@@ -301,7 +301,7 @@ function TestingHelperTest_ImportTestingModule_TargetModule{
 function TestingHelperTest_ImportTestingModule_TestingModule {
     [CmdletBinding()] param ()
 
-    $TestDummy1 = GetTestingModuleName -TargetModule $Dummy1
+    $TestDummy1 = Get-TestingModuleName -TargetModule $Dummy1
 
     Import-Module -Name $Dummy1
     $modulePath = (Get-Module -Name $Dummy1).Path

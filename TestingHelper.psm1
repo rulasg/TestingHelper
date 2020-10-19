@@ -3,8 +3,16 @@ Write-Host "Loading TestingHelper ..." -ForegroundColor DarkCyan
 
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder" 
 
-function GetTestingModuleName ([string] $TargetModule) { return ($TargetModule + "Test") }
-function GetTestingFunctionPrefix ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }
+function Get-TestingModuleName {
+    [CmdletBinding()]
+    param (
+        [parameter(Mandatory)] [string] $TargetModule
+    )
+    
+    return ($TargetModule + "Test") 
+}
+
+function Get-TestingFunctionPrefix ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }
 
 function Trace-Message {
     [CmdletBinding()]
@@ -111,7 +119,7 @@ function Test-Module {
 
             Import-TestingModule -TargetModule $Name -Force
 
-            $TestingModuleName = GetTestingModuleName -TargetModule $Name
+            $TestingModuleName = Get-TestingModuleName -TargetModule $Name
 
             $functionsTest = @()
 
@@ -123,7 +131,7 @@ function Test-Module {
             }
             else {
                 # Legacy
-                $TestName = GetTestingFunctionPrefix -TestingModuleName ($TestingModuleName )
+                $TestName = Get-TestingFunctionPrefix -TestingModuleName ($TestingModuleName )
                 $functionsTest += Get-Command -Name $TestName -Module $TestingModuleName 
                 
                 # New function name Test-*
@@ -159,7 +167,7 @@ function Import-TestingModule {
 
         $modulePath = (Get-Module -Name $TargetModule).Path
     
-        $moduleName = Join-Path -Path (Split-Path -Path $modulePath -Parent) -ChildPath (GetTestingModuleName -TargetModule $TargetModule)
+        $moduleName = Join-Path -Path (Split-Path -Path $modulePath -Parent) -ChildPath (Get-TestingModuleName -TargetModule $TargetModule)
 
         if (-not (Test-Path -Path $moduleName)) {
             Write-Warning -Message "TestingModule for module [ $TargetModule ] not found at [ $moduleName ]"
