@@ -284,6 +284,34 @@ function Assert-AreEqual {
     Assert-IsTrue -Condition ($Expected -eq $Presented) -Comment ("Object are not Equal : Expected [ $Expected ] and presented [ $Presented] - " + $Comment)
 }
 
+function Assert-AreEqualSecureString {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [string] $Expected,
+        [Parameter(Mandatory)] [securestring] $Presented,
+        [Parameter()] [string] $Comment
+
+    )
+
+    $pss = $Presented | ConvertFrom-SecureString -AsPlainText
+
+    Assert-AreEqual -Expected $Expected -Presented $pss -Comment ("SecureString - " + $Comment)
+}
+
+function Assert-AreEqualPath {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+
+    )
+    $ex = $Expected | Convert-Path
+    $pr = $presented | Convert-Path
+
+    Assert-AreEqual -Expected $ex -Presented $pr -Comment ("Path not equal - " + $Comment)
+}
+
 function Assert-AreNotEqual {
     [CmdletBinding()]
     param (
