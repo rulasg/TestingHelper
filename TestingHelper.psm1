@@ -61,10 +61,17 @@ function Start-TestingFunction {
     param (
         [parameter(Mandatory, ValueFromPipeline,ParameterSetName="FuncInfo")][System.Management.Automation.FunctionInfo] $FunctionInfo,
         [Parameter(Mandatory, ParameterSetName="FuncName")] [string] $FunctionName,
-        [Parameter()] [switch] $ShowError
+        [Parameter()] [switch] $ShowTestErrors
     )
 
     Process {
+
+        if ($ShowTestErrors) {
+            $ErrorShow = 'Continue'
+        }
+        else {
+            $ErrorShow = 'SilentlyContinue'
+        }
 
         if ($FunctionInfo) {
             $FunctionName = $FunctionInfo.Name
@@ -74,8 +81,8 @@ function Start-TestingFunction {
         $local = Push-TestingFolder -Path $FunctionName
     
         try {
-            Write-Host "$FunctionName ... [" -NoNewline -ForegroundColor DarkCyan 
-            & $FunctionName 
+            Write-Host "$FunctionName ... [" -NoNewline -ForegroundColor DarkCyan
+            & $FunctionName -ErrorAction $ErrorShow
             Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
             Write-Host "PASS"  -ForegroundColor DarkYellow 
         }
@@ -90,7 +97,7 @@ function Start-TestingFunction {
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Failed"  -ForegroundColor Red 
                 
-                if ($ShowError) {
+                if ($ShowTestErrors) {
                     $_
                 }
             }
@@ -106,7 +113,7 @@ function Test-Module {
     param (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName,Position = 0)] [string] $Name,
         [Parameter( Position = 1)] [string] $TestName,
-        [Parameter()] [switch] $ShowError
+        [Parameter()] [switch] $ShowTestErrors
     )
 
     process {
@@ -126,7 +133,7 @@ function Test-Module {
             #Use standar testing fucntions prfix
             if ( $TestName) {
                 # Filter based on TestFunction names
-                $ShowError = $true
+                $ShowTestErrors = $true
                 $functionsTest += Get-Command -Name $TestName -Module $TestingModuleName 
             }
             else {
@@ -138,7 +145,7 @@ function Test-Module {
                 $functionsTest += Get-Command -Name "Test-*" -Module $TestingModuleName 
             } 
             
-            $functionsTest | Start-TestingFunction -ShowError:$ShowError
+            $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
 
             Remove-Module -Name $TestingModuleName -Force
 
