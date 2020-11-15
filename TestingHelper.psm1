@@ -313,8 +313,9 @@ function Assert-AreEqualPath {
         [Parameter()] [string] $Comment
 
     )
-    $ex = $Expected | Convert-Path
-    $pr = $presented | Convert-Path
+
+    $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
+    $pr = &{ if ($Presented | Test-Path) { $Presented | Convert-Path} else {$Presented}}
 
     Assert-AreEqual -Expected $ex -Presented $pr -Comment ("Path not equal - " + $Comment)
 }
