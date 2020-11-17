@@ -2,6 +2,7 @@
 Write-Host "Loading TestingHelper ..." -ForegroundColor DarkCyan
 
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder" 
+Set-Variable -Name TEST_FUNCTION_NAME_PATTERN -Value "Test-*" 
 
 function Get-TestingModuleName {
     [CmdletBinding()]
@@ -12,7 +13,7 @@ function Get-TestingModuleName {
     return ($TargetModule + "Test") 
 }
 
-function Get-TestingFunctionPrefix ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }
+function Get-TestingFunctionPrefix_Deprecated ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }
 
 function Trace-Message {
     [CmdletBinding()]
@@ -138,11 +139,11 @@ function Test-Module {
             }
             else {
                 # Legacy
-                $TestName = Get-TestingFunctionPrefix -TestingModuleName ($TestingModuleName )
+                $TestName = Get-TestingFunctionPrefix_Deprecated -TestingModuleName ($TestingModuleName )
                 $functionsTest += Get-Command -Name $TestName -Module $TestingModuleName 
                 
                 # New function name Test-*
-                $functionsTest += Get-Command -Name "Test-*" -Module $TestingModuleName 
+                $functionsTest += Get-Command -Name $TEST_FUNCTION_NAME_PATTERN -Module $TestingModuleName 
             } 
             
             $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
@@ -268,7 +269,7 @@ function Assert-IsNotNull {
 function Assert-IsNull {
     [CmdletBinding()]
     param (
-        $Object
+        [parameter(Position=0)] $Object
     )
 
     if ($Object) {
