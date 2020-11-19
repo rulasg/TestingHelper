@@ -1,3 +1,5 @@
+using Module .\TestingHelperTestHelper.psm1
+
 Write-Host "Loading TestingHelperTest ..." -ForegroundColor DarkCyan
 
 # N3ed to match the value of variable of same name of TestHelper
@@ -6,7 +8,7 @@ Set-Variable -Name RootTestingFolder -Value "Temp:/P"
 
 $moduleRootPath = $MyInvocation.MyCommand.Path | Split-Path -Parent
 if (-not $env:PSModulePath.Contains($moduleRootPath)) {
-    $env:PSModulePath+= (";" + $moduleRootPath)
+    Add-PSModulePath -Path $moduleRootPath
 }
 
 $Dummy1 = "DummyModule1"
