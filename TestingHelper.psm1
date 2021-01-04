@@ -125,6 +125,8 @@ function Test-Module {
 
         try {
 
+            Remove-Module -Name "$Name*"
+            
             Import-TestingModule -TargetModule $Name -Force
 
             $TestingModuleName = Get-TestingModuleName -TargetModule $Name
@@ -375,7 +377,18 @@ function Assert-Count {
         [Parameter(Mandatory)] [int] $Expected,
         [Parameter(Mandatory)] [object] $Presented
     )
-    Assert-IsTrue -Condition ($Presented.Length -eq $Expected)
+    Assert-IsTrue -Condition ($Presented.Length -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}]" -f $Expected,$Presented.Length)
+}
+
+function Assert-CountObjects {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [int] $Expected,
+        [Parameter(Mandatory)] [object] $Presented
+    )
+
+    $presentedCount = $Presented.Count
+    Assert-IsTrue -Condition ($presentedCount -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}]" -f $Expected,$presentedCount)
 }
 
 function Remove-TestingFolder {
