@@ -271,7 +271,7 @@ function Assert-IsNotNull {
 function Assert-IsNull {
     [CmdletBinding()]
     param (
-        [parameter(Position=0)] $Object
+        [parameter(Position=0,ValueFromPipeline)] $Object
     )
 
     if ($Object) {
