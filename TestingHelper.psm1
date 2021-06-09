@@ -377,7 +377,7 @@ function Assert-Count {
         [Parameter(Mandatory)] [int] $Expected,
         [Parameter(Mandatory)] [object] $Presented
     )
-    Assert-IsTrue -Condition ($Presented.Length -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}]" -f $Expected,$Presented.Length)
+    Assert-IsTrue -Condition ($Presented.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}]" -f $Expected,$Presented.Length)
 }
 
 function Assert-CountObjects {
