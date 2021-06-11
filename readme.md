@@ -7,3 +7,4 @@ This `module` contains `functions` to help create and run Unit Testing for Power
 | #   | Module/Area   | Type | Name                      | Status | Description                                                                   | Comments |
 | --- | ------------- | ---- | ------------------------- | ------ | ----------------------------------------------------------------------------- | -------- |
 | [ ] | TestingHelper | DCR  | Start-Test Return Objects | New    | Change execution frame work to return objects and not display run status text |          |
+| [ ] | TestingHelper | DCR  | NoteBook                  | New    | Create help notebook                                                          |          |
