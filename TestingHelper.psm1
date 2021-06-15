@@ -92,8 +92,12 @@ function Start-TestingFunction {
             if ($_.Exception.Message -eq "SKIP_TEST") {
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Skip"  -ForegroundColor Magenta 
-            }
-            else {
+                
+            }elseif ($_.Exception.Message -eq "NOT_IMPLEMENTED") {
+                Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
+                Write-Host "NotImplemented"  -ForegroundColor Red 
+                
+            } else {
                 Write-Host "x"  -NoNewline -ForegroundColor Red 
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Failed"  -ForegroundColor Red 
@@ -228,7 +232,7 @@ function Start-TestModule {
 
 function Assert-NotImplemented {
 
-    Assert -Condition $false -Expected $true -Comment "Function not implemented"
+    throw "NOT_IMPLEMENTED"
 }
 
 function Assert-SkipTest{
