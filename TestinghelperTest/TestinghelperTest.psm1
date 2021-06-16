@@ -162,6 +162,49 @@ function TestingHelperTest_AreEqual_Fail{
     Assert-IsTrue -Condition $hasThrow
 }
 
+function TestingHelperTest_FilesAreEqual{
+    
+    "content of the file rajksljkjralksr" | Out-File -FilePath "file1.txt"
+    "content of the file rajksljkjralksr" | Out-File -FilePath "file2.txt"
+    "Other   of the file rajksljkjralksr" | Out-File -FilePath "file3.txt"
+
+    Assert-FilesAreEqual -Expected  "file1.txt" -Presented "file2.txt"
+    Assert-FilesAreNotEqual -Expected  "file1.txt" -Presented "file3.txt"
+
+    $hasThrow = $false
+    try {
+        Assert-FilesAreEqual -Expected  "file1.txt" -Presented "file2.txt"
+
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_FilesAreEqual{
+    "content of the file rajksljkjralksr" | Out-File -FilePath "file1.txt"
+    "content of the file rajksljkjralksr" | Out-File -FilePath "file2.txt"
+    "Other   of the file rajksljkjralksr" | Out-File -FilePath "file3.txt"
+
+    $hasThrow = $false
+    try {
+        Assert-FilesAreEqual -Expected  "file1.txt" -Presented "file3.txt"
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+    $hasThrow = $false
+    try {
+        Assert-FilesAreNotEqual -Expected  "file1.txt" -Presented "file2.txt"
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
 function TestingHelperTest_ItemExists_Success{
 
     $l = Get-Location
