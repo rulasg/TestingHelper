@@ -395,6 +395,33 @@ function Assert-CountObjects {
     Assert-IsTrue -Condition ($presentedCount -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}]" -f $Expected,$presentedCount)
 }
 
+function Assert-FilesAreEqual{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    $ex = $Expected | Get-FileHash
+    $pr = $Presented | Get-FileHash
+
+    Assert-AreEqual -Expected $ex.Hash -Presented $pr.Hash -Comment ("Files not equal - " + $Comment)
+}
+function Assert-FilesAreNotEqual{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    $ex = $Expected | Get-FileHash
+    $pr = $Presented | Get-FileHash
+
+    Assert-AreNotEqual -Expected $ex.Hash -Presented $pr.Hash -Comment ("Files equal - " + $Comment)
+}
+
 function Remove-TestingFolder {
     param(
         [Parameter(Mandatory, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)][string] $Path,
