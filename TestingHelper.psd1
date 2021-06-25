@@ -12,7 +12,7 @@
     RootModule = 'TestingHelper.psm1'
     
     # Version number of this module.
-    ModuleVersion = '1.2'
+    ModuleVersion = '1.3'
     
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -21,13 +21,13 @@
     GUID="6628c5f3-61b1-4659-a63b-e487b65923e8"
     
     # Author of this module
-    Author = 'raulg'
+    Author = 'rulasg'
     
     # Company or vendor of this module
-    CompanyName="raulg.eu"
+    CompanyName="rulasg"
     
     # Copyright statement for this module
-    Copyright = '(c) 2020 BiT21. All rights reserved.'
+    Copyright = '(c) 2021 rulasg. All rights reserved.'
     
     # Description of the functionality provided by this module
     Description = 'Functions to help create Unit Testing for Powershell modules and run them'
