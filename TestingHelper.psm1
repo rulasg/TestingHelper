@@ -65,6 +65,13 @@ function Start-TestingFunction {
         [Parameter()] [switch] $ShowTestErrors
     )
 
+    begin{
+        $SuccessCount = 0
+        $FailedCount = 0 
+        $SkippedCount = 0 
+        $NotImplementedCount = 0 
+    }
+
     Process {
 
         if ($ShowTestErrors) {
@@ -86,21 +93,25 @@ function Start-TestingFunction {
             & $FunctionName -ErrorAction $ErrorShow
             Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
             Write-Host "PASS"  -ForegroundColor DarkYellow 
+            $SuccessCount++
         }
         catch {
     
             if ($_.Exception.Message -eq "SKIP_TEST") {
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Skip"  -ForegroundColor Magenta 
+                $SkippedCount++
                 
             }elseif ($_.Exception.Message -eq "NOT_IMPLEMENTED") {
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "NotImplemented"  -ForegroundColor Red 
+                $NotImplementedCount++
                 
             } else {
                 Write-Host "x"  -NoNewline -ForegroundColor Red 
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Failed"  -ForegroundColor Red 
+                $FailedCount++
                 
                 if ($ShowTestErrors) {
                     $_
@@ -111,6 +122,25 @@ function Start-TestingFunction {
             $local | Pop-TestingFolder -Force
         }
     }
+
+    end{
+        Write-Host  -ForegroundColor DarkCyan 
+        "Test Result " | Write-Host  -ForegroundColor DarkCyan -NoNewline
+        OutputSingleResultData -Name "Success"        -Value $SuccessCount        -Color "Yellow"
+        OutputSingleResultData -Name "Failed"         -Value $FailedCount         -Color "Red"
+        OutputSingleResultData -Name "Skipped"        -Value $SkippedCount        -Color "Yellow"
+        OutputSingleResultData -Name "NotImplemented" -Value $NotImplementedCount -Color "Red"
+        Write-Host  -ForegroundColor DarkCyan 
+    }
+}
+
+function OutputSingleResultData($Name,$Value, $Color){
+    $testColor = $Value -eq 0 ? "DarkCyan" : $Color
+
+    "{0}" -f $Name | Write-Host  -ForegroundColor $testColor -NoNewline 
+    "["     -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
+    $Value            | Write-Host  -ForegroundColor $testColor -NoNewline 
+    "] "     -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
 }
 
 function Test-Module {
