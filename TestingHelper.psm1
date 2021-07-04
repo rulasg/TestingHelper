@@ -2,7 +2,6 @@
 Write-Host "Loading TestingHelper ..." -ForegroundColor DarkCyan
 
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder" 
-Set-Variable -Name TEST_FUNCTION_NAME_PATTERN -Value "Test-*" 
 
 function Get-TestingModuleName {
     [CmdletBinding()]
@@ -13,7 +12,7 @@ function Get-TestingModuleName {
     return ($TargetModule + "Test") 
 }
 
-function Get-TestingFunctionPrefix_Deprecated ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }
+function Get-TestingFunctionPrefix ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }
 
 function Trace-Message {
     [CmdletBinding()]
@@ -124,13 +123,13 @@ function Start-TestingFunction {
     }
 
     end{
-        Write-Host  -ForegroundColor DarkCyan 
-        "Test Result " | Write-Host  -ForegroundColor DarkCyan -NoNewline
-        OutputSingleResultData -Name "Success"        -Value $SuccessCount        -Color "Yellow"
-        OutputSingleResultData -Name "Failed"         -Value $FailedCount         -Color "Red"
-        OutputSingleResultData -Name "Skipped"        -Value $SkippedCount        -Color "Yellow"
-        OutputSingleResultData -Name "NotImplemented" -Value $NotImplementedCount -Color "Red"
-        Write-Host  -ForegroundColor DarkCyan 
+        return [PSCustomObject]@{
+
+            Success = $SuccessCount
+            Failed = $FailedCount
+            Skipped = $SkippedCount
+            NotImplemented = $NotImplementedCount
+        }
     }
 }
 
@@ -146,14 +145,14 @@ function OutputSingleResultData($Name,$Value, $Color){
 function Test-Module {
     [CmdletBinding()] 
     param (
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName,Position = 0)] [string] $Name,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName,Position = 0)] [string] $Name,
         [Parameter( Position = 1)] [string] $TestName,
         [Parameter()] [switch] $ShowTestErrors
     )
 
     process {
-
-        Write-Verbose "Running tests for Module [ $Name ] functions [ $TestName ] "
+        write-host
+        Write-Host ("[ {0} ] Running tests functions [ {1} ] " -f $Name,([string]::IsNullOrWhiteSpace($TestName) ? "*" : $TestName)) -ForegroundColor Green
 
         $local = Push-TestingFolder
 
@@ -171,18 +170,34 @@ function Test-Module {
             if ( $TestName) {
                 # Filter based on TestFunction names
                 $ShowTestErrors = $true
-                $functionsTest += Get-Command -Name $TestName -Module $TestingModuleName 
+                $functionsTestName = $TestName
             }
             else {
-                # Legacy
-                $TestName = Get-TestingFunctionPrefix_Deprecated -TestingModuleName ($TestingModuleName )
-                $functionsTest += Get-Command -Name $TestName -Module $TestingModuleName 
                 
-                # New function name Test-*
-                $functionsTest += Get-Command -Name $TEST_FUNCTION_NAME_PATTERN -Module $TestingModuleName 
+                $functionsTestName = Get-TestingFunctionPrefix -TestingModuleName ($TestingModuleName )
+                
             } 
             
-            $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
+            $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName 
+            
+            $result = $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
+
+            
+            $result | Add-Member -NotePropertyName "Name" -NotePropertyValue $Name
+            $result | Add-Member -NotePropertyName "TestModule" -NotePropertyValue $TestingModuleName
+            $result | Add-Member -NotePropertyName "TestsName" -NotePropertyValue $functionsTestName
+            $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
+
+            Write-Host  -ForegroundColor DarkCyan 
+            $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
+            " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
+            OutputSingleResultData -Name "Success"      -Value $result.Success        -Color "Yellow"
+            OutputSingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
+            OutputSingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
+            OutputSingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
+            Write-Host  -ForegroundColor DarkCyan 
+
+            $result
 
             Remove-Module -Name $TestingModuleName -Force
 
