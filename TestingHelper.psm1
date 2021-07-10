@@ -69,6 +69,7 @@ function Start-TestingFunction {
         $FailedCount = 0 
         $SkippedCount = 0 
         $NotImplementedCount = 0 
+        $FailedTests = @()
     }
 
     Process {
@@ -111,6 +112,7 @@ function Start-TestingFunction {
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Failed"  -ForegroundColor Red 
                 $FailedCount++
+                $FailedTests += $FunctionName
                 
                 if ($ShowTestErrors) {
                     $_
@@ -129,6 +131,7 @@ function Start-TestingFunction {
             Failed = $FailedCount
             Skipped = $SkippedCount
             NotImplemented = $NotImplementedCount
+            FailedTests = $FailedTests
         }
     }
 }
