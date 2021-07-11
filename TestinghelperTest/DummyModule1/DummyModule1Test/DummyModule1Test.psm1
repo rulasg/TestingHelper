@@ -1,5 +1,5 @@
 
-Write-Host "Loading DummyModule1Test ..." -ForegroundColor DarkCyan
+Write-Host "Loading DummyModule1Test ..." -ForegroundColor DarkYellow
 
 $InstanceId = New-Guid
 function Get-InstanceId{

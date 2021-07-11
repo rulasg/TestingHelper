@@ -1,6 +1,6 @@
 using Module .\TestingHelperTestHelper.psm1
 
-Write-Host "Loading TestingHelperTest ..." -ForegroundColor DarkCyan
+Write-Host "Loading TestingHelperTest ..." -ForegroundColor DarkYellow
 
 # N3ed to match the value of variable of same name of TestHelper
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder"

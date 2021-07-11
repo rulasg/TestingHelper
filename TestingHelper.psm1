@@ -90,7 +90,7 @@ function Start-TestingFunction {
     
         try {
             Write-Host "$FunctionName ... [" -NoNewline -ForegroundColor DarkCyan
-            & $FunctionName -ErrorAction $ErrorShow
+            $null = & $FunctionName -ErrorAction $ErrorShow
             Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
             Write-Host "PASS"  -ForegroundColor DarkYellow 
             $SuccessCount++
@@ -155,7 +155,7 @@ function Test-Module {
 
     process {
         write-host
-        Write-Host ("[ {0} ] Running tests functions [ {1} ] " -f $Name,([string]::IsNullOrWhiteSpace($TestName) ? "*" : $TestName)) -ForegroundColor Green
+        "[ {0} ] Running tests functions [ {1} ] " -f $Name,([string]::IsNullOrWhiteSpace($TestName) ? "*" : $TestName) | Write-Host -ForegroundColor Green
 
         $local = Push-TestingFolder
 
@@ -181,7 +181,7 @@ function Test-Module {
                 
             } 
             
-            $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName 
+            $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName -ErrorAction SilentlyContinue
             
             $result = $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
 
