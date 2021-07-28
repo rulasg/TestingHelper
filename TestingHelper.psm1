@@ -127,7 +127,7 @@ function Start-TestingFunction {
     end{
         return [PSCustomObject]@{
 
-            Success = $SuccessCount
+            Pass = $SuccessCount
             Failed = $FailedCount
             Skipped = $SkippedCount
             NotImplemented = $NotImplementedCount
@@ -194,7 +194,7 @@ function Test-Module {
             Write-Host  -ForegroundColor DarkCyan 
             $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
             " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
-            OutputSingleResultData -Name "Success"      -Value $result.Success        -Color "Yellow"
+            OutputSingleResultData -Name "Pass"           -Value $result.Pass        -Color "Yellow"
             OutputSingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
             OutputSingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
             OutputSingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
