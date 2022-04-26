@@ -136,7 +136,7 @@ function Start-TestingFunction {
     }
 }
 
-function OutputSingleResultData($Name,$Value, $Color){
+function Out-SingleResultData($Name,$Value, $Color){
     $testColor = $Value -eq 0 ? "DarkCyan" : $Color
 
     "{0}" -f $Name | Write-Host  -ForegroundColor $testColor -NoNewline 
@@ -194,10 +194,10 @@ function Test-Module {
             Write-Host  -ForegroundColor DarkCyan 
             $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
             " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
-            OutputSingleResultData -Name "Pass"           -Value $result.Pass        -Color "Yellow"
-            OutputSingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
-            OutputSingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
-            OutputSingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
+            Out-SingleResultData -Name "Pass"           -Value $result.Pass           -Color "Yellow"
+            Out-SingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
+            Out-SingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
+            Out-SingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
             Write-Host  -ForegroundColor DarkCyan 
 
             $result
