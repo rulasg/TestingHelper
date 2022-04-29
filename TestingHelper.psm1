@@ -17,7 +17,7 @@ function Get-TestingFunctionPrefix ([string] $TestingModuleName) { return ($Test
 function Trace-Message {
     [CmdletBinding()]
     param (
-        [Parameter(Position = 1)]
+        [Parameter(ValueFromPipeline, Position = 1)]
         [string]
         $Message
     )
@@ -375,6 +375,21 @@ function Assert-AreEqualPath {
     Assert-AreEqual -Expected $ex -Presented $pr -Comment ("Path not equal - " + $Comment)
 }
 
+function Assert-AreNotEqualPath {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+
+    )
+
+    $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
+    $pr = &{ if ($Presented | Test-Path) { $Presented | Convert-Path} else {$Presented}}
+
+    Assert-AreNotEqual -Expected $ex -Presented $pr -Comment ("Path equal - " + $Comment)
+}
+
 function Assert-AreNotEqual {
     [CmdletBinding()]
     param (
@@ -385,6 +400,40 @@ function Assert-AreNotEqual {
 
     Assert-IsFalse -Condition ($Expected -eq $Presented) -Comment ("Object are Equal : Expecte [ $Expected ] and presented [ $Presented] - " + $Comment)
 
+}
+
+function Assert-AreEqualContent{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
+    $pr = &{ if ($Presented | Test-Path) { $Presented | Convert-Path} else {$Presented}}
+
+    $hashEx = Get-FileHash -Path $ex
+    $hashPr = Get-FileHash -Path $pr
+
+    Assert-AreEqual -Expected $hashEx -Presented $hashPr 
+}
+
+function Assert-AreNotEqualContent{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
+    $pr = &{ if ($Presented | Test-Path) { $Presented | Convert-Path} else {$Presented}}
+
+    $hashEx = Get-FileHash -Path $ex
+    $hashPr = Get-FileHash -Path $pr
+
+    Assert-AreNotEqual -Expected $hashEx -Presented $hashPr  
 }
 
 function Assert-ItemExist {
