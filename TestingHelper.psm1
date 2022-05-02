@@ -476,20 +476,18 @@ function Assert-Count {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)] [int] $Expected,
-        [Parameter(Mandatory)] [object] $Presented
-    )
-    Assert-IsTrue -Condition ($Presented.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}]" -f $Expected,$Presented.Length)
-}
+        [Parameter()] [object] $Presented,
+        [Parameter()] [string] $Comment
 
-function Assert-CountObjects {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory)] [int] $Expected,
-        [Parameter(Mandatory)] [object] $Presented
     )
 
-    $presentedCount = $Presented.Count
-    Assert-IsTrue -Condition ($presentedCount -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}]" -f $Expected,$presentedCount)
+    if (!$Presented) {
+        Assert-IsTrue -Condition ($Expected -eq 0) -Comment ("Presented is null expected [{0}]- {1}" -f $Expected, $Comment)
+    } else {
+        Assert-IsTrue -Condition ($Presented.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}] - {2}" -f $Expected,$Presented.Length, $Comment)
+
+    }
+
 }
 
 function Assert-FilesAreEqual{
