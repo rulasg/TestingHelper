@@ -618,6 +618,31 @@ function New-TestingFolder {
     Write-Verbose -Message "Created Diretory [ $result ] "
 }
 
+function New-TestingFile {
+    param(
+        [Parameter()][string]$Name,
+        [Parameter()][string]$Path,
+        [Parameter()][string]$Content,
+        [switch] $Hidden,
+        [switch] $PassThru
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Name))    { $Name    = ("{0}.txt" -f (New-Guid).ToString()) }
+    if ([string]::IsNullOrWhiteSpace($Path))    { $Path    = '.' }
+    if ([string]::IsNullOrWhiteSpace($Content)) { $Content = "random content" }
+
+    $file = New-Item -ItemType File -Path $Path -Name $Name -Value $Content -Force
+
+    if ($Hidden) {
+        $file.Attributes = $file.Attributes -bxor [System.IO.FileAttributes]::Hidden
+    }
+
+    if ($PassThru) {
+        return $file
+    }
+}
+
+
 function GetRooTestingFolderPath{
     $rd = Get-Date -Format yyMMdd
     $path = Join-Path -Path "Temp:" -ChildPath ("Posh_Testing_" + $rd)
