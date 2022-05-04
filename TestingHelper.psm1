@@ -609,13 +609,18 @@ function Pop-TestingFolder {
 function New-TestingFolder {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [string] $Path
+        [Parameter(Mandatory)] [string] $Path,
+        [switch] $PassThru
     )
 
     # Need to consolidate as mkdir behaves diferent on PC or Mac
     $result = New-Item -ItemType Directory -Path $Path 
 
     Write-Verbose -Message "Created Diretory [ $result ] "
+
+    if ($PassThru) {
+        return $result
+    }
 }
 
 function New-TestingFile {
