@@ -398,7 +398,7 @@ function Assert-AreNotEqual {
         [Parameter()] [string] $Comment
     )
 
-    Assert-IsFalse -Condition ($Expected -eq $Presented) -Comment ("Object are Equal : Expecte [ $Expected ] and presented [ $Presented] - " + $Comment)
+    Assert-IsFalse -Condition ($Expected -eq $Presented) -Comment ("Object are Equal : Expecte [ $Expected ] and presented [ $Presented ] - " + $Comment)
 
 }
 
