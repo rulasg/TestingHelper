@@ -484,7 +484,7 @@ function Assert-Count {
     if (!$Presented) {
         Assert-IsTrue -Condition ($Expected -eq 0) -Comment ("Presented is null expected [{0}]- {1}" -f $Expected, $Comment)
     } else {
-        Assert-IsTrue -Condition ($Presented.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}] - {2}" -f $Expected,$Presented.Length, $Comment)
+        Assert-IsTrue -Condition ($Presented.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presented [{1}] - {2}" -f $Expected,$Presented.Count, $Comment)
 
     }
 
