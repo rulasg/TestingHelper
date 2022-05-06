@@ -343,7 +343,7 @@ function Assert-AreEqual {
 
     )
 
-    Assert-IsTrue -Condition ($Expected -eq $Presented) -Comment ("Object are not Equal : Expected [ $Expected ] and presented [ $Presented] - " + $Comment)
+    Assert-IsTrue -Condition ($Expected -eq $Presented) -Comment ("Object are not Equal : Expected [ $Expected ] and presented [ $Presented ] - " + $Comment)
 }
 
 function Assert-AreEqualSecureString {
