@@ -296,6 +296,30 @@ function TestingHelperTest_Count_Fail{
     Assert-IsTrue -Condition $hasThrow
 }
 
+function TestingHelperTest_Contains_Success{
+    $array = @(
+        "value1","Value2","Value3"
+    )
+
+    Assert-Contains -Expected "Value2" -Presented $array
+}
+
+function TestingHelperTest_Contains_Fail{
+
+    $array = @(
+        "value1","Value2","Value3"
+    )
+
+    $hasThrow = $false
+    try {
+        Assert-Contains -Expected "value2" -Presented $array
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
 function TestingHelperTest_GetRooTestingFolderPath {
     [CmdletBinding()] param ()
 
@@ -317,11 +341,11 @@ function TestingHelperTest_RemoveTestingFolder_Not_TestRunFolder{
 
     Remove-TestingFolder -Path ".\NotStandardName"
 
-    Assert-ItemExist -Path $t.Name
+    Assert-ItemExist -Path $t
 
     $t | Remove-Item
     
-    Assert-itemNotExist -Path $t.Path
+    Assert-itemNotExist -Path $t
 }
 
 function TestingHelperTest_RemoveTestingFolder_Recurse{

@@ -39,7 +39,6 @@ function Test-Assert {
         throw "Assertion - Found [ $Condition ] Expected [ $Expected ] - $Comment"
     }
     else {
-        #Write-Host "." -NoNewline -ForegroundColor DarkMagenta
         Write-AssertionDot -Color DarkMagenta
     }
 }
@@ -440,24 +439,17 @@ function Assert-ItemExist {
     param(
         [string] $Path
     )
-    try {
-        Assert-IsTrue -Condition ($Path | Test-Path)
-    }
-    catch {
-        throw "Item does not exist [ $Path ]"
-    }
+    Assert-IsNotNull -Object $Path -Comment "[Assert-ItemExist] Path is empty"
+    Assert-IsTrue -Condition ($Path | Test-Path)
 }
 
 function Assert-ItemNotExist {
     param(
         [string] $Path
-    )
-    try {
-        Assert-IsFalse -Condition ($Path | Test-Path)
-    }
-    catch {
-        throw "Item does not exist [ $Path ]"
-    }
+        )
+        
+    Assert-IsNotNull -Object $Path -Comment "[Assert-ItemNotExist] Path is empty"
+    Assert-IsFalse -Condition ($Path | Test-Path)
 }
 
 function Assert-IsGuid{
@@ -468,7 +460,7 @@ function Assert-IsGuid{
         Assert-IsNotNull -Object (New-Object -TypeName System.Guid -ArgumentList $Presented)
     }
     catch {
-        throw "String is not a valid Guid"
+        Assert -Condition $false -Comment "String is not a valid Guid"
     }
 }
 
@@ -488,6 +480,19 @@ function Assert-Count {
 
     }
 
+}
+
+function Assert-Contains{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [string] $Expected,
+        [Parameter()] [string[]] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Assert -Condition ([string]::IsNullOrEmpty($Expected)) -Expected $false -Comment "[Assert-Contains] Expected can not be empty"
+
+    Assert-IsTrue -Condition ($Presented.Contains($Expected))
 }
 
 function Assert-FilesAreEqual{
@@ -609,12 +614,35 @@ function Pop-TestingFolder {
 function New-TestingFolder {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [string] $Path,
+        [Parameter(ValueFromPipeline)] [string] $Path,
+        [Parameter()] [string] $Name,
         [switch] $PassThru
     )
 
+    if ($Path -and !$Name) {
+        $finalPath = $Path
+    } else {
+        if ([string]::IsNullOrWhiteSpace($Name))    { $Name    = (New-Guid).ToString()}
+        if ([string]::IsNullOrWhiteSpace($Path))    { $Path    = '.' }
+
+        $finalPath = $Path | Join-Path -ChildPath $Name
+    }
+    
+    # if ($Path -and $Name) {
+    #     $finalPath = $Path | Join-Path -ChildPath $Name
+    # }
+    
+    # if (!$Path -and $Name) {
+    #     $finalPath = '.' | Join-Path -ChildPath $Name
+    # }
+    
+    # if (!$Path -and !$Name) {
+    #     $finalPath = '.' | Join-Path -ChildPath (New-Guid).ToString()
+    # }
+
+
     # Need to consolidate as mkdir behaves diferent on PC or Mac
-    $result = New-Item -ItemType Directory -Path $Path 
+    $result = New-Item -ItemType Directory -Path $finalPath
 
     Write-Verbose -Message "Created Diretory [ $result ] "
 
@@ -625,8 +653,8 @@ function New-TestingFolder {
 
 function New-TestingFile {
     param(
+        [Parameter(ValueFromPipeline)][string]$Path,
         [Parameter()][string]$Name,
-        [Parameter()][string]$Path,
         [Parameter()][string]$Content,
         [switch] $Hidden,
         [switch] $PassThru
