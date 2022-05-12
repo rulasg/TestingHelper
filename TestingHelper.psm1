@@ -492,7 +492,7 @@ function Assert-Contains{
 
     Assert -Condition ([string]::IsNullOrEmpty($Expected)) -Expected $false -Comment "[Assert-Contains] Expected can not be empty"
 
-    Assert-IsTrue -Condition ($Presented.Contains($Expected))
+    Assert-IsTrue -Condition ($Presented.Contains($Expected)) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
 }
 
 function Assert-FilesAreEqual{
