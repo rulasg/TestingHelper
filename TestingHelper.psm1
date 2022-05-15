@@ -479,7 +479,23 @@ function Assert-Count {
         Assert-IsTrue -Condition ($Presented.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presented [{1}] - {2}" -f $Expected,$Presented.Count, $Comment)
 
     }
+}
 
+function Assert-CountTimes {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [int] $Expected,
+        [Parameter(Mandatory)] [string] $Pattern,
+        [Parameter()] [string[]] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+        if (!$Presented) {
+        Assert-IsTrue -Condition ($Expected -eq 0) -Comment ("Presented is null expected [{0}]- {1}" -f $Expected, $Comment)
+    } else {
+        $iterations = $Presented | Where-Object {$_ -eq $pattern}
+        Assert-IsTrue -Condition ($iterations.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presented [{1}] - {2}" -f $Expected,$iterations.Count, $Comment)
+    }
 }
 
 function Assert-Contains{
