@@ -315,28 +315,19 @@ function Assert-IsNotNull {
         $Object,
         $Comment
     )
-    if ($Object) {
-        $isNull = $false
-    }
-    else {
-        $isNull = $true
-    }
-    Assert-IsFalse -Condition $isNull -Comment ("Object is null -" + $Comment)
+
+    Assert-IsFalse -Condition ($null -eq $Object) -Comment ("Object is null -" + $Comment)
 }
 
 function Assert-IsNull {
     [CmdletBinding()]
     param (
-        [parameter(Position=0,ValueFromPipeline)] $Object
+        [parameter(Position=0,ValueFromPipeline)] $Object,
+        $Comment
     )
 
-    if ($Object) {
-        $isNull = $false
-    }
-    else {
-        $isNull = $true
-    }
-    Assert-IsTrue -Condition $isNull -Comment "IsNull"
+
+    Assert-IsTrue -Condition ($null -eq $Object) -Comment ("Object is null -" + $Comment)
 }
 function Assert-AreEqual {
     [CmdletBinding()]
