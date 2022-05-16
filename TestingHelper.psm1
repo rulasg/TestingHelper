@@ -69,6 +69,7 @@ function Start-TestingFunction {
         $SkippedCount = 0 
         $NotImplementedCount = 0 
         $FailedTests = @()
+        $FailedTestsErrors = @()
     }
 
     Process {
@@ -112,10 +113,11 @@ function Start-TestingFunction {
                 Write-Host "Failed"  -ForegroundColor Red 
                 $FailedCount++
                 $FailedTests += $FunctionName
+                $FailedTestsErrors += @($functionName,$_)
                 
                 if ($ShowTestErrors) {
                     $_
-                }
+                } 
             }
         }
         finally {
@@ -124,6 +126,9 @@ function Start-TestingFunction {
     }
 
     end{
+
+        $Global:FailedTestsErrors = $FailedTestsErrors
+        
         return [PSCustomObject]@{
 
             Pass = $SuccessCount
