@@ -187,13 +187,17 @@ function Test-Module {
             
             $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName -ErrorAction SilentlyContinue
             
+            $start = Get-Date
+
             $result = $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
 
+            $time = ($start | New-TimeSpan ).ToString("hh\:mm\:ss\:FFFF")
             
             $result | Add-Member -NotePropertyName "Name" -NotePropertyValue $Name
             $result | Add-Member -NotePropertyName "TestModule" -NotePropertyValue $TestingModuleName
             $result | Add-Member -NotePropertyName "TestsName" -NotePropertyValue $functionsTestName
             $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
+            $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
 
             Write-Host  -ForegroundColor DarkCyan 
             $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
@@ -327,7 +331,7 @@ function Assert-IsNull {
     )
 
 
-    Assert-IsTrue -Condition ($null -eq $Object) -Comment ("Object is null -" + $Comment)
+    Assert-IsTrue -Condition ($null -eq $Object) -Comment ("Object not null -" + $Comment)
 }
 function Assert-AreEqual {
     [CmdletBinding()]
