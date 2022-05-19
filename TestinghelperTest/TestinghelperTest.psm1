@@ -296,6 +296,51 @@ function TestingHelperTest_Count_Fail{
     Assert-IsTrue -Condition $hasThrow
 }
 
+function TestingHelperTest_CountTimes_Success{
+    [CmdletBinding()] param ()
+    $array = @()
+    $array+="first"
+    $array+="Second"
+    $array+="first"
+
+    Assert-CountTimes -Expected 2 -Presented $array -Pattern "first"
+
+}
+function TestingHelperTest_CountTimes_Fail{
+    [CmdletBinding()] param ()
+    $array = @()
+    $array+="first"
+    $array+="Second"
+    $array+="first"
+
+    $hasThrow = $false
+    try {
+        Assert-CountTimes -Expected 1 -Presented $array -Pattern "first"
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_CountTimes_PresentedNull{
+    [CmdletBinding()] param ()
+    $array = @()
+    $array+="first"
+    $array+="Second"
+    $array+="first"
+
+    Assert-CountTimes -Expected 0 -Presented $null -Pattern "three"
+
+    $hasThrow = $false
+    try {
+        Assert-CountTimes -Expected 2 -Presented $null -Pattern "first"
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
 function TestingHelperTest_Contains_Success{
     $array = @(
         "value1","Value2","Value3"

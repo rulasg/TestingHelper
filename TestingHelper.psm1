@@ -69,6 +69,7 @@ function Start-TestingFunction {
         $SkippedCount = 0 
         $NotImplementedCount = 0 
         $FailedTests = @()
+        $FailedTestsErrors = @()
     }
 
     Process {
@@ -112,10 +113,11 @@ function Start-TestingFunction {
                 Write-Host "Failed"  -ForegroundColor Red 
                 $FailedCount++
                 $FailedTests += $FunctionName
+                $FailedTestsErrors += @($functionName,$_)
                 
                 if ($ShowTestErrors) {
                     $_
-                }
+                } 
             }
         }
         finally {
@@ -124,6 +126,9 @@ function Start-TestingFunction {
     }
 
     end{
+
+        $Global:FailedTestsErrors = $FailedTestsErrors
+        
         return [PSCustomObject]@{
 
             Pass = $SuccessCount
@@ -182,13 +187,17 @@ function Test-Module {
             
             $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName -ErrorAction SilentlyContinue
             
+            $start = Get-Date
+
             $result = $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
 
+            $time = ($start | New-TimeSpan ).ToString("hh\:mm\:ss\:FFFF")
             
             $result | Add-Member -NotePropertyName "Name" -NotePropertyValue $Name
             $result | Add-Member -NotePropertyName "TestModule" -NotePropertyValue $TestingModuleName
             $result | Add-Member -NotePropertyName "TestsName" -NotePropertyValue $functionsTestName
             $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
+            $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
 
             Write-Host  -ForegroundColor DarkCyan 
             $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
@@ -310,28 +319,19 @@ function Assert-IsNotNull {
         $Object,
         $Comment
     )
-    if ($Object) {
-        $isNull = $false
-    }
-    else {
-        $isNull = $true
-    }
-    Assert-IsFalse -Condition $isNull -Comment ("Object is null -" + $Comment)
+
+    Assert-IsFalse -Condition ($null -eq $Object) -Comment ("Object is null -" + $Comment)
 }
 
 function Assert-IsNull {
     [CmdletBinding()]
     param (
-        [parameter(Position=0,ValueFromPipeline)] $Object
+        [parameter(Position=0,ValueFromPipeline)] $Object,
+        $Comment
     )
 
-    if ($Object) {
-        $isNull = $false
-    }
-    else {
-        $isNull = $true
-    }
-    Assert-IsTrue -Condition $isNull -Comment "IsNull"
+
+    Assert-IsTrue -Condition ($null -eq $Object) -Comment ("Object not null -" + $Comment)
 }
 function Assert-AreEqual {
     [CmdletBinding()]
@@ -479,7 +479,23 @@ function Assert-Count {
         Assert-IsTrue -Condition ($Presented.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presented [{1}] - {2}" -f $Expected,$Presented.Count, $Comment)
 
     }
+}
 
+function Assert-CountTimes {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [int] $Expected,
+        [Parameter(Mandatory)] [string] $Pattern,
+        [Parameter()] [string[]] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+        if (!$Presented) {
+        Assert-IsTrue -Condition ($Expected -eq 0) -Comment ("Presented is null expected [{0}]- {1}" -f $Expected, $Comment)
+    } else {
+        $iterations = $Presented | Where-Object {$_ -eq $pattern}
+        Assert-IsTrue -Condition ($iterations.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presented [{1}] - {2}" -f $Expected,$iterations.Count, $Comment)
+    }
 }
 
 function Assert-Contains{
@@ -492,7 +508,7 @@ function Assert-Contains{
 
     Assert -Condition ([string]::IsNullOrEmpty($Expected)) -Expected $false -Comment "[Assert-Contains] Expected can not be empty"
 
-    Assert-IsTrue -Condition ($Presented.Contains($Expected))
+    Assert-IsTrue -Condition ($Presented.Contains($Expected)) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
 }
 
 function Assert-FilesAreEqual{
