@@ -250,7 +250,6 @@ function TestingHelperTest_ItemExists_Fail{
     Assert-IsTrue -Condition $hasThrow
 }
 
-
 function TestingHelperTest_IsGuid_Success {
     [CmdletBinding()] param ()
 
@@ -365,6 +364,71 @@ function TestingHelperTest_Contains_Fail{
     Assert-IsTrue -Condition $hasThrow
 }
 
+function TestingHelperTest_StringIsNotNullOrEmpty_Null{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-StringIsNotNullorEmpty -Presented "Some string"
+
+    $hasThrow = $false
+    try {
+        Assert-StringIsNotNullorEmpty $null
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+
+function TestingHelperTest_StringIsNullOrEmpty_Null{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-StringIsNullorEmpty -Presented $Null
+
+    $hasThrow = $false
+    try {
+        Assert-StringIsNullorEmpty -Presented "some string" 
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_StringIsNotNullOrEmpty_Empty{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-StringIsNotNullorEmpty -Presented "Some text"
+
+    $hasThrow = $false
+    try {
+            Assert-IsNotNull -Presented [string]::Empty
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+function TestingHelperTest_StringIsNullOrEmpty_Empty{
+    [CmdletBinding()] param ()
+
+    Assert-StringIsNullorEmpty -Presented ([string]::Empty)
+    Assert-StringIsNullorEmpty -Presented ""
+
+    $hasThrow = $false
+    try {
+        Assert-StringIsNullorEmpty "some string"
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
 function TestingHelperTest_GetRooTestingFolderPath {
     [CmdletBinding()] param ()
 
