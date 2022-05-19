@@ -333,6 +333,7 @@ function Assert-IsNull {
 
     Assert-IsTrue -Condition ($null -eq $Object) -Comment ("Object not null -" + $Comment)
 }
+
 function Assert-AreEqual {
     [CmdletBinding()]
     param (
@@ -511,6 +512,21 @@ function Assert-Contains{
     Assert-IsTrue -Condition ($Presented.Contains($Expected)) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
 }
 
+function Assert-ContainedXOR{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [string] $Expected,
+        [Parameter(Mandatory)] [string[]] $PresentedA,
+        [Parameter(Mandatory)] [string[]] $PresentedB,
+        [Parameter()] [string] $Comment
+    )
+
+    $ga = $PresentedA.contains($Expected)
+    $gb = $PresentedB.contains($Expected)
+
+    Assert-IsTrue -Condition ( $ga -xor $gb) -Comment ("Assert-ContainedXOR [{0}]" -f ($Expected))
+}
+
 function Assert-FilesAreEqual{
     [CmdletBinding()]
     param (
@@ -551,6 +567,27 @@ function Assert-FileContains{
 
     Assert-IsTrue -Condition ($null -ne $SEL) -Comment ("Files contains - " + $Comment)
 
+}
+
+function Assert-StringIsNotNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][string] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Assert-IsFalse -Condition ([string]::IsNullOrEmpty($Presented))-Comment ("String not null or empty -" + $Comment)
+
+}
+
+function Assert-StringIsNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][string] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Assert-IsTrue -Condition ([string]::IsNullOrEmpty($Presented))-Comment ("String null or empty -" + $Comment)
 }
 
 function Remove-TestingFolder {
