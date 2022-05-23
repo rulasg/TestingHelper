@@ -454,6 +454,64 @@ function TestingHelperTest_StringIsNullOrEmpty_Empty{
     Assert-IsTrue -Condition $hasThrow
 
 }
+
+######################################
+
+function TestingHelperTest_RemoveTestingFile_Root {
+
+    $filename = "Filename.txt"
+
+    #By Path
+    New-TestingFile -Name $filename
+    
+    Assert-ItemExist -Path $filename
+    Remove-TestingFile -Path $filename
+    Assert-ItemNotExist -Path $filename
+    
+    #By Name
+    New-TestingFile -Name $filename
+    
+    Assert-ItemExist -Path $filename
+    Remove-TestingFile -Name $filename
+    Assert-ItemNotExist -Path $filename
+    
+    # Hidden
+    $file = New-TestingFile -Name $filename -Hidden -PassThru
+    Assert-IsTrue -Condition $file.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)
+
+    Assert-ItemExist -Path $filename
+    Remove-TestingFile -Path $filename
+    Assert-ItemNotExist -Path $filename
+}
+
+function TestingHelperTest_RemoveTestingFile_Folder {
+
+    $filename = "Filename.txt"
+    $folder = "folder1"
+
+    #By Path
+    $file = New-TestingFile -Name $filename -Path $folder -PassThru
+    
+    Assert-ItemExist -Path $file
+    Remove-TestingFile -Path $file.FullName
+    Assert-ItemNotExist -Path $file
+    
+    #By Name
+    $file = New-TestingFile -Name $filename -Path $folder -PassThru
+    
+    Assert-ItemExist -Path $file
+    Remove-TestingFile -Name $filename -Path $folder
+    Assert-ItemNotExist -Path $file
+    
+    # Hidden
+    $file = New-TestingFile -Name $filename -Path $folder -Hidden -PassThru 
+    Assert-IsTrue -Condition $file.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)
+
+    Assert-ItemExist -Path $file
+    Remove-TestingFile -Name $filename -Path $folder
+    Assert-ItemNotExist -Path $file
+}
+
 function TestingHelperTest_GetRooTestingFolderPath {
     [CmdletBinding()] param ()
 

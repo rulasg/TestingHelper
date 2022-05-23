@@ -741,6 +741,26 @@ function New-TestingFile {
     }
 }
 
+function Remove-TestingFile {
+    param(
+        [Parameter(ValueFromPipeline)][string]$Path,
+        [Parameter()][string]$Name,
+        [Parameter()][string]$Content,
+        [switch] $Hidden
+    )
+    
+    if ([string]::IsNullOrWhiteSpace($Path))    { $Path    = '.' }
+    
+    $target = ([string]::IsNullOrWhiteSpace($Name)) ? $Path : ($Path | Join-Path -ChildPath $Name)
+
+    Assert-ItemExist -Path $target
+
+    (Get-Item -Force -Path $target).Attributes = 0
+
+    Remove-Item -Path $target
+
+    Assert-itemNotExist -Path $target
+} 
 
 function GetRooTestingFolderPath{
     $rd = Get-Date -Format yyMMdd
