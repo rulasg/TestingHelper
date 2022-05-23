@@ -356,6 +356,7 @@ function TestingHelperTest_Contains_Fail{
 
     $hasThrow = $false
     try {
+        # value2 is lower case
         Assert-Contains -Expected "value2" -Presented $array
     }
     catch {
@@ -364,6 +365,30 @@ function TestingHelperTest_Contains_Fail{
     Assert-IsTrue -Condition $hasThrow
 }
 
+function TestingHelperTest_NotContains_Success{
+    $array = @(
+        "value1","Value2","Value3"
+    )
+
+    # value2 is lower case
+    Assert-NotContains -Expected "value2" -Presented $array
+}
+
+function TestingHelperTest_NotContains_Fail{
+
+    $array = @(
+        "value1","Value2","Value3"
+    )
+
+    $hasThrow = $false
+    try {
+        Assert-NotContains -Expected "Value2" -Presented $array
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
 function TestingHelperTest_StringIsNotNullOrEmpty_Null{
     [CmdletBinding()] param ()
 
