@@ -64,12 +64,17 @@ function Start-TestingFunction {
     )
 
     begin{
-        $SuccessCount = 0
-        $FailedCount = 0 
-        $SkippedCount = 0 
-        $NotImplementedCount = 0 
-        $FailedTests = @()
-        $FailedTestsErrors = @()
+        $ret = @{
+            # Pass = 0
+            # Failed = 0 
+            # SkippedCount = 0 
+            # NotImplementedCount = 0 
+            FailedTests = @()
+            FailedTestsErrors = @()
+            NotImplementedTests = @()
+            SkippedTests = @()
+        }
+
     }
 
     Process {
@@ -93,27 +98,26 @@ function Start-TestingFunction {
             $null = & $FunctionName -ErrorAction $ErrorShow
             Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
             Write-Host "PASS"  -ForegroundColor DarkYellow 
-            $SuccessCount++
+            $ret.Pass++
         }
         catch {
     
             if ($_.Exception.Message -eq "SKIP_TEST") {
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Skip"  -ForegroundColor Magenta 
-                $SkippedCount++
+                $ret.SkippedTests += $FunctionName
                 
             }elseif ($_.Exception.Message -eq "NOT_IMPLEMENTED") {
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "NotImplemented"  -ForegroundColor Red 
-                $NotImplementedCount++
+                $ret.NotImplementedTests += $FunctionName
                 
             } else {
                 Write-Host "x"  -NoNewline -ForegroundColor Red 
                 Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Failed"  -ForegroundColor Red 
-                $FailedCount++
-                $FailedTests += $FunctionName
-                $FailedTestsErrors += @($functionName,$_)
+                $ret.FailedTests += $FunctionName
+                $ret.FailedTestsErrors += @($functionName,$_)
                 
                 if ($ShowTestErrors) {
                     $_
@@ -128,15 +132,14 @@ function Start-TestingFunction {
     end{
 
         $Global:FailedTestsErrors = $FailedTestsErrors
-        
-        return [PSCustomObject]@{
 
-            Pass = $SuccessCount
-            Failed = $FailedCount
-            Skipped = $SkippedCount
-            NotImplemented = $NotImplementedCount
-            FailedTests = $FailedTests
-        }
+        if($ret.FailedTests.count -eq 0)         { $ret.Remove("FailedTests")}         else {$ret.Failed = $ret.FailedTests.Count}
+        if($ret.SkippedTests.count -eq 0)        { $ret.Remove("SkippedTests")}        else {$ret.Skipped = $ret.SkippedTests.Count}
+        if($ret.NotImplementedTests.count -eq 0) { $ret.Remove("NotImplementedTests")} else {$ret.NotImplemented = $ret.NotImplementedTests.Count}
+
+        if($ret.FailedTestsErrors.count -eq 0) { $ret.Remove("FailedTestsErrors")}
+
+        return [PSCustomObject] $ret
     }
 }
 
