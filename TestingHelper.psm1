@@ -102,21 +102,21 @@ function Start-TestingFunction {
         }
         catch {
     
+            Write-Host "x"  -NoNewline -ForegroundColor Red 
+            Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
+
             if ($_.Exception.Message -eq "SKIP_TEST") {
-                Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Skip"  -ForegroundColor Magenta 
                 $ret.SkippedTests += $FunctionName
                 
             }elseif ($_.Exception.Message -eq "NOT_IMPLEMENTED") {
-                Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "NotImplemented"  -ForegroundColor Red 
                 $ret.NotImplementedTests += $FunctionName
                 
             } else {
-                Write-Host "x"  -NoNewline -ForegroundColor Red 
-                Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Failed"  -ForegroundColor Red 
                 $ret.FailedTests += $FunctionName
+                
                 $ret.FailedTestsErrors += @($functionName,$_)
                 
                 if ($ShowTestErrors) {
