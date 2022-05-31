@@ -120,7 +120,7 @@ function Start-TestingFunction {
                 $ret.FailedTestsErrors += @($functionName,$_)
                 
                 if ($ShowTestErrors) {
-                    $_
+                    @($functionName,$_)
                 } 
             }
         }
@@ -136,6 +136,8 @@ function Start-TestingFunction {
         if($ret.FailedTests.count -eq 0)         { $ret.Remove("FailedTests")}         else {$ret.Failed = $ret.FailedTests.Count}
         if($ret.SkippedTests.count -eq 0)        { $ret.Remove("SkippedTests")}        else {$ret.Skipped = $ret.SkippedTests.Count}
         if($ret.NotImplementedTests.count -eq 0) { $ret.Remove("NotImplementedTests")} else {$ret.NotImplemented = $ret.NotImplementedTests.Count}
+
+        $Global:FailedTestsErrors = $ret.FailedTestsErrors
 
         if($ret.FailedTestsErrors.count -eq 0) { $ret.Remove("FailedTestsErrors")}
 
@@ -402,7 +404,6 @@ function Assert-AreNotEqual {
     )
 
     Assert-IsFalse -Condition ($Expected -eq $Presented) -Comment ("Object are Equal : Expecte [ $Expected ] and presented [ $Presented ] - " + $Comment)
-
 }
 
 function Assert-AreEqualContent{
@@ -556,6 +557,7 @@ function Assert-FilesAreEqual{
 
     Assert-AreEqual -Expected $ex.Hash -Presented $pr.Hash -Comment ("Files not equal - " + $Comment)
 }
+
 function Assert-FilesAreNotEqual{
     [CmdletBinding()]
     param (
@@ -582,7 +584,6 @@ function Assert-FileContains{
     $SEL = Select-String -Path $Path -Pattern $Pattern
 
     Assert-IsTrue -Condition ($null -ne $SEL) -Comment ("Files contains - " + $Comment)
-
 }
 
 function Assert-StringIsNotNullOrEmpty {
@@ -593,7 +594,6 @@ function Assert-StringIsNotNullOrEmpty {
     )
 
     Assert-IsFalse -Condition ([string]::IsNullOrEmpty($Presented))-Comment ("String not null or empty -" + $Comment)
-
 }
 
 function Assert-StringIsNullOrEmpty {
