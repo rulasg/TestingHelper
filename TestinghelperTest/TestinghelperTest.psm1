@@ -455,6 +455,71 @@ function TestingHelperTest_StringIsNullOrEmpty_Empty{
 
 }
 
+function TestingHelperTest_CollectionIsNotNullOrEmpty_Null{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-CollectionIsNotNullorEmpty -Presented @("Something")
+
+    $hasThrow = $false
+    try {
+        Assert-CollectionIsNotNullorEmpty $null
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+
+function TestingHelperTest_CollectionIsNullOrEmpty_Null{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-CollectionIsNullorEmpty -Presented $Null
+
+    $hasThrow = $false
+    try {
+        Assert-CollectionIsNullorEmpty -Presented @("something")
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_CollectionIsNotNullOrEmpty_Empty{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-CollectionIsNotNullorEmpty -Presented @("value")
+
+    $hasThrow = $false
+    try {
+            Assert-CollectionIsNotNull -Presented @{}
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+function TestingHelperTest_CollectionIsNullOrEmpty_Empty{
+    [CmdletBinding()] param ()
+
+    Assert-CollectionIsNullorEmpty -Presented @()
+
+    $hasThrow = $false
+    try {
+        Assert-CollectionIsNullorEmpty @("something")
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+
 ######################################
 
 function TestingHelperTest_RemoveTestingFile_Root {

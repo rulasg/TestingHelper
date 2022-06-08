@@ -606,6 +606,26 @@ function Assert-StringIsNullOrEmpty {
     Assert-IsTrue -Condition ([string]::IsNullOrEmpty($Presented))-Comment ("String null or empty -" + $Comment)
 }
 
+function Assert-CollectionIsNotNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Test-Assert -Condition (($null -ne $presented) -and ($presented.Count -gt 0)) -Comment:$Comment
+}
+
+function Assert-CollectionIsNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Test-Assert -Condition (($null -eq $presented) -or ($presented.Count -eq 0)) -Comment:$Comment
+}
+
 function Remove-TestingFolder {
     param(
         [Parameter(Mandatory, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)][string] $Path,
