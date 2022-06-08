@@ -511,9 +511,8 @@ function Assert-Contains{
         [Parameter()] [string] $Comment
     )
 
-    Assert -Condition ([string]::IsNullOrEmpty($Expected)) -Expected $false -Comment "[Assert-Contains] Expected can not be empty"
+    Test-Assert -Condition (!([string]::IsNullOrEmpty($Expected)) -and ($Presented.Contains($Expected))) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
 
-    Assert-IsTrue -Condition ($Presented.Contains($Expected)) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
 }
 
 function Assert-NotContains{
