@@ -531,16 +531,18 @@ function Assert-NotContains{
 function Assert-ContainedXOR{
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [string] $Expected,
+        [Parameter(Mandatory,ValueFromPipeline)] [string] $Expected,
         [Parameter(Mandatory)] [string[]] $PresentedA,
         [Parameter(Mandatory)] [string[]] $PresentedB,
         [Parameter()] [string] $Comment
     )
 
-    $ga = $PresentedA.contains($Expected)
-    $gb = $PresentedB.contains($Expected)
-
-    Assert-IsTrue -Condition ( $ga -xor $gb) -Comment ("Assert-ContainedXOR [{0}]" -f ($Expected))
+    process {
+        $ga = $PresentedA.contains($Expected)
+        $gb = $PresentedB.contains($Expected)
+        
+        Assert-IsTrue -Condition ( $ga -xor $gb) -Comment ("Assert-ContainedXOR [{0}]" -f ($Expected))
+    }
 }
 
 function Assert-FilesAreEqual{
@@ -954,3 +956,8 @@ function New-TestingVsCodeLaunchJson($Path, $ModuleName){
         | Out-Null
 }
 
+# TODO : Reduce the number of functions exported
+# Export-ModuleMember -Function Assert-*
+# Export-ModuleMember -Function New-Testing*
+# Export-ModuleMember -Function Test-Module
+# Export-ModuleMember -Function Pop-TestingFolder

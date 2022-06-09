@@ -389,6 +389,35 @@ function TestingHelperTest_NotContains_Fail{
     }
     Assert-IsTrue -Condition $hasThrow
 }
+
+function TestingHelperTest_ContainsXOR_Success{
+
+    $array1 = @("value1","Value2","Value3")
+    $array2 = @("Value4","Value5","Value6","Value7")
+
+    Assert-ContainedXOR -Expected "Value2" -PresentedA $array1 -PresentedB $array2
+    Assert-ContainedXOR -Expected "Value6" -PresentedA $array1 -PresentedB $array2
+    
+    "Value6" | Assert-ContainedXOR -PresentedA $array1 -PresentedB $array2
+    
+    ("Value3","Value4") | Assert-ContainedXOR -PresentedA $array1 -PresentedB $array2
+}
+
+function TestingHelperTest_ContainsXOR_Fail{
+
+    $array1 = @("value1","Value2","Value3")
+    $array2 = @("Value4","Value5","Value6","Value7")
+
+    $hasThrow = $false
+    try {
+        Assert-ContainedXOR -Expected "value2" -PresentedA $array1 -PresentedB $array2
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
 function TestingHelperTest_StringIsNotNullOrEmpty_Null{
     [CmdletBinding()] param ()
 
