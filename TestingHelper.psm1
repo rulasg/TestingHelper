@@ -215,8 +215,9 @@ function Test-Module {
 
             $result
 
-            Remove-Module -Name $TestingModuleName -Force
+            $global:ResultTestingHelper = $result
 
+            Remove-Module -Name $TestingModuleName -Force
         }
         finally {
             $local | Pop-TestingFolder
