@@ -571,7 +571,11 @@ function TestingHelperTest_RemoveTestingFile_Root {
     
     # Hidden
     $file = New-TestingFile -Name $filename -Hidden -PassThru
-    Assert-IsTrue -Condition $file.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)
+    
+    # skip if in linux as hidden is not supported
+    if (-not $IsLinux) {
+        Assert-IsTrue -Condition $file.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)
+    }
 
     Assert-ItemExist -Path $filename
     Remove-TestingFile -Path $filename
@@ -598,9 +602,13 @@ function TestingHelperTest_RemoveTestingFile_Folder {
     Assert-ItemNotExist -Path $file
     
     # Hidden
-    $file = New-TestingFile -Name $filename -Path $folder -Hidden -PassThru 
-    Assert-IsTrue -Condition $file.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)
-
+    $file = New-TestingFile -Name $filename -Path $folder -Hidden -PassThru
+    
+    # skip if in linux as hidden is not supported
+    if (-not $IsLinux) {
+        Assert-IsTrue -Condition $file.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)
+    }
+    
     Assert-ItemExist -Path $file
     Remove-TestingFile -Name $filename -Path $folder
     Assert-ItemNotExist -Path $file
