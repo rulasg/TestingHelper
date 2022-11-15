@@ -250,7 +250,6 @@ function TestingHelperTest_ItemExists_Fail{
     Assert-IsTrue -Condition $hasThrow
 }
 
-
 function TestingHelperTest_IsGuid_Success {
     [CmdletBinding()] param ()
 
@@ -357,12 +356,262 @@ function TestingHelperTest_Contains_Fail{
 
     $hasThrow = $false
     try {
+        # value2 is lower case
         Assert-Contains -Expected "value2" -Presented $array
     }
     catch {
         $hasThrow = $true
     }
     Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_NotContains_Success{
+    $array = @(
+        "value1","Value2","Value3"
+    )
+
+    # value2 is lower case
+    Assert-NotContains -Expected "value2" -Presented $array
+}
+
+function TestingHelperTest_NotContains_Fail{
+
+    $array = @(
+        "value1","Value2","Value3"
+    )
+
+    $hasThrow = $false
+    try {
+        Assert-NotContains -Expected "Value2" -Presented $array
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_ContainsXOR_Success{
+
+    $array1 = @("value1","Value2","Value3")
+    $array2 = @("Value4","Value5","Value6","Value7")
+
+    Assert-ContainedXOR -Expected "Value2" -PresentedA $array1 -PresentedB $array2
+    Assert-ContainedXOR -Expected "Value6" -PresentedA $array1 -PresentedB $array2
+    
+    "Value6" | Assert-ContainedXOR -PresentedA $array1 -PresentedB $array2
+    
+    ("Value3","Value4") | Assert-ContainedXOR -PresentedA $array1 -PresentedB $array2
+}
+
+function TestingHelperTest_ContainsXOR_Fail{
+
+    $array1 = @("value1","Value2","Value3")
+    $array2 = @("Value4","Value5","Value6","Value7")
+
+    $hasThrow = $false
+    try {
+        Assert-ContainedXOR -Expected "value2" -PresentedA $array1 -PresentedB $array2
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_StringIsNotNullOrEmpty_Null{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-StringIsNotNullorEmpty -Presented "Some string"
+
+    $hasThrow = $false
+    try {
+        Assert-StringIsNotNullorEmpty $null
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+
+function TestingHelperTest_StringIsNullOrEmpty_Null{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-StringIsNullorEmpty -Presented $Null
+
+    $hasThrow = $false
+    try {
+        Assert-StringIsNullorEmpty -Presented "some string" 
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_StringIsNotNullOrEmpty_Empty{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-StringIsNotNullorEmpty -Presented "Some text"
+
+    $hasThrow = $false
+    try {
+            Assert-IsNotNull -Presented [string]::Empty
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+function TestingHelperTest_StringIsNullOrEmpty_Empty{
+    [CmdletBinding()] param ()
+
+    Assert-StringIsNullorEmpty -Presented ([string]::Empty)
+    Assert-StringIsNullorEmpty -Presented ""
+
+    $hasThrow = $false
+    try {
+        Assert-StringIsNullorEmpty "some string"
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+
+function TestingHelperTest_CollectionIsNotNullOrEmpty_Null{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-CollectionIsNotNullorEmpty -Presented @("Something")
+
+    $hasThrow = $false
+    try {
+        Assert-CollectionIsNotNullorEmpty $null
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+
+function TestingHelperTest_CollectionIsNullOrEmpty_Null{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-CollectionIsNullorEmpty -Presented $Null
+
+    $hasThrow = $false
+    try {
+        Assert-CollectionIsNullorEmpty -Presented @("something")
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_CollectionIsNotNullOrEmpty_Empty{
+    [CmdletBinding()] param ()
+
+    # Positive Null
+    Assert-CollectionIsNotNullorEmpty -Presented @("value")
+
+    $hasThrow = $false
+    try {
+            Assert-CollectionIsNotNull -Presented @{}
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+function TestingHelperTest_CollectionIsNullOrEmpty_Empty{
+    [CmdletBinding()] param ()
+
+    Assert-CollectionIsNullorEmpty -Presented @()
+
+    $hasThrow = $false
+    try {
+        Assert-CollectionIsNullorEmpty @("something")
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+
+}
+
+######################################
+
+function TestingHelperTest_RemoveTestingFile_Root {
+
+    $filename = "Filename.txt"
+
+    #By Path
+    New-TestingFile -Name $filename
+    
+    Assert-ItemExist -Path $filename
+    Remove-TestingFile -Path $filename
+    Assert-ItemNotExist -Path $filename
+    
+    #By Name
+    New-TestingFile -Name $filename
+    
+    Assert-ItemExist -Path $filename
+    Remove-TestingFile -Name $filename
+    Assert-ItemNotExist -Path $filename
+    
+    # Hidden
+    $file = New-TestingFile -Name $filename -Hidden -PassThru
+    
+    # skip if in linux as hidden is not supported
+    if (-not $IsLinux) {
+        Assert-IsTrue -Condition $file.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)
+    }
+
+    Assert-ItemExist -Path $filename
+    Remove-TestingFile -Path $filename
+    Assert-ItemNotExist -Path $filename
+}
+
+function TestingHelperTest_RemoveTestingFile_Folder {
+
+    $filename = "Filename.txt"
+    $folder = "folder1"
+
+    #By Path
+    $file = New-TestingFile -Name $filename -Path $folder -PassThru
+    
+    Assert-ItemExist -Path $file
+    Remove-TestingFile -Path $file.FullName
+    Assert-ItemNotExist -Path $file
+    
+    #By Name
+    $file = New-TestingFile -Name $filename -Path $folder -PassThru
+    
+    Assert-ItemExist -Path $file
+    Remove-TestingFile -Name $filename -Path $folder
+    Assert-ItemNotExist -Path $file
+    
+    # Hidden
+    $file = New-TestingFile -Name $filename -Path $folder -Hidden -PassThru
+    
+    # skip if in linux as hidden is not supported
+    if (-not $IsLinux) {
+        Assert-IsTrue -Condition $file.Attributes.HasFlag([System.IO.FileAttributes]::Hidden)
+    }
+    
+    Assert-ItemExist -Path $file
+    Remove-TestingFile -Name $filename -Path $folder
+    Assert-ItemNotExist -Path $file
 }
 
 function TestingHelperTest_GetRooTestingFolderPath {

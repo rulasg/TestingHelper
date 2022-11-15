@@ -64,12 +64,17 @@ function Start-TestingFunction {
     )
 
     begin{
-        $SuccessCount = 0
-        $FailedCount = 0 
-        $SkippedCount = 0 
-        $NotImplementedCount = 0 
-        $FailedTests = @()
-        $FailedTestsErrors = @()
+        $ret = @{
+            # Pass = 0
+            # Failed = 0 
+            # SkippedCount = 0 
+            # NotImplementedCount = 0 
+            FailedTests = @()
+            FailedTestsErrors = @()
+            NotImplementedTests = @()
+            SkippedTests = @()
+        }
+
     }
 
     Process {
@@ -93,30 +98,29 @@ function Start-TestingFunction {
             $null = & $FunctionName -ErrorAction $ErrorShow
             Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
             Write-Host "PASS"  -ForegroundColor DarkYellow 
-            $SuccessCount++
+            $ret.Pass++
         }
         catch {
     
+            Write-Host "x"  -NoNewline -ForegroundColor Red 
+            Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
+
             if ($_.Exception.Message -eq "SKIP_TEST") {
-                Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Skip"  -ForegroundColor Magenta 
-                $SkippedCount++
+                $ret.SkippedTests += $FunctionName
                 
             }elseif ($_.Exception.Message -eq "NOT_IMPLEMENTED") {
-                Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "NotImplemented"  -ForegroundColor Red 
-                $NotImplementedCount++
+                $ret.NotImplementedTests += $FunctionName
                 
             } else {
-                Write-Host "x"  -NoNewline -ForegroundColor Red 
-                Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Failed"  -ForegroundColor Red 
-                $FailedCount++
-                $FailedTests += $FunctionName
-                $FailedTestsErrors += @($functionName,$_)
+                $ret.FailedTests += $FunctionName
+                
+                $ret.FailedTestsErrors += @($functionName,$_)
                 
                 if ($ShowTestErrors) {
-                    $_
+                    @($functionName,$_)
                 } 
             }
         }
@@ -128,15 +132,16 @@ function Start-TestingFunction {
     end{
 
         $Global:FailedTestsErrors = $FailedTestsErrors
-        
-        return [PSCustomObject]@{
 
-            Pass = $SuccessCount
-            Failed = $FailedCount
-            Skipped = $SkippedCount
-            NotImplemented = $NotImplementedCount
-            FailedTests = $FailedTests
-        }
+        if($ret.FailedTests.count -eq 0)         { $ret.Remove("FailedTests")}         else {$ret.Failed = $ret.FailedTests.Count}
+        if($ret.SkippedTests.count -eq 0)        { $ret.Remove("SkippedTests")}        else {$ret.Skipped = $ret.SkippedTests.Count}
+        if($ret.NotImplementedTests.count -eq 0) { $ret.Remove("NotImplementedTests")} else {$ret.NotImplemented = $ret.NotImplementedTests.Count}
+
+        $Global:FailedTestsErrors = $ret.FailedTestsErrors
+
+        if($ret.FailedTestsErrors.count -eq 0) { $ret.Remove("FailedTestsErrors")}
+
+        return [PSCustomObject] $ret
     }
 }
 
@@ -210,8 +215,9 @@ function Test-Module {
 
             $result
 
-            Remove-Module -Name $TestingModuleName -Force
+            $global:ResultTestingHelper = $result
 
+            Remove-Module -Name $TestingModuleName -Force
         }
         finally {
             $local | Pop-TestingFolder
@@ -255,7 +261,20 @@ function Import-TargetModule {
         [switch] $Force
     )
 
-    Import-Module -Name $Name -Force:$Force -Global
+    $manifestFile = $name + ".psd1"
+    
+    # check if file exists
+    if (Test-Path -Path $manifestFile) {
+        # import module
+        Import-Module -Name $manifestFile -Force:$Force -Global
+    }
+    else {
+        Write-Verbose -Message "Manifest [ $manifestFile ] not found for mdoule [ $Name ]"
+        Import-Module -Name $Name -Force:$Force -Global
+    }
+
+
+
 }
 
 function Start-TestModule {
@@ -333,6 +352,7 @@ function Assert-IsNull {
 
     Assert-IsTrue -Condition ($null -eq $Object) -Comment ("Object not null -" + $Comment)
 }
+
 function Assert-AreEqual {
     [CmdletBinding()]
     param (
@@ -398,7 +418,6 @@ function Assert-AreNotEqual {
     )
 
     Assert-IsFalse -Condition ($Expected -eq $Presented) -Comment ("Object are Equal : Expecte [ $Expected ] and presented [ $Presented ] - " + $Comment)
-
 }
 
 function Assert-AreEqualContent{
@@ -506,9 +525,38 @@ function Assert-Contains{
         [Parameter()] [string] $Comment
     )
 
+    Test-Assert -Condition (!([string]::IsNullOrEmpty($Expected)) -and ($Presented.Contains($Expected))) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
+
+}
+
+function Assert-NotContains{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [string] $Expected,
+        [Parameter()] [string[]] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
     Assert -Condition ([string]::IsNullOrEmpty($Expected)) -Expected $false -Comment "[Assert-Contains] Expected can not be empty"
 
-    Assert-IsTrue -Condition ($Presented.Contains($Expected)) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
+    Assert-IsTrue -Condition (!($Presented.Contains($Expected))) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
+}
+
+function Assert-ContainedXOR{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory,ValueFromPipeline)] [string] $Expected,
+        [Parameter(Mandatory)] [string[]] $PresentedA,
+        [Parameter(Mandatory)] [string[]] $PresentedB,
+        [Parameter()] [string] $Comment
+    )
+
+    process {
+        $ga = $PresentedA.contains($Expected)
+        $gb = $PresentedB.contains($Expected)
+        
+        Assert-IsTrue -Condition ( $ga -xor $gb) -Comment ("Assert-ContainedXOR [{0}]" -f ($Expected))
+    }
 }
 
 function Assert-FilesAreEqual{
@@ -524,6 +572,7 @@ function Assert-FilesAreEqual{
 
     Assert-AreEqual -Expected $ex.Hash -Presented $pr.Hash -Comment ("Files not equal - " + $Comment)
 }
+
 function Assert-FilesAreNotEqual{
     [CmdletBinding()]
     param (
@@ -550,7 +599,46 @@ function Assert-FileContains{
     $SEL = Select-String -Path $Path -Pattern $Pattern
 
     Assert-IsTrue -Condition ($null -ne $SEL) -Comment ("Files contains - " + $Comment)
+}
 
+function Assert-StringIsNotNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][string] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Assert-IsFalse -Condition ([string]::IsNullOrEmpty($Presented))-Comment ("String not null or empty -" + $Comment)
+}
+
+function Assert-StringIsNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][string] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Assert-IsTrue -Condition ([string]::IsNullOrEmpty($Presented))-Comment ("String null or empty -" + $Comment)
+}
+
+function Assert-CollectionIsNotNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Test-Assert -Condition (($null -ne $presented) -and ($presented.Count -gt 0)) -Comment:$Comment
+}
+
+function Assert-CollectionIsNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Test-Assert -Condition (($null -eq $presented) -or ($presented.Count -eq 0)) -Comment:$Comment
 }
 
 function Remove-TestingFolder {
@@ -691,6 +779,26 @@ function New-TestingFile {
     }
 }
 
+function Remove-TestingFile {
+    param(
+        [Parameter(ValueFromPipeline)][string]$Path,
+        [Parameter()][string]$Name,
+        [Parameter()][string]$Content,
+        [switch] $Hidden
+    )
+    
+    if ([string]::IsNullOrWhiteSpace($Path))    { $Path    = '.' }
+    
+    $target = ([string]::IsNullOrWhiteSpace($Name)) ? $Path : ($Path | Join-Path -ChildPath $Name)
+
+    Assert-ItemExist -Path $target
+
+    (Get-Item -Force -Path $target).Attributes = 0
+
+    Remove-Item -Path $target
+
+    Assert-itemNotExist -Path $target
+} 
 
 function GetRooTestingFolderPath{
     $rd = Get-Date -Format yyMMdd
@@ -862,3 +970,8 @@ function New-TestingVsCodeLaunchJson($Path, $ModuleName){
         | Out-Null
 }
 
+# TODO : Reduce the number of functions exported
+# Export-ModuleMember -Function Assert-*
+# Export-ModuleMember -Function New-Testing*
+# Export-ModuleMember -Function Test-Module
+# Export-ModuleMember -Function Pop-TestingFolder
