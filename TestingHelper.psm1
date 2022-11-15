@@ -261,7 +261,20 @@ function Import-TargetModule {
         [switch] $Force
     )
 
-    Import-Module -Name $Name -Force:$Force -Global
+    $manifestFile = $name + ".psd1"
+    
+    # check if file exists
+    if (Test-Path -Path $manifestFile) {
+        # import module
+        Import-Module -Name $manifestFile -Force:$Force -Global
+    }
+    else {
+        Write-Verbose -Message "Manifest [ $manifestFile ] not found for mdoule [ $Name ]"
+        Import-Module -Name $Name -Force:$Force -Global
+    }
+
+
+
 }
 
 function Start-TestModule {
