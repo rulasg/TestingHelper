@@ -170,7 +170,7 @@ function Test-Module {
 
         try {
 
-            Remove-Module -Name "$Name*"
+            # Remove-Module -Name "$Name*"
             
             Import-TestingModule -TargetModule $Name -Force
 
@@ -239,7 +239,14 @@ function Import-TestingModule {
 
     if ($TargetModule) {
   
-        Import-TargetModule -Name $TargetModule -Force
+        # check if module is already loaded
+        $module = Get-Module -Name $TargetModule -ErrorAction SilentlyContinue
+        if (-not $module) {
+            "[Import-TestingModule] TargetModule {0} is not loaded" -f $TargetModule | Write-Verbose
+            Import-TargetModule -Name $TargetModule -Force
+        } else {
+            "[Import-TestingModule] TargetModule {0} is already loaded" -f $TargetModule | Write-Verbose
+        }
 
         $modulePath = (Get-Module -Name $TargetModule).Path
     
@@ -258,23 +265,16 @@ function Import-TargetModule {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)][string] $Name,
+        [Parameter()][string] $Manifest,
         [switch] $Force
     )
 
-    $manifestFile = $name + ".psd1"
+    if ($Manifest) {
+        Get-Item -Path $manifestFile | Import-Module -force -Force:$Force -Global
+        return
+    }
     
-    # check if file exists
-    if (Test-Path -Path $manifestFile) {
-        # import module
-        Import-Module -Name $manifestFile -Force:$Force -Global
-    }
-    else {
-        Write-Verbose -Message "Manifest [ $manifestFile ] not found for mdoule [ $Name ]"
-        Import-Module -Name $Name -Force:$Force -Global
-    }
-
-
-
+    Import-Module -Name $Name -Force:$Force -Global
 }
 
 function Start-TestModule {
