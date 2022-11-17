@@ -2,7 +2,6 @@
 Write-Host "Loading TestingHelper ..." -ForegroundColor DarkCyan
 
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder" 
-Set-Variable -Name TEST_FUNCTION_NAME_PATTERN -Value "Test-*" 
 
 function Get-TestingModuleName {
     [CmdletBinding()]
@@ -13,12 +12,12 @@ function Get-TestingModuleName {
     return ($TargetModule + "Test") 
 }
 
-function Get-TestingFunctionPrefix_Deprecated ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }
+function Get-TestingFunctionPrefix ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }
 
 function Trace-Message {
     [CmdletBinding()]
     param (
-        [Parameter(Position = 1)]
+        [Parameter(ValueFromPipeline, Position = 1)]
         [string]
         $Message
     )
@@ -40,7 +39,6 @@ function Test-Assert {
         throw "Assertion - Found [ $Condition ] Expected [ $Expected ] - $Comment"
     }
     else {
-        #Write-Host "." -NoNewline -ForegroundColor DarkMagenta
         Write-AssertionDot -Color DarkMagenta
     }
 }
@@ -65,6 +63,20 @@ function Start-TestingFunction {
         [Parameter()] [switch] $ShowTestErrors
     )
 
+    begin{
+        $ret = @{
+            # Pass = 0
+            # Failed = 0 
+            # SkippedCount = 0 
+            # NotImplementedCount = 0 
+            FailedTests = @()
+            FailedTestsErrors = @()
+            NotImplementedTests = @()
+            SkippedTests = @()
+        }
+
+    }
+
     Process {
 
         if ($ShowTestErrors) {
@@ -83,49 +95,82 @@ function Start-TestingFunction {
     
         try {
             Write-Host "$FunctionName ... [" -NoNewline -ForegroundColor DarkCyan
-            & $FunctionName -ErrorAction $ErrorShow
+            $null = & $FunctionName -ErrorAction $ErrorShow
             Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
             Write-Host "PASS"  -ForegroundColor DarkYellow 
+            $ret.Pass++
         }
         catch {
     
+            Write-Host "x"  -NoNewline -ForegroundColor Red 
+            Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
+
             if ($_.Exception.Message -eq "SKIP_TEST") {
-                Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
                 Write-Host "Skip"  -ForegroundColor Magenta 
-            }
-            else {
-                Write-Host "x"  -NoNewline -ForegroundColor Red 
-                Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
+                $ret.SkippedTests += $FunctionName
+                
+            }elseif ($_.Exception.Message -eq "NOT_IMPLEMENTED") {
+                Write-Host "NotImplemented"  -ForegroundColor Red 
+                $ret.NotImplementedTests += $FunctionName
+                
+            } else {
                 Write-Host "Failed"  -ForegroundColor Red 
+                $ret.FailedTests += $FunctionName
+                
+                $ret.FailedTestsErrors += @($functionName,$_)
                 
                 if ($ShowTestErrors) {
-                    $_
-                }
+                    @($functionName,$_)
+                } 
             }
         }
         finally {
             $local | Pop-TestingFolder -Force
         }
     }
+
+    end{
+
+        $Global:FailedTestsErrors = $FailedTestsErrors
+
+        if($ret.FailedTests.count -eq 0)         { $ret.Remove("FailedTests")}         else {$ret.Failed = $ret.FailedTests.Count}
+        if($ret.SkippedTests.count -eq 0)        { $ret.Remove("SkippedTests")}        else {$ret.Skipped = $ret.SkippedTests.Count}
+        if($ret.NotImplementedTests.count -eq 0) { $ret.Remove("NotImplementedTests")} else {$ret.NotImplemented = $ret.NotImplementedTests.Count}
+
+        $Global:FailedTestsErrors = $ret.FailedTestsErrors
+
+        if($ret.FailedTestsErrors.count -eq 0) { $ret.Remove("FailedTestsErrors")}
+
+        return [PSCustomObject] $ret
+    }
+}
+
+function Out-SingleResultData($Name,$Value, $Color){
+    $testColor = $Value -eq 0 ? "DarkCyan" : $Color
+
+    "{0}" -f $Name | Write-Host  -ForegroundColor $testColor -NoNewline 
+    "["     -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
+    $Value            | Write-Host  -ForegroundColor $testColor -NoNewline 
+    "] "     -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
 }
 
 function Test-Module {
     [CmdletBinding()] 
     param (
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName,Position = 0)] [string] $Name,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName,Position = 0)] [string] $Name,
         [Parameter( Position = 1)] [string] $TestName,
         [Parameter()] [switch] $ShowTestErrors
     )
 
     process {
-
-        Write-Verbose "Running tests for Module [ $Name ] functions [ $TestName ] "
+        write-host
+        "[ {0} ] Running tests functions [ {1} ] " -f $Name,([string]::IsNullOrWhiteSpace($TestName) ? "*" : $TestName) | Write-Host -ForegroundColor Green
 
         $local = Push-TestingFolder
 
         try {
 
-            Remove-Module -Name "$Name*"
+            # Remove-Module -Name "$Name*"
             
             Import-TestingModule -TargetModule $Name -Force
 
@@ -137,21 +182,42 @@ function Test-Module {
             if ( $TestName) {
                 # Filter based on TestFunction names
                 $ShowTestErrors = $true
-                $functionsTest += Get-Command -Name $TestName -Module $TestingModuleName 
+                $functionsTestName = $TestName
             }
             else {
-                # Legacy
-                $TestName = Get-TestingFunctionPrefix_Deprecated -TestingModuleName ($TestingModuleName )
-                $functionsTest += Get-Command -Name $TestName -Module $TestingModuleName 
                 
-                # New function name Test-*
-                $functionsTest += Get-Command -Name $TEST_FUNCTION_NAME_PATTERN -Module $TestingModuleName 
+                $functionsTestName = Get-TestingFunctionPrefix -TestingModuleName ($TestingModuleName )
+                
             } 
             
-            $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
+            $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName -ErrorAction SilentlyContinue
+            
+            $start = Get-Date
+
+            $result = $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
+
+            $time = ($start | New-TimeSpan ).ToString("hh\:mm\:ss\:FFFF")
+            
+            $result | Add-Member -NotePropertyName "Name" -NotePropertyValue $Name
+            $result | Add-Member -NotePropertyName "TestModule" -NotePropertyValue $TestingModuleName
+            $result | Add-Member -NotePropertyName "TestsName" -NotePropertyValue $functionsTestName
+            $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
+            $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
+
+            Write-Host  -ForegroundColor DarkCyan 
+            $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
+            " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
+            Out-SingleResultData -Name "Pass"           -Value $result.Pass           -Color "Yellow"
+            Out-SingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
+            Out-SingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
+            Out-SingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
+            Write-Host  -ForegroundColor DarkCyan 
+
+            $result
+
+            $global:ResultTestingHelper = $result
 
             Remove-Module -Name $TestingModuleName -Force
-
         }
         finally {
             $local | Pop-TestingFolder
@@ -168,34 +234,48 @@ function Import-TestingModule {
     )
 
     if ($Name) {
-        $moduleName = $Name
+        $testingModulePathOrName = $Name
     }
 
     if ($TargetModule) {
   
-        Import-TargetModule -Name $TargetModule -Force
+        # check if module is already loaded
+        $module = Get-Module -Name $TargetModule -ErrorAction SilentlyContinue
+        if (-not $module) {
+            "[Import-TestingModule] TargetModule {0} is not loaded" -f $TargetModule | Write-Verbose
+            $module = Import-Module -Name $TargetModule -Force -PassThru
+        } else {
+            "[Import-TestingModule] TargetModule {0} is already loaded" -f $TargetModule | Write-Warning
+        }
 
-        $modulePath = (Get-Module -Name $TargetModule).Path
+        $modulePath = $module.Path
     
-        $moduleName = Join-Path -Path (Split-Path -Path $modulePath -Parent) -ChildPath (Get-TestingModuleName -TargetModule $TargetModule)
+        $testingModulePathOrName = Join-Path -Path (Split-Path -Path $modulePath -Parent) -ChildPath (Get-TestingModuleName -TargetModule $TargetModule)
 
-        if (-not (Test-Path -Path $moduleName)) {
-            Write-Warning -Message "TestingModule for module [ $TargetModule ] not found at [ $moduleName ]"
+        if (-not (Test-Path -Path $testingModulePathOrName)) {
+            Write-Warning -Message "TestingModule for module [ $TargetModule ] not found at [ $testingModulePathOrName ]"
             return
         }
     }
     
-    Import-Module -Name $moduleName -Force:$Force -Global
+    Import-Module -Name $testingModulePathOrName -Force:$Force -Global
 }
 
 function Import-TargetModule {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)][string] $Name,
-        [switch] $Force
+        [Parameter()][string] $Manifest,
+        [switch] $Force,
+        [switch] $PassThru
     )
 
-    Import-Module -Name $Name -Force:$Force -Global
+    if ($Manifest) {
+        Get-Item -Path $manifestFile | Import-Module -force -Force:$Force -Global
+        return
+    }
+    
+    Import-Module -Name $Name -Force:$Force -Global -Passthru:$PassThru
 }
 
 function Start-TestModule {
@@ -228,7 +308,7 @@ function Start-TestModule {
 
 function Assert-NotImplemented {
 
-    Assert -Condition $false -Expected $true -Comment "Function not implemented"
+    throw "NOT_IMPLEMENTED"
 }
 
 function Assert-SkipTest{
@@ -259,29 +339,21 @@ function Assert-IsNotNull {
         $Object,
         $Comment
     )
-    if ($Object) {
-        $isNull = $false
-    }
-    else {
-        $isNull = $true
-    }
-    Assert-IsFalse -Condition $isNull -Comment ("Object is null -" + $Comment)
+
+    Assert-IsFalse -Condition ($null -eq $Object) -Comment ("Object is null -" + $Comment)
 }
 
 function Assert-IsNull {
     [CmdletBinding()]
     param (
-        [parameter(Position=0,ValueFromPipeline)] $Object
+        [parameter(Position=0,ValueFromPipeline)] $Object,
+        $Comment
     )
 
-    if ($Object) {
-        $isNull = $false
-    }
-    else {
-        $isNull = $true
-    }
-    Assert-IsTrue -Condition $isNull -Comment "IsNull"
+
+    Assert-IsTrue -Condition ($null -eq $Object) -Comment ("Object not null -" + $Comment)
 }
+
 function Assert-AreEqual {
     [CmdletBinding()]
     param (
@@ -291,7 +363,7 @@ function Assert-AreEqual {
 
     )
 
-    Assert-IsTrue -Condition ($Expected -eq $Presented) -Comment ("Object are not Equal : Expected [ $Expected ] and presented [ $Presented] - " + $Comment)
+    Assert-IsTrue -Condition ($Expected -eq $Presented) -Comment ("Object are not Equal : Expected [ $Expected ] and presented [ $Presented ] - " + $Comment)
 }
 
 function Assert-AreEqualSecureString {
@@ -323,6 +395,21 @@ function Assert-AreEqualPath {
     Assert-AreEqual -Expected $ex -Presented $pr -Comment ("Path not equal - " + $Comment)
 }
 
+function Assert-AreNotEqualPath {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+
+    )
+
+    $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
+    $pr = &{ if ($Presented | Test-Path) { $Presented | Convert-Path} else {$Presented}}
+
+    Assert-AreNotEqual -Expected $ex -Presented $pr -Comment ("Path equal - " + $Comment)
+}
+
 function Assert-AreNotEqual {
     [CmdletBinding()]
     param (
@@ -331,32 +418,58 @@ function Assert-AreNotEqual {
         [Parameter()] [string] $Comment
     )
 
-    Assert-IsFalse -Condition ($Expected -eq $Presented) -Comment ("Object are Equal : Expecte [ $Expected ] and presented [ $Presented] - " + $Comment)
+    Assert-IsFalse -Condition ($Expected -eq $Presented) -Comment ("Object are Equal : Expecte [ $Expected ] and presented [ $Presented ] - " + $Comment)
+}
 
+function Assert-AreEqualContent{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
+    $pr = &{ if ($Presented | Test-Path) { $Presented | Convert-Path} else {$Presented}}
+
+    $hashEx = Get-FileHash -Path $ex
+    $hashPr = Get-FileHash -Path $pr
+
+    Assert-AreEqual -Expected $hashEx -Presented $hashPr 
+}
+
+function Assert-AreNotEqualContent{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
+    $pr = &{ if ($Presented | Test-Path) { $Presented | Convert-Path} else {$Presented}}
+
+    $hashEx = Get-FileHash -Path $ex
+    $hashPr = Get-FileHash -Path $pr
+
+    Assert-AreNotEqual -Expected $hashEx -Presented $hashPr  
 }
 
 function Assert-ItemExist {
     param(
         [string] $Path
     )
-    try {
-        Assert-IsTrue -Condition ($Path | Test-Path)
-    }
-    catch {
-        throw "Item does not exist [ $Path ]"
-    }
+    Assert-IsNotNull -Object $Path -Comment "[Assert-ItemExist] Path is empty"
+    Assert-IsTrue -Condition ($Path | Test-Path)
 }
 
 function Assert-ItemNotExist {
     param(
         [string] $Path
-    )
-    try {
-        Assert-IsFalse -Condition ($Path | Test-Path)
-    }
-    catch {
-        throw "Item does not exist [ $Path ]"
-    }
+        )
+        
+    Assert-IsNotNull -Object $Path -Comment "[Assert-ItemNotExist] Path is empty"
+    Assert-IsFalse -Condition ($Path | Test-Path)
 }
 
 function Assert-IsGuid{
@@ -367,7 +480,7 @@ function Assert-IsGuid{
         Assert-IsNotNull -Object (New-Object -TypeName System.Guid -ArgumentList $Presented)
     }
     catch {
-        throw "String is not a valid Guid"
+        Assert -Condition $false -Comment "String is not a valid Guid"
     }
 }
 
@@ -375,20 +488,158 @@ function Assert-Count {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)] [int] $Expected,
-        [Parameter(Mandatory)] [object] $Presented
+        [Parameter()] [object] $Presented,
+        [Parameter()] [string] $Comment
+
     )
-    Assert-IsTrue -Condition ($Presented.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}]" -f $Expected,$Presented.Length)
+
+    if (!$Presented) {
+        Assert-IsTrue -Condition ($Expected -eq 0) -Comment ("Presented is null expected [{0}]- {1}" -f $Expected, $Comment)
+    } else {
+        Assert-IsTrue -Condition ($Presented.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presented [{1}] - {2}" -f $Expected,$Presented.Count, $Comment)
+
+    }
 }
 
-function Assert-CountObjects {
+function Assert-CountTimes {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)] [int] $Expected,
-        [Parameter(Mandatory)] [object] $Presented
+        [Parameter(Mandatory)] [string] $Pattern,
+        [Parameter()] [string[]] $Presented,
+        [Parameter()] [string] $Comment
     )
 
-    $presentedCount = $Presented.Count
-    Assert-IsTrue -Condition ($presentedCount -eq $Expected) -Comment ("Count Expected [{0}] and Presneted [{1}]" -f $Expected,$presentedCount)
+        if (!$Presented) {
+        Assert-IsTrue -Condition ($Expected -eq 0) -Comment ("Presented is null expected [{0}]- {1}" -f $Expected, $Comment)
+    } else {
+        $iterations = $Presented | Where-Object {$_ -eq $pattern}
+        Assert-IsTrue -Condition ($iterations.Count -eq $Expected) -Comment ("Count Expected [{0}] and Presented [{1}] - {2}" -f $Expected,$iterations.Count, $Comment)
+    }
+}
+
+function Assert-Contains{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [string] $Expected,
+        [Parameter()] [string[]] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Test-Assert -Condition (!([string]::IsNullOrEmpty($Expected)) -and ($Presented.Contains($Expected))) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
+
+}
+
+function Assert-NotContains{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [string] $Expected,
+        [Parameter()] [string[]] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Assert -Condition ([string]::IsNullOrEmpty($Expected)) -Expected $false -Comment "[Assert-Contains] Expected can not be empty"
+
+    Assert-IsTrue -Condition (!($Presented.Contains($Expected))) -Comment  ("[Assert-Contains] Expected[{0}] present on {1}" -f $Expected, $Presented)
+}
+
+function Assert-ContainedXOR{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory,ValueFromPipeline)] [string] $Expected,
+        [Parameter(Mandatory)] [string[]] $PresentedA,
+        [Parameter(Mandatory)] [string[]] $PresentedB,
+        [Parameter()] [string] $Comment
+    )
+
+    process {
+        $ga = $PresentedA.contains($Expected)
+        $gb = $PresentedB.contains($Expected)
+        
+        Assert-IsTrue -Condition ( $ga -xor $gb) -Comment ("Assert-ContainedXOR [{0}]" -f ($Expected))
+    }
+}
+
+function Assert-FilesAreEqual{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    $ex = $Expected | Get-FileHash
+    $pr = $Presented | Get-FileHash
+
+    Assert-AreEqual -Expected $ex.Hash -Presented $pr.Hash -Comment ("Files not equal - " + $Comment)
+}
+
+function Assert-FilesAreNotEqual{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    $ex = $Expected | Get-FileHash
+    $pr = $Presented | Get-FileHash
+
+    Assert-AreNotEqual -Expected $ex.Hash -Presented $pr.Hash -Comment ("Files equal - " + $Comment)
+}
+
+function Assert-FileContains{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][Object] $Path,
+        [Parameter(Mandatory)][Object] $Pattern,
+        [Parameter()] [string] $Comment
+
+    )
+
+    $SEL = Select-String -Path $Path -Pattern $Pattern
+
+    Assert-IsTrue -Condition ($null -ne $SEL) -Comment ("Files contains - " + $Comment)
+}
+
+function Assert-StringIsNotNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][string] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Assert-IsFalse -Condition ([string]::IsNullOrEmpty($Presented))-Comment ("String not null or empty -" + $Comment)
+}
+
+function Assert-StringIsNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][string] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Assert-IsTrue -Condition ([string]::IsNullOrEmpty($Presented))-Comment ("String null or empty -" + $Comment)
+}
+
+function Assert-CollectionIsNotNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Test-Assert -Condition (($null -ne $presented) -and ($presented.Count -gt 0)) -Comment:$Comment
+}
+
+function Assert-CollectionIsNullOrEmpty {
+    [CmdletBinding()]
+    param (
+        [parameter(Position=0,ValueFromPipeline)][object] $Presented,
+        [Parameter()] [string] $Comment
+    )
+
+    Test-Assert -Condition (($null -eq $presented) -or ($presented.Count -eq 0)) -Comment:$Comment
 }
 
 function Remove-TestingFolder {
@@ -468,17 +719,260 @@ function Pop-TestingFolder {
 function New-TestingFolder {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)] [string] $Path
+        [Parameter(ValueFromPipeline)] [string] $Path,
+        [Parameter()] [string] $Name,
+        [switch] $PassThru
     )
 
+    if ($Path -and !$Name) {
+        $finalPath = $Path
+    } else {
+        if ([string]::IsNullOrWhiteSpace($Name))    { $Name    = (New-Guid).ToString()}
+        if ([string]::IsNullOrWhiteSpace($Path))    { $Path    = '.' }
+
+        $finalPath = $Path | Join-Path -ChildPath $Name
+    }
+    
+    # if ($Path -and $Name) {
+    #     $finalPath = $Path | Join-Path -ChildPath $Name
+    # }
+    
+    # if (!$Path -and $Name) {
+    #     $finalPath = '.' | Join-Path -ChildPath $Name
+    # }
+    
+    # if (!$Path -and !$Name) {
+    #     $finalPath = '.' | Join-Path -ChildPath (New-Guid).ToString()
+    # }
+
+
     # Need to consolidate as mkdir behaves diferent on PC or Mac
-    $result = New-Item -ItemType Directory -Path $Path 
+    $result = New-Item -ItemType Directory -Path $finalPath
 
     Write-Verbose -Message "Created Diretory [ $result ] "
+
+    if ($PassThru) {
+        return $result
+    }
 }
+
+function New-TestingFile {
+    param(
+        [Parameter(ValueFromPipeline)][string]$Path,
+        [Parameter()][string]$Name,
+        [Parameter()][string]$Content,
+        [switch] $Hidden,
+        [switch] $PassThru
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Name))    { $Name    = ("{0}.txt" -f (New-Guid).ToString()) }
+    if ([string]::IsNullOrWhiteSpace($Path))    { $Path    = '.' }
+    if ([string]::IsNullOrWhiteSpace($Content)) { $Content = "random content" }
+
+    $file = New-Item -ItemType File -Path $Path -Name $Name -Value $Content -Force
+
+    if ($Hidden) {
+        $file.Attributes = $file.Attributes -bxor [System.IO.FileAttributes]::Hidden
+    }
+
+    if ($PassThru) {
+        return $file
+    }
+}
+
+function Remove-TestingFile {
+    param(
+        [Parameter(ValueFromPipeline)][string]$Path,
+        [Parameter()][string]$Name,
+        [Parameter()][string]$Content,
+        [switch] $Hidden
+    )
+    
+    if ([string]::IsNullOrWhiteSpace($Path))    { $Path    = '.' }
+    
+    $target = ([string]::IsNullOrWhiteSpace($Name)) ? $Path : ($Path | Join-Path -ChildPath $Name)
+
+    Assert-ItemExist -Path $target
+
+    (Get-Item -Force -Path $target).Attributes = 0
+
+    Remove-Item -Path $target
+
+    Assert-itemNotExist -Path $target
+} 
 
 function GetRooTestingFolderPath{
     $rd = Get-Date -Format yyMMdd
     $path = Join-Path -Path "Temp:" -ChildPath ("Posh_Testing_" + $rd)
     return $path
 }
+
+#Modules
+function New-Module {
+<#
+.Synopsis
+   Created a Powershell module with BiT21 format.
+#>
+    [CmdletBinding()]
+    [OutputType([System.IO.FileInfo])]
+    Param
+    (
+        # Param1 help description
+        [Parameter(Mandatory)][string]$Name,
+        [Parameter(Mandatory)][string]$Description,
+        [Parameter()][string]$Path,
+        [Parameter()][switch]$AvoidModuleFile,
+        [Parameter()][switch]$AvoidTestFile,
+        [Parameter()][String]$AppendToModuleFile
+    )    
+
+    $AUTHOR = 'rulasg'
+    $ModuleName = $Name
+
+    if (!$Path) {
+        $Path = '.'
+    }
+
+    $modulePath = Join-Path -Path $Path -ChildPath $Name
+
+    if(Test-Path($modulePath)){
+        throw "Folder already exists"
+    } else {
+       $null = New-Item -ItemType Directory -Name $modulePath
+    }
+
+    # Manifest
+    $filename = "$ModuleName.psd1"
+    
+    New-ModuleManifest `
+        -Path (Join-Path -Path $modulePath -ChildPath $filename) `
+        -RootModule "$ModuleName.psm1" `
+        -Author        $AUTHOR `
+        -ModuleVersion '0.1' `
+        -Description   $Description `
+        #-CompanyName   "rulasg" `
+        #-Copyright     "(c) 2021 rulasg. All rights reserved."  `
+        # -RequiredModules 'BaseSDK' `
+        # -DefaultCommandPrefix $ModuleName 
+
+    # Module File
+    if (-Not $AvoidModuleFile)
+    {
+        NewModulefile -Path $modulePath -ModuleName $ModuleName -Author $AUTHOR -Description $Description -Append $AppendToModuleFile
+    }    
+
+    # Testing module
+    if (-Not $AvoidTestFile)
+    {
+        New-TestingModule -Path $modulePath -ModuleName $ModuleName
+        New-TestingVsCodeLaunchJson -Path $modulePath -ModuleName $ModuleName
+    }
+
+    return $modulePath
+}
+
+function NewModulefile($Path, $ModuleName, $Author, $Description, $Append){
+    $myString = 
+@'
+<# 
+.Synopsis 
+_XMODULE_
+
+.Description
+_DESCRIPTION_
+
+.Notes 
+NAME  : _XMODULE_.psm1*
+AUTHOR: _AUTHOR_   
+
+CREATED: _CREATED_TIME_
+#>
+
+Write-Host "Loading _XMODULE_ ..." -ForegroundColor DarkCyan
+'@
+    $myString = $myString.Replace('_XMODULE_',$ModuleName)
+    $myString = $myString.Replace('_DESCRIPTION_',$Description)
+    $myString = $myString.Replace('_AUTHOR_',$AUTHOR)
+    $myString = $myString.Replace('_CREATED_TIME_',(Get-Date).ToShortDateString());
+
+    if ($Append) {
+        $myString+=$Append
+    }
+
+    $myString |  Out-File -FilePath (Join-Path -Path $Path -ChildPath "$ModuleName.psm1")
+} 
+
+function New-TestingModule($Path, $ModuleName){
+
+    $testingModuleName = $ModuleName + "Test"
+
+    $testScript = 
+@'
+[CmdletBinding()]
+param ()
+
+$ModuleName = "_XMODULE_"
+
+Import-Module -Name TestingHelper -Force
+
+Test-Module -Name $ModuleName 
+'@
+
+    $testingModulePs1 = "$TestingModuleName.ps1"
+    
+    $testScript = $testScript.Replace('_XMODULE_',$ModuleName)
+    $testScript = $testScript.Replace('_CREATED_TIME_',(Get-Date).ToShortDateString());
+    
+    $testScript |  Out-File -FilePath (Join-Path -Path $Path -ChildPath $testingModulePs1)
+
+    $toAppend =
+@'
+
+
+function _MODULE_TESTING__Sample(){
+    Assert-IsTrue -Condition $true
+}
+
+Export-ModuleMember -Function _MODULE_TESTING__*
+'@
+
+    $toAppend = $toAppend.Replace('_MODULE_TESTING_',$testingModuleName)
+
+    $null = New-Module -Path $Path -Name $testingModuleName -Description "Testing module for $ModuleName" -AvoidTestFile -AppendToModuleFile $toAppend
+}   
+
+function New-TestingVsCodeLaunchJson($Path, $ModuleName){
+    $testScript = 
+@'
+    {
+        // Use IntelliSense to learn about possible attributes.
+        // Hover to view descriptions of existing attributes.
+        // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "PowerShell: _XMODULE_.ps1",
+                "type": "PowerShell",
+                "request": "launch",
+                "script": "${workspaceFolder}/_XMODULE_Test.ps1",
+                "cwd": "${workspaceFolder}"
+            }
+        ]
+    }
+'@
+
+    $testScript = $testScript.Replace('_XMODULE_',$ModuleName)
+
+    New-Item `
+        -ItemType File `
+        -Path (Join-Path -Path $Path -ChildPath '.vscode' -AdditionalChildPath 'launch.json') `
+        -Value $testScript `
+        -Force `
+        | Out-Null
+}
+
+# TODO : Reduce the number of functions exported
+# Export-ModuleMember -Function Assert-*
+# Export-ModuleMember -Function New-Testing*
+# Export-ModuleMember -Function Test-Module
+# Export-ModuleMember -Function Pop-TestingFolder
