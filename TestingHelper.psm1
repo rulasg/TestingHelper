@@ -234,7 +234,7 @@ function Import-TestingModule {
     )
 
     if ($Name) {
-        $moduleName = $Name
+        $testingModulePathOrName = $Name
     }
 
     if ($TargetModule) {
@@ -243,22 +243,22 @@ function Import-TestingModule {
         $module = Get-Module -Name $TargetModule -ErrorAction SilentlyContinue
         if (-not $module) {
             "[Import-TestingModule] TargetModule {0} is not loaded" -f $TargetModule | Write-Verbose
-            Import-TargetModule -Name $TargetModule -Force
+            $module = Import-Module -Name $TargetModule -Force -PassThru
         } else {
-            "[Import-TestingModule] TargetModule {0} is already loaded" -f $TargetModule | Write-Verbose
+            "[Import-TestingModule] TargetModule {0} is already loaded" -f $TargetModule | Write-Warning
         }
 
-        $modulePath = (Get-Module -Name $TargetModule).Path
+        $modulePath = $module.Path
     
-        $moduleName = Join-Path -Path (Split-Path -Path $modulePath -Parent) -ChildPath (Get-TestingModuleName -TargetModule $TargetModule)
+        $testingModulePathOrName = Join-Path -Path (Split-Path -Path $modulePath -Parent) -ChildPath (Get-TestingModuleName -TargetModule $TargetModule)
 
-        if (-not (Test-Path -Path $moduleName)) {
-            Write-Warning -Message "TestingModule for module [ $TargetModule ] not found at [ $moduleName ]"
+        if (-not (Test-Path -Path $testingModulePathOrName)) {
+            Write-Warning -Message "TestingModule for module [ $TargetModule ] not found at [ $testingModulePathOrName ]"
             return
         }
     }
     
-    Import-Module -Name $moduleName -Force:$Force -Global
+    Import-Module -Name $testingModulePathOrName -Force:$Force -Global
 }
 
 function Import-TargetModule {
@@ -266,7 +266,8 @@ function Import-TargetModule {
     param (
         [Parameter(Mandatory)][string] $Name,
         [Parameter()][string] $Manifest,
-        [switch] $Force
+        [switch] $Force,
+        [switch] $PassThru
     )
 
     if ($Manifest) {
@@ -274,7 +275,7 @@ function Import-TargetModule {
         return
     }
     
-    Import-Module -Name $Name -Force:$Force -Global
+    Import-Module -Name $Name -Force:$Force -Global -Passthru:$PassThru
 }
 
 function Start-TestModule {

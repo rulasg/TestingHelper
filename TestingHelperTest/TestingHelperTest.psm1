@@ -2,6 +2,11 @@ using Module .\TestingHelperTestHelper.psm1
 
 Write-Host "Loading TestingHelperTest ..." -ForegroundColor DarkYellow
 
+$WarningParameters = @{
+    WarningAction = 'SilentlyContinue' 
+    WarningVariable = 'warningVar'
+}
+
 # N3ed to match the value of variable of same name of TestHelper
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder"
 Set-Variable -Name RootTestingFolder -Value "Temp:/P"
@@ -617,7 +622,7 @@ function TestingHelperTest_RemoveTestingFile_Folder {
 function TestingHelperTest_GetRooTestingFolderPath {
     [CmdletBinding()] param ()
 
-    $f = Import-Module  -Name TestingHelper -PassThru
+    $f = Get-Module -Name TestingHelper 
     $result = & $f {GetRooTestingFolderPath}
 
     Assert-AreEqual -Expected "Temp:" -Presented (Split-Path -Path $result -Qualifier)
@@ -684,6 +689,20 @@ function TestingHelperTest_ImportTestingModule_TargetModule{
     $instance2 = Get-DummyModule1TestInstanceId
 
     Assert-AreNotEqual -Expected $instance1 -Presented $instance2
+}
+
+function TestingHelperTest_ImportTestingModule_TargetModule_AlreadyLoaded{
+    [Cmdletbinding()] param ()
+
+    Get-Module -Name $Dummy1* | Remove-Module -Force
+    Import-Module -name $Dummy1 -Global
+
+    Import-TestingModule -TargetModule $Dummy1 @WarningParameters
+    
+    Assert-IsNotNull -Object (Get-Module -Name ($Dummy1 +"Test"))
+
+    Assert-Count -Expected 1 -Presented $WarningVar
+    Assert-AreEqual -Presented $WarningVar[0].Message -Expected ("[Import-TestingModule] TargetModule {0} is already loaded" -f $Dummy1) 
 }
 
 function TestingHelperTest_ImportTestingModule_TestingModule {
