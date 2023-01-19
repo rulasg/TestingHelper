@@ -410,6 +410,36 @@ function Assert-AreNotEqualPath {
     Assert-AreNotEqual -Expected $ex -Presented $pr -Comment ("Path equal - " + $Comment)
 }
 
+function Assert-ContainsPath {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+
+    )
+
+    $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
+    $pr = &{ $Presented | Convert-Path} else {$Presented}
+
+    Assert-Contains -Expected $ex -Presented $pr -Comment ("Path not contained - " + $Comment)
+}
+
+function Assert-NotContainsPath {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)] [object] $Expected,
+        [Parameter(Mandatory)] [object] $Presented,
+        [Parameter()] [string] $Comment
+
+    )
+
+    $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
+    $pr = &{ $Presented | Convert-Path} else {$Presented}
+
+    Assert-NotContains -Expected $ex -Presented $pr -Comment ("Path not contained - " + $Comment)
+}
+
 function Assert-AreNotEqual {
     [CmdletBinding()]
     param (
