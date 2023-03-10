@@ -167,6 +167,7 @@ function TestingHelperTest_AreEqual_Fail{
     Assert-IsTrue -Condition $hasThrow
 }
 
+
 function TestingHelperTest_ContainsPath_Success{
 
     $f1 = New-TestingFile -Path "." -PassThru

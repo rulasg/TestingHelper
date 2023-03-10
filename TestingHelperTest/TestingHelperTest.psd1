@@ -12,6 +12,7 @@
     RootModule = 'TestingHelperTest.psm1'
     
     # Version number of this module.
+
     ModuleVersion = '2.0'
     
     # Supported PSEditions
@@ -30,6 +31,7 @@
     Copyright = '(c) 2020 BiT21. All rights reserved.'
     
     # Description of the functionality provided by this module
+
     Description = 'Testing for TestingHelper module'
     
     # Minimum version of the Windows PowerShell engine required by this module

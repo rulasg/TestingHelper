@@ -2,6 +2,7 @@ TOPIC
     about_TestingHelper
 
 SHORT DESCRIPTION
+
     Module that will help you unit test your PowerShell code.
 
 LONG DESCRIPTION
@@ -15,3 +16,4 @@ KEYWORDS
 
 SEE ALSO
     https://github.com/rulasg/TestingHelper/
+

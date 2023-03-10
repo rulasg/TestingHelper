@@ -62,3 +62,4 @@ Follow naming convention for easier use. Function names `ModuleNameTest_*` will 
   - New-TestingFile
   - Remove-TestingFile
   - New-TestingFolder
+
