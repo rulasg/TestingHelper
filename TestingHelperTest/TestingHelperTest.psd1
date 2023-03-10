@@ -12,7 +12,8 @@
     RootModule = 'TestingHelperTest.psm1'
     
     # Version number of this module.
-    ModuleVersion = '0.3'
+
+    ModuleVersion = '2.0'
     
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -30,7 +31,8 @@
     Copyright = '(c) 2020 BiT21. All rights reserved.'
     
     # Description of the functionality provided by this module
-    Description = 'Functions to help create Unit Testing for Powershell modules and run them'
+
+    Description = 'Testing for TestingHelper module'
     
     # Minimum version of the Windows PowerShell engine required by this module
     # PowerShellVersion = ''

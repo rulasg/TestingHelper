@@ -2,16 +2,18 @@ TOPIC
     about_TestingHelper
 
 SHORT DESCRIPTION
-    A short, one-line description of the topic contents.
+
+    Module that will help you unit test your PowerShell code.
 
 LONG DESCRIPTION
-    A detailed, full description of the subject or purpose of the module.
+    Following the module pattern that TestingHelper proposes, you can easily unit test your PowerShell code. The module provides a set of functions that will help you to run test functions that will Arrange, Act and Assert the results of your code. 
 
-EXAMPLES
-    Examples of how to use the module or how the subject feature works in practice.
+    Use `New-Module` to create the skeleton of your module with a nexted Test module where to code your tests.
+    Use the .ps1 file at the root og the project to run the tests and get the results.
 
 KEYWORDS
-    Terms or titles on which you might expect your users to search for the information in this topic.
+    Powershell Testing UnitTest Module
 
 SEE ALSO
-    Text-only references for further reading. Hyperlinks cannot work in the PowerShell console.
+    https://github.com/rulasg/TestingHelper/
+

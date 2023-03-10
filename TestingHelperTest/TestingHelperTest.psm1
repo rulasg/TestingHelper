@@ -167,6 +167,85 @@ function TestingHelperTest_AreEqual_Fail{
     Assert-IsTrue -Condition $hasThrow
 }
 
+
+function TestingHelperTest_ContainsPath_Success{
+
+    $f1 = New-TestingFile -Path "." -PassThru
+    $f2 = New-TestingFile -Path "." -PassThru
+    $f3 = New-TestingFile -Path Folder1 -PassThru
+    $f4 = New-TestingFile -Path Folder2 -PassThru
+    $f5 = New-TestingFile -Path "Folder2/Folder2" -PassThru
+
+    $result = dir -Recurse 
+    Assert-Count -Expected 8 -Presented $result
+
+    Assert-ContainsPath -Expected $f5.FullName -Presented $result
+    Assert-ContainsPath -Expected $f4.FullName -Presented $result
+    Assert-ContainsPath -Expected $f3.FullName -Presented $result
+    Assert-ContainsPath -Expected $f2.FullName -Presented $result
+    Assert-ContainsPath -Expected $f1.FullName -Presented $result
+}
+
+function TestingHelperTest_ContainsPath_Fail{
+
+    $f1 = New-TestingFile -Name Included1 -Path "." -PassThru
+    $f2 = New-TestingFile -Name Included2 -Path "." -PassThru
+    $f3 = New-TestingFile -Name Excluded3 -Path Folder1 -PassThru
+    $f4 = New-TestingFile -Name Included4 -Path Folder2 -PassThru
+    $f5 = New-TestingFile -Name Included5 -Path "Folder2/Folder2" -PassThru
+
+    $result = dir Include* -Recurse 
+    
+    Assert-Count -Expected 4 -Presented $result
+
+    $hasThrow = $false
+    try {
+            Assert-ContainsPath -Expected $f3.FullName -Presented $result
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
+function TestingHelperTest_NotContainsPath_Success{
+
+    $f1 = New-TestingFile -Name Excluded1 -Path "." -PassThru
+    $f2 = New-TestingFile -Name Included2 -Path "." -PassThru
+    $f3 = New-TestingFile -Name Excluded3 -Path Folder1 -PassThru
+    $f4 = New-TestingFile -Name Included4 -Path Folder2 -PassThru
+    $f5 = New-TestingFile -Name Excluded5 -Path "Folder2/Folder2" -PassThru
+
+    $result = dir Included* -Recurse 
+    Assert-Count -Expected 2 -Presented $result
+
+    Assert-NotContainsPath -Expected $f1.FullName -Presented $result
+    Assert-NotContainsPath -Expected $f3.FullName -Presented $result
+    Assert-NotContainsPath -Expected $f5.FullName -Presented $result
+}
+
+function TestingHelperTest_NotContainsPath_Fail{
+
+    $f1 = New-TestingFile -Name Included1 -Path "." -PassThru
+    $f2 = New-TestingFile -Name Included2 -Path "." -PassThru
+    $f3 = New-TestingFile -Name Excluded3 -Path Folder1 -PassThru
+    $f4 = New-TestingFile -Name Included4 -Path Folder2 -PassThru
+    $f5 = New-TestingFile -Name Included5 -Path "Folder2/Folder2" -PassThru
+
+    $result = dir Include* -Recurse 
+    
+    Assert-Count -Expected 4 -Presented $result
+
+    $hasThrow = $false
+    try {
+            Assert-NotContainsPath -Expected $f4.FullName -Presented $result
+    }
+    catch {
+        $hasThrow = $true
+    }
+    Assert-IsTrue -Condition $hasThrow
+}
+
 function TestingHelperTest_FilesAreEqual{
     
     "content of the file rajksljkjralksr" | Out-File -FilePath "file1.txt"
