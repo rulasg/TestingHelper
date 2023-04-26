@@ -61,7 +61,7 @@ function TestingHelperTest_IsFalse
     try {
         Assert-TT_Isfalse -Condition $true
     } catch { 
-        Write-TT_Verbose -Message "Did throw"
+        Write-Verbose -Message "Did throw"
         $hasThrow = $true
     }
     Assert-IsTrue -Condition $hasThrow
@@ -546,7 +546,7 @@ function TestingHelperTest_StringIsNotNullOrEmpty_Empty{
 
     $hasThrow = $false
     try {
-        Assert-TT_StringIsNotNullorEmpty -Presented [string]::Empty
+        Assert-TT_StringIsNotNullorEmpty -Presented ([string]::Empty)
     }
     catch {
         $hasThrow = $true
