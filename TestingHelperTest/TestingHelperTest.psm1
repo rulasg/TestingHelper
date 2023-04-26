@@ -2,6 +2,10 @@ using Module .\TestingHelperTestHelper.psm1
 
 Write-Host "Loading TestingHelperTest ..." -ForegroundColor DarkYellow
 
+# Import Target Module with prefix
+$module = $PSScriptRoot | split-path -Parent | Join-Path -ChildPath "TestingHelper.psd1"
+Import-Module -Name $module -Prefix "TT_" -Force
+
 $WarningParameters = @{
     WarningAction = 'SilentlyContinue' 
     WarningVariable = 'warningVar'
@@ -25,13 +29,13 @@ function TestingHelperTest_Assert
 
     Write-Verbose -Message "TestingHelperTest_Assert..."
 
-    Assert -Condition $true 
-    Assert -Condition $true -Expected $true
-    Assert -Condition $false -Expected $false
+    TT_Assert -Condition $true 
+    TT_Assert -Condition $true -Expected $true
+    TT_Assert -Condition $false -Expected $false
 
     $hasThrow = $false
     try {
-        Assert -Condition $false
+        TT_Assert -Condition $false
     } catch { 
         Write-Verbose -Message "Did throw"
         $hasthrow = $true
@@ -40,7 +44,7 @@ function TestingHelperTest_Assert
     
     $hasThrow = $false
     try {
-        Assert -Condition $true -Expected $false
+        TT_Assert -Condition $true -Expected $false
     } catch { 
         Write-Verbose -Message "Did throw"
         $hasthrow = $true
@@ -52,12 +56,12 @@ function TestingHelperTest_IsFalse
 {
     [CmdletBinding()] param ()
 
-    Assert-IsFalse -Condition $false
+    Assert-TT_IsFalse -Condition $false
     $hasThrow = $false
     try {
-        Assert-Isfalse -Condition $true
+        Assert-TT_Isfalse -Condition $true
     } catch { 
-        Write-Verbose -Message "Did throw"
+        Write-TT_Verbose -Message "Did throw"
         $hasThrow = $true
     }
     Assert-IsTrue -Condition $hasThrow
@@ -67,10 +71,10 @@ function TestingHelperTest_IsTrue
 {
     [CmdletBinding()] param ()
 
-    Assert-IsTrue -Condition $true
+    Assert-TT_IsTrue -Condition $true
     $hasThrow = $false
     try {
-        Assert-IsTrue -Condition $false
+        Assert-TT_IsTrue -Condition $false
     } catch { 
         Write-Verbose -Message "Did throw"
         $hasthrow = $true
@@ -83,11 +87,11 @@ function TestingHelperTest_IsNotNull
     [CmdletBinding()] param ()
 
     $object = [DateTime]::Now
-    Assert-IsNotNull -Object $object
+    Assert-TT_IsNotNull -Object $object
 
     $hasThrow = $false
     try {
-            Assert-IsNotNull $null
+            Assert-TT_IsNotNull $null
     }
     catch {
         $hasThrow = $true
@@ -100,11 +104,11 @@ function TestingHelperTest_IsNull
     [CmdletBinding()] param ()
 
     $object = [DateTime]::Now
-    Assert-IsNull -Object $null
+    Assert-TT_IsNull -Object $null
 
     $hasThrow = $false
     try {
-            Assert-IsNull $object
+        Assert-TT_IsNull $object
     }
     catch {
         $hasThrow = $true
@@ -118,13 +122,13 @@ function TestingHelperTest_AreEqual{
     $o1 = "stringobject"
     $o2 = $o1
 
-    Assert-AreEqual -Expected $o1 -Presented $o2
-    Assert-AreEqual -Expected "string text" -Presented "string text" 
+    Assert-TT_AreEqual -Expected $o1 -Presented $o2
+    Assert-TT_AreEqual -Expected "string text" -Presented "string text" 
 
 
     $hasThrow = $false
     try {
-        Assert-AreEqual -Expected "string text 1" -Presented "string text 2" 
+        Assert-TT_AreEqual -Expected "string text 1" -Presented "string text 2" 
     }
     catch {
         $hasThrow = $true
@@ -138,13 +142,13 @@ function TestingHelperTest_AreNotEqual{
     $o1 = "stringobject1"
     $o2 = "string object 2"
 
-    Assert-AreNotEqual -Expected "string text 1 " -Presented "string text 2" 
-    Assert-ArenotEqual -Expected $o1 -Presented $o2
+    Assert-TT_AreNotEqual -Expected "string text 1 " -Presented "string text 2" 
+    Assert-TT_ArenotEqual -Expected $o1 -Presented $o2
 
     
     $hasThrow = $false
     try {
-        Assert-AreNotEqual -Expected "string text" -Presented "string text" 
+        Assert-TT_AreNotEqual -Expected "string text" -Presented "string text" 
     }
     catch {
         $hasThrow = $true
@@ -159,7 +163,7 @@ function TestingHelperTest_AreEqual_Fail{
 
     $hasThrow = $false
     try {
-            Assert-AreEqual -Expected $o1 -Presented $o2
+        Assert-AreEqual -Expected $o1 -Presented $o2
     }
     catch {
         $hasThrow = $true
@@ -768,6 +772,22 @@ function TestingHelperTest_ImportTestingModule_TargetModule{
     $instance2 = Get-DummyModule1TestInstanceId
 
     Assert-AreNotEqual -Expected $instance1 -Presented $instance2
+}
+
+function TestingHelperTest_ImportTestingModule_TargetModule_NotMatchingVerion{
+    [Cmdletbinding()] param ()
+
+    Get-Module -Name $Dummy1* | Remove-Module -Force
+    $dummyModule = Import-Module -name $Dummy1 -Global -PassThru
+    $wrongVersion = "2.5.1"
+    
+    Import-TT_TestingModule -TargetModule $Dummy1 -TargetModuleVersion $wrongVersion @WarningParameters
+    
+    Assert-IsNull -Object (Get-Module -Name ($Dummy1 +"Test"))
+
+    Assert-Count -Expected 2 -Presented $WarningVar
+    Assert-AreEqual -Presented $WarningVar[1].Message -Expected `
+    ("[Import-TestingModule] TargetModule {0} version {1} not matches {2}" -f $Dummy1,$dummyModule.Version, $wrongVersion) 
 }
 
 function TestingHelperTest_ImportTestingModule_TargetModule_AlreadyLoaded{
