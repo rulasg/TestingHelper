@@ -2,7 +2,12 @@ using Module .\TestingHelperTestHelper.psm1
 
 Write-Host "Loading TestingHelperTest ..." -ForegroundColor DarkYellow
 
-# Import Target Module with prefix
+# As we are uing TestingHelper to code and run tests of TestingHelper we need to scope 
+# which functions are from the Testing version and which are from the tested version.
+# We will load the tested version with a prefix. aka TT_
+# On the tests functions the prefixed calls will be the actions. The rest of calls are the asserts
+
+# Import Target Module with prefix TT_ (aka TestingTarget)
 $module = $PSScriptRoot | split-path -Parent | Join-Path -ChildPath "TestingHelper.psd1"
 $testingModule = Import-Module -Name $module -Prefix "TT_" -Force -PassThru
 
@@ -11,7 +16,7 @@ $WarningParameters = @{
     WarningVariable = 'warningVar'
 }
 
-# N3ed to match the value of variable of same name of TestHelper
+# Need to match the value of variable of same name of TestHelper
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder"
 Set-Variable -Name RootTestingFolder -Value "Temp:/P"
 
