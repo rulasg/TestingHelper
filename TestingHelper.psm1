@@ -178,32 +178,33 @@ function Test-Module {
 
             $functionsTest = @()
 
-            #Use standar testing fucntions prfix
+            # Check if specific scoped to specific testing functions
             if ( $TestName) {
                 # Filter based on TestFunction names
                 $ShowTestErrors = $true
                 $functionsTestName = $TestName
             }
             else {
-                
+                # No function scope so search for all testing functions in module based on prefix
                 $functionsTestName = Get-TestingFunctionPrefix -TestingModuleName ($TestingModuleName )
-                
             } 
             
+            # Get list of testing fucntions to run
             $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName -ErrorAction SilentlyContinue
             
+            # Run tests and gather result
             $start = Get-Date
-
             $result = $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
-
             $time = ($start | New-TimeSpan ).ToString("hh\:mm\:ss\:FFFF")
             
+            # Add extra info to result
             $result | Add-Member -NotePropertyName "Name" -NotePropertyValue $Name
             $result | Add-Member -NotePropertyName "TestModule" -NotePropertyValue $TestingModuleName
             $result | Add-Member -NotePropertyName "TestsName" -NotePropertyValue $functionsTestName
             $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
             $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
 
+            # Display single line result
             Write-Host  -ForegroundColor DarkCyan 
             $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
             " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
@@ -213,10 +214,127 @@ function Test-Module {
             Out-SingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
             Write-Host  -ForegroundColor DarkCyan 
 
+            # Displayy all results strucutre
             $result
 
+            # Save result to global variable
             $global:ResultTestingHelper = $result
 
+            # unload testing module
+            Remove-Module -Name $TestingModuleName -Force
+        }
+        finally {
+            $local | Pop-TestingFolder
+        }
+    }
+}
+
+function GetModuleManifest($Path){
+
+    $localPath = $Path | Convert-Path
+
+    $psdpath = Get-ChildItem -Path $localPath -Filter "*.psd1" -ErrorAction SilentlyContinue
+
+    if($psdpath.count -ne 1){
+        throw "No psd1 file found in path $localPath"
+    }
+    
+    $manifest = Import-PowerShellDataFile -Path $psdpath.FullName
+
+    $manifest.Path = $localPath
+    $manifest.PsdPath = $psdpath.FullName
+    $manifest.Name = $manifest.RootModule | Split-Path -leafbase
+
+
+    return $manifest
+}
+
+function GetTestingModuleManifest($path){
+
+    $name = $path | Split-Path -leafbase
+    $testingModulename = Get-TestingModuleName -TargetModule $name
+    $testingpath = $path | Join-Path -ChildPath $testingModulename
+
+    $ret = GetModuleManifest -Path $testingpath
+
+    return $ret
+}
+
+
+function Test-ModulelocalPSD1 {
+    [CmdletBinding()] 
+    param (
+        [Parameter( Position = 1)] [string] $TestName,
+        [Parameter( Position = 2)] [string] $Path = '.',
+        [Parameter()] [switch] $ShowTestErrors
+    )
+
+    process {
+
+        $manifest = GetModuleManifest -Path ($Path | Convert-Path)
+        $testingmodulemanifest = GetTestingModuleManifest -path $manifest.Path
+        $versionString = "{0} {1} {2}" -f $manifest.Name, $manifest.ModuleVersion, $manifest.PrivateData.PSData.Prerelease
+
+        write-host
+        "[ {0} ] Running tests from functions [ {1} ] " -f $versionString,([string]::IsNullOrWhiteSpace($TestName) ? "*" : $TestName) | Write-Host -ForegroundColor Green
+
+        $local = Push-TestingFolder
+  
+        try {
+
+            # Import Target Module
+            Import-Module -Name $manifest.PsdPath -Force -Scope:Global
+            
+            # Load Testing Module 
+            Import-TestingModule -Name $testingmodulemanifest.path -Force
+
+            $TestingModuleName = Get-TestingModuleName -TargetModule $manifest.Name
+
+            $functionsTest = @()
+
+            # Check if specific scoped to specific testing functions
+            if ( $TestName) {
+                # Filter based on TestFunction names
+                $ShowTestErrors = $true
+                $functionsTestName = $TestName
+            }
+            else {
+                # No function scope so search for all testing functions in module based on prefix
+                $functionsTestName = Get-TestingFunctionPrefix -TestingModuleName ($testingmodulemanifest.Name )
+            } 
+            
+            # Get list of testing fucntions to run
+            $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName -ErrorAction SilentlyContinue
+            
+            # Run tests and gather result
+            $start = Get-Date
+            $result = $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
+            $time = ($start | New-TimeSpan ).ToString("hh\:mm\:ss\:FFFF")
+            
+            # Add extra info to result
+            $result | Add-Member -NotePropertyName "Name" -NotePropertyValue $Name
+            $result | Add-Member -NotePropertyName "TestModule" -NotePropertyValue $TestingModuleName
+            $result | Add-Member -NotePropertyName "TestsName" -NotePropertyValue $functionsTestName
+            $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
+            $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
+
+            # Display single line result
+            Write-Host  -ForegroundColor DarkCyan 
+            $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
+            " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
+            Out-SingleResultData -Name "Pass"           -Value $result.Pass           -Color "Yellow"
+            Out-SingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
+            Out-SingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
+            Out-SingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
+            Write-Host  -ForegroundColor DarkCyan 
+
+            # Displayy all results strucutre
+            $result
+
+            # Save result to global variable
+            $global:ResultTestingHelper = $result
+
+            # unload testing module
             Remove-Module -Name $TestingModuleName -Force
         }
         finally {
@@ -230,6 +348,8 @@ function Import-TestingModule {
     param (
         [Parameter(Mandatory, ParameterSetName = "TestingModule")][string] $Name,
         [Parameter(Mandatory, ParameterSetName = "TargetModule" )][string] $TargetModule,
+        [Parameter()][string] $TargetModuleVersion,
+
         [switch] $Force
     )
 
@@ -248,6 +368,16 @@ function Import-TestingModule {
             "[Import-TestingModule] TargetModule {0} is already loaded" -f $TargetModule | Write-Warning
         }
 
+        #check TargetModuleVersion
+        if ($TargetModuleVersion) {
+            if ($module.Version -ne $TargetModuleVersion) {
+                # Write-Warning -Message "TargetModule [ $TargetModule ] version [ $($module.Version) ] is not equal to TargetModuleVersion [ $TargetModuleVersion ]"
+                "[Import-TestingModule] TargetModule {0} version {1} not matches {2}" -f $TargetModule,$module.Version,$TargetModuleVersion | Write-Warning
+
+                return
+            }
+        }
+
         $modulePath = $module.Path
     
         $testingModulePathOrName = Join-Path -Path (Split-Path -Path $modulePath -Parent) -ChildPath (Get-TestingModuleName -TargetModule $TargetModule)
@@ -258,6 +388,7 @@ function Import-TestingModule {
         }
     }
     
+    #Import Testing Module
     Import-Module -Name $testingModulePathOrName -Force:$Force -Global
 }
 
@@ -278,33 +409,33 @@ function Import-TargetModule {
     Import-Module -Name $Name -Force:$Force -Global -Passthru:$PassThru
 }
 
-function Start-TestModule {
-    [CmdletBinding()] 
-    param (
-        [Parameter(Mandatory, Position = 0)][string] $TestModuleName,
-        [Parameter()][string] $Prefix,
-        [Parameter()][string] $ModuleName
-    )
+# function Start-TestModule {
+#     [CmdletBinding()] 
+#     param (
+#         [Parameter(Mandatory, Position = 0)][string] $TestModuleName,
+#         [Parameter()][string] $Prefix,
+#         [Parameter()][string] $ModuleName
+#     )
 
-    if ($ModuleName) {
-        Import-Module -Name $ModuleName
-    }
+#     if ($ModuleName) {
+#         Import-Module -Name $ModuleName
+#     }
 
-    Write-Host "Running Test Module [ $TestModuleName ] ..." -ForegroundColor DarkYellow
-    Import-TestingModule -Name $TestModuleName
+#     Write-Host "Running Test Module [ $TestModuleName ] ..." -ForegroundColor DarkYellow
+#     Import-TestingModule -Name $TestModuleName
 
-    if ($Prefix) {
-        Write-Host "Filtering functions by Prefix [ $Prefix ] ..." -ForegroundColor DarkYellow
-        $functions = Get-Command -Module $TestModuleName -Name $Prefix*
-    }
-    else { 
-        $functions = Get-Command -Module $TestModuleName 
-    }
+#     if ($Prefix) {
+#         Write-Host "Filtering functions by Prefix [ $Prefix ] ..." -ForegroundColor DarkYellow
+#         $functions = Get-Command -Module $TestModuleName -Name $Prefix*
+#     }
+#     else { 
+#         $functions = Get-Command -Module $TestModuleName 
+#     }
 
-    $functions | ForEach-Object {
-        Start-TestingFunction -FunctionName $_.Name
-    }
-}
+#     $functions | ForEach-Object {
+#         Start-TestingFunction -FunctionName $_.Name
+#     }
+# }
 
 function Assert-NotImplemented {
 

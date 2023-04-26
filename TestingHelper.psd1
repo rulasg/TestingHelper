@@ -13,7 +13,7 @@
     
     # Version number of this module.
 
-    ModuleVersion = '2.0'
+    ModuleVersion = '2.1'
     
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -109,6 +109,15 @@
     
             # ReleaseNotes of this module
             # ReleaseNotes = ''
+
+            # Prerelease string of this module
+            Prerelease = 'dev'
+
+            # Flag to indicate whether the module requires explicit user acceptance for install/update/save
+            # RequireLicenseAcceptance = $false
+
+            # External dependent modules of this module
+            # ExternalModuleDependencies = @()
     
         } # End of PSData hashtable
     

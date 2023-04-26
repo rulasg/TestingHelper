@@ -4,7 +4,7 @@ Write-Host "Loading TestingHelperTest ..." -ForegroundColor DarkYellow
 
 # Import Target Module with prefix
 $module = $PSScriptRoot | split-path -Parent | Join-Path -ChildPath "TestingHelper.psd1"
-Import-Module -Name $module -Prefix "TT_" -Force
+$testingModule = Import-Module -Name $module -Prefix "TT_" -Force -PassThru
 
 $WarningParameters = @{
     WarningAction = 'SilentlyContinue' 
@@ -163,7 +163,7 @@ function TestingHelperTest_AreEqual_Fail{
 
     $hasThrow = $false
     try {
-        Assert-AreEqual -Expected $o1 -Presented $o2
+        Assert-TT_AreEqual -Expected $o1 -Presented $o2
     }
     catch {
         $hasThrow = $true
@@ -180,14 +180,14 @@ function TestingHelperTest_ContainsPath_Success{
     $f4 = New-TestingFile -Path Folder2 -PassThru
     $f5 = New-TestingFile -Path "Folder2/Folder2" -PassThru
 
-    $result = dir -Recurse 
+    $result = Get-ChildItem -Recurse 
     Assert-Count -Expected 8 -Presented $result
 
-    Assert-ContainsPath -Expected $f5.FullName -Presented $result
-    Assert-ContainsPath -Expected $f4.FullName -Presented $result
-    Assert-ContainsPath -Expected $f3.FullName -Presented $result
-    Assert-ContainsPath -Expected $f2.FullName -Presented $result
-    Assert-ContainsPath -Expected $f1.FullName -Presented $result
+    Assert-TT_ContainsPath -Expected $f5.FullName -Presented $result
+    Assert-TT_ContainsPath -Expected $f4.FullName -Presented $result
+    Assert-TT_ContainsPath -Expected $f3.FullName -Presented $result
+    Assert-TT_ContainsPath -Expected $f2.FullName -Presented $result
+    Assert-TT_ContainsPath -Expected $f1.FullName -Presented $result
 }
 
 function TestingHelperTest_ContainsPath_Fail{
@@ -198,13 +198,13 @@ function TestingHelperTest_ContainsPath_Fail{
     $f4 = New-TestingFile -Name Included4 -Path Folder2 -PassThru
     $f5 = New-TestingFile -Name Included5 -Path "Folder2/Folder2" -PassThru
 
-    $result = dir Include* -Recurse 
+    $result = Get-ChildItem Include* -Recurse 
     
     Assert-Count -Expected 4 -Presented $result
 
     $hasThrow = $false
     try {
-            Assert-ContainsPath -Expected $f3.FullName -Presented $result
+        Assert-TT_ContainsPath -Expected $f3.FullName -Presented $result
     }
     catch {
         $hasThrow = $true
@@ -220,12 +220,12 @@ function TestingHelperTest_NotContainsPath_Success{
     $f4 = New-TestingFile -Name Included4 -Path Folder2 -PassThru
     $f5 = New-TestingFile -Name Excluded5 -Path "Folder2/Folder2" -PassThru
 
-    $result = dir Included* -Recurse 
+    $result = Get-ChildItem Included* -Recurse 
     Assert-Count -Expected 2 -Presented $result
 
-    Assert-NotContainsPath -Expected $f1.FullName -Presented $result
-    Assert-NotContainsPath -Expected $f3.FullName -Presented $result
-    Assert-NotContainsPath -Expected $f5.FullName -Presented $result
+    Assert-TT_NotContainsPath -Expected $f1.FullName -Presented $result
+    Assert-TT_NotContainsPath -Expected $f3.FullName -Presented $result
+    Assert-TT_NotContainsPath -Expected $f5.FullName -Presented $result
 }
 
 function TestingHelperTest_NotContainsPath_Fail{
@@ -236,13 +236,13 @@ function TestingHelperTest_NotContainsPath_Fail{
     $f4 = New-TestingFile -Name Included4 -Path Folder2 -PassThru
     $f5 = New-TestingFile -Name Included5 -Path "Folder2/Folder2" -PassThru
 
-    $result = dir Include* -Recurse 
+    $result = Get-ChildItem Include* -Recurse 
     
     Assert-Count -Expected 4 -Presented $result
 
     $hasThrow = $false
     try {
-            Assert-NotContainsPath -Expected $f4.FullName -Presented $result
+        Assert-TT_NotContainsPath -Expected $f4.FullName -Presented $result
     }
     catch {
         $hasThrow = $true
@@ -256,13 +256,12 @@ function TestingHelperTest_FilesAreEqual{
     "content of the file rajksljkjralksr" | Out-File -FilePath "file2.txt"
     "Other   of the file rajksljkjralksr" | Out-File -FilePath "file3.txt"
 
-    Assert-FilesAreEqual -Expected  "file1.txt" -Presented "file2.txt"
-    Assert-FilesAreNotEqual -Expected  "file1.txt" -Presented "file3.txt"
+    Assert-TT_FilesAreEqual -Expected  "file1.txt" -Presented "file2.txt"
+    Assert-TT_FilesAreNotEqual -Expected  "file1.txt" -Presented "file3.txt"
 
     $hasThrow = $false
     try {
-        Assert-FilesAreEqual -Expected  "file1.txt" -Presented "file2.txt"
-
+        Assert-TT_FilesAreEqual -Expected  "file1.txt" -Presented "file2.txt"
     }
     catch {
         $hasThrow = $true
@@ -277,7 +276,7 @@ function TestingHelperTest_FilesAreEqual{
 
     $hasThrow = $false
     try {
-        Assert-FilesAreEqual -Expected  "file1.txt" -Presented "file3.txt"
+        Assert-TT_FilesAreEqual -Expected  "file1.txt" -Presented "file3.txt"
     }
     catch {
         $hasThrow = $true
@@ -286,7 +285,7 @@ function TestingHelperTest_FilesAreEqual{
 
     $hasThrow = $false
     try {
-        Assert-FilesAreNotEqual -Expected  "file1.txt" -Presented "file2.txt"
+        Assert-TT_FilesAreNotEqual -Expected  "file1.txt" -Presented "file2.txt"
     }
     catch {
         $hasThrow = $true
@@ -313,16 +312,16 @@ $Value
 '@
     $content | Out-File -FilePath "file1.txt"
 
-    Assert-FileContains -Path "file1.txt" -Pattern "ModuleVersion = '0.1'"
-    Assert-FileContains -Path "file1.txt" -Pattern "RootModule = 'ModuleNameTest.psm1'"
-    Assert-FileContains -Path "file1.txt" -Pattern "# Script"
+    Assert-TT_FileContains -Path "file1.txt" -Pattern "ModuleVersion = '0.1'"
+    Assert-TT_FileContains -Path "file1.txt" -Pattern "RootModule = 'ModuleNameTest.psm1'"
+    Assert-TT_FileContains -Path "file1.txt" -Pattern "# Script"
 }
 
 function TestingHelperTest_ItemExists_Success{
 
     $l = Get-Location
 
-    Assert-ItemExist -Path $l.Path
+    Assert-TT_ItemExist -Path $l.Path
 
 }
 
@@ -330,7 +329,7 @@ function TestingHelperTest_ItemExists_Fail{
 
     $hasThrow = $false
     try {
-            Asset-ItemExist -Path "Thispathdoesnotexist"
+        Asset-TT_ItemExist -Path "Thispathdoesnotexist"
     }
     catch {
         $hasThrow = $true
@@ -341,14 +340,14 @@ function TestingHelperTest_ItemExists_Fail{
 function TestingHelperTest_IsGuid_Success {
     [CmdletBinding()] param ()
 
-     Assert-IsGuid -Presented (New-Guid).ToString()
+     Assert-TT_IsGuid -Presented (New-Guid).ToString()
 }
 function TestingHelperTest_IsGuid_Fail {
     [CmdletBinding()] param ()
 
     $hasThrow = $false
     try {
-        Asset-IsGuid -Presented "NotAValidGuid"
+        Asset-TT_IsGuid -Presented "NotAValidGuid"
     }
     catch {
         $hasThrow = $true
@@ -363,7 +362,7 @@ function TestingHelperTest_Count_Success{
     $array+="Second"
     $array+="Third"
 
-    Assert-Count -Expected 3 -Presented $array
+    Assert-TT_Count -Expected 3 -Presented $array
 
 }
 function TestingHelperTest_Count_Fail{
@@ -375,7 +374,7 @@ function TestingHelperTest_Count_Fail{
 
     $hasThrow = $false
     try {
-        Assert-Count -Expected 2 -Presented $array
+        Assert-TT_Count -Expected 2 -Presented $array
     }
     catch {
         $hasThrow = $true
@@ -390,7 +389,7 @@ function TestingHelperTest_CountTimes_Success{
     $array+="Second"
     $array+="first"
 
-    Assert-CountTimes -Expected 2 -Presented $array -Pattern "first"
+    Assert-TT_CountTimes -Expected 2 -Presented $array -Pattern "first"
 
 }
 function TestingHelperTest_CountTimes_Fail{
@@ -402,7 +401,7 @@ function TestingHelperTest_CountTimes_Fail{
 
     $hasThrow = $false
     try {
-        Assert-CountTimes -Expected 1 -Presented $array -Pattern "first"
+        Assert-TT_CountTimes -Expected 1 -Presented $array -Pattern "first"
     }
     catch {
         $hasThrow = $true
@@ -417,11 +416,11 @@ function TestingHelperTest_CountTimes_PresentedNull{
     $array+="Second"
     $array+="first"
 
-    Assert-CountTimes -Expected 0 -Presented $null -Pattern "three"
+    Assert-TT_CountTimes -Expected 0 -Presented $null -Pattern "three"
 
     $hasThrow = $false
     try {
-        Assert-CountTimes -Expected 2 -Presented $null -Pattern "first"
+        Assert-TT_CountTimes -Expected 2 -Presented $null -Pattern "first"
     }
     catch {
         $hasThrow = $true
@@ -433,7 +432,7 @@ function TestingHelperTest_Contains_Success{
         "value1","Value2","Value3"
     )
 
-    Assert-Contains -Expected "Value2" -Presented $array
+    Assert-TT_Contains -Expected "Value2" -Presented $array
 }
 
 function TestingHelperTest_Contains_Fail{
@@ -445,7 +444,7 @@ function TestingHelperTest_Contains_Fail{
     $hasThrow = $false
     try {
         # value2 is lower case
-        Assert-Contains -Expected "value2" -Presented $array
+        Assert-TT_Contains -Expected "value2" -Presented $array
     }
     catch {
         $hasThrow = $true
@@ -459,7 +458,7 @@ function TestingHelperTest_NotContains_Success{
     )
 
     # value2 is lower case
-    Assert-NotContains -Expected "value2" -Presented $array
+    Assert-TT_NotContains -Expected "value2" -Presented $array
 }
 
 function TestingHelperTest_NotContains_Fail{
@@ -470,7 +469,7 @@ function TestingHelperTest_NotContains_Fail{
 
     $hasThrow = $false
     try {
-        Assert-NotContains -Expected "Value2" -Presented $array
+        Assert-TT_NotContains -Expected "Value2" -Presented $array
     }
     catch {
         $hasThrow = $true
@@ -483,12 +482,12 @@ function TestingHelperTest_ContainsXOR_Success{
     $array1 = @("value1","Value2","Value3")
     $array2 = @("Value4","Value5","Value6","Value7")
 
-    Assert-ContainedXOR -Expected "Value2" -PresentedA $array1 -PresentedB $array2
-    Assert-ContainedXOR -Expected "Value6" -PresentedA $array1 -PresentedB $array2
+    Assert-TT_ContainedXOR -Expected "Value2" -PresentedA $array1 -PresentedB $array2
+    Assert-TT_ContainedXOR -Expected "Value6" -PresentedA $array1 -PresentedB $array2
     
-    "Value6" | Assert-ContainedXOR -PresentedA $array1 -PresentedB $array2
+    "Value6" | Assert-TT_ContainedXOR -PresentedA $array1 -PresentedB $array2
     
-    ("Value3","Value4") | Assert-ContainedXOR -PresentedA $array1 -PresentedB $array2
+    ("Value3","Value4") | Assert-TT_ContainedXOR -PresentedA $array1 -PresentedB $array2
 }
 
 function TestingHelperTest_ContainsXOR_Fail{
@@ -498,7 +497,7 @@ function TestingHelperTest_ContainsXOR_Fail{
 
     $hasThrow = $false
     try {
-        Assert-ContainedXOR -Expected "value2" -PresentedA $array1 -PresentedB $array2
+        Assert-TT_ContainedXOR -Expected "value2" -PresentedA $array1 -PresentedB $array2
     }
     catch {
         $hasThrow = $true
@@ -510,11 +509,11 @@ function TestingHelperTest_StringIsNotNullOrEmpty_Null{
     [CmdletBinding()] param ()
 
     # Positive Null
-    Assert-StringIsNotNullorEmpty -Presented "Some string"
+    Assert-TT_StringIsNotNullorEmpty -Presented "Some string"
 
     $hasThrow = $false
     try {
-        Assert-StringIsNotNullorEmpty $null
+        Assert-TT_StringIsNotNullorEmpty $null
     }
     catch {
         $hasThrow = $true
@@ -527,11 +526,11 @@ function TestingHelperTest_StringIsNullOrEmpty_Null{
     [CmdletBinding()] param ()
 
     # Positive Null
-    Assert-StringIsNullorEmpty -Presented $Null
+    Assert-TT_StringIsNullorEmpty -Presented $Null
 
     $hasThrow = $false
     try {
-        Assert-StringIsNullorEmpty -Presented "some string" 
+        Assert-TT_StringIsNullorEmpty -Presented "some string" 
     }
     catch {
         $hasThrow = $true
@@ -543,11 +542,11 @@ function TestingHelperTest_StringIsNotNullOrEmpty_Empty{
     [CmdletBinding()] param ()
 
     # Positive Null
-    Assert-StringIsNotNullorEmpty -Presented "Some text"
+    Assert-TT_StringIsNotNullorEmpty -Presented "Some text"
 
     $hasThrow = $false
     try {
-            Assert-IsNotNull -Presented [string]::Empty
+        Assert-TT_StringIsNotNullorEmpty -Presented [string]::Empty
     }
     catch {
         $hasThrow = $true
@@ -558,12 +557,12 @@ function TestingHelperTest_StringIsNotNullOrEmpty_Empty{
 function TestingHelperTest_StringIsNullOrEmpty_Empty{
     [CmdletBinding()] param ()
 
-    Assert-StringIsNullorEmpty -Presented ([string]::Empty)
-    Assert-StringIsNullorEmpty -Presented ""
+    Assert-TT_StringIsNullorEmpty -Presented ([string]::Empty)
+    Assert-TT_StringIsNullorEmpty -Presented ""
 
     $hasThrow = $false
     try {
-        Assert-StringIsNullorEmpty "some string"
+        Assert-TT_StringIsNullorEmpty "some string"
     }
     catch {
         $hasThrow = $true
@@ -576,11 +575,11 @@ function TestingHelperTest_CollectionIsNotNullOrEmpty_Null{
     [CmdletBinding()] param ()
 
     # Positive Null
-    Assert-CollectionIsNotNullorEmpty -Presented @("Something")
+    Assert-TT_CollectionIsNotNullorEmpty -Presented @("Something")
 
     $hasThrow = $false
     try {
-        Assert-CollectionIsNotNullorEmpty $null
+        Assert-TT_CollectionIsNotNullorEmpty $null
     }
     catch {
         $hasThrow = $true
@@ -593,11 +592,11 @@ function TestingHelperTest_CollectionIsNullOrEmpty_Null{
     [CmdletBinding()] param ()
 
     # Positive Null
-    Assert-CollectionIsNullorEmpty -Presented $Null
+    Assert-TT_CollectionIsNullorEmpty -Presented $Null
 
     $hasThrow = $false
     try {
-        Assert-CollectionIsNullorEmpty -Presented @("something")
+        Assert-TT_CollectionIsNullorEmpty -Presented @("something")
     }
     catch {
         $hasThrow = $true
@@ -609,11 +608,11 @@ function TestingHelperTest_CollectionIsNotNullOrEmpty_Empty{
     [CmdletBinding()] param ()
 
     # Positive Null
-    Assert-CollectionIsNotNullorEmpty -Presented @("value")
+    Assert-TT_CollectionIsNotNullorEmpty -Presented @("value")
 
     $hasThrow = $false
     try {
-            Assert-CollectionIsNotNull -Presented @{}
+            Assert-TT_CollectionIsNotNull -Presented @{}
     }
     catch {
         $hasThrow = $true
@@ -624,11 +623,11 @@ function TestingHelperTest_CollectionIsNotNullOrEmpty_Empty{
 function TestingHelperTest_CollectionIsNullOrEmpty_Empty{
     [CmdletBinding()] param ()
 
-    Assert-CollectionIsNullorEmpty -Presented @()
+    Assert-TT_CollectionIsNullorEmpty -Presented @()
 
     $hasThrow = $false
     try {
-        Assert-CollectionIsNullorEmpty @("something")
+        Assert-TT_CollectionIsNullorEmpty @("something")
     }
     catch {
         $hasThrow = $true
@@ -647,14 +646,14 @@ function TestingHelperTest_RemoveTestingFile_Root {
     New-TestingFile -Name $filename
     
     Assert-ItemExist -Path $filename
-    Remove-TestingFile -Path $filename
+    Remove-TT_TestingFile -Path $filename
     Assert-ItemNotExist -Path $filename
     
     #By Name
     New-TestingFile -Name $filename
     
     Assert-ItemExist -Path $filename
-    Remove-TestingFile -Name $filename
+    Remove-TT_TestingFile -Name $filename
     Assert-ItemNotExist -Path $filename
     
     # Hidden
@@ -666,7 +665,7 @@ function TestingHelperTest_RemoveTestingFile_Root {
     }
 
     Assert-ItemExist -Path $filename
-    Remove-TestingFile -Path $filename
+    Remove-TT_TestingFile -Path $filename
     Assert-ItemNotExist -Path $filename
 }
 
@@ -679,14 +678,14 @@ function TestingHelperTest_RemoveTestingFile_Folder {
     $file = New-TestingFile -Name $filename -Path $folder -PassThru
     
     Assert-ItemExist -Path $file
-    Remove-TestingFile -Path $file.FullName
+    Remove-TT_TestingFile -Path $file.FullName
     Assert-ItemNotExist -Path $file
     
     #By Name
     $file = New-TestingFile -Name $filename -Path $folder -PassThru
     
     Assert-ItemExist -Path $file
-    Remove-TestingFile -Name $filename -Path $folder
+    Remove-TT_TestingFile -Name $filename -Path $folder
     Assert-ItemNotExist -Path $file
     
     # Hidden
@@ -698,15 +697,16 @@ function TestingHelperTest_RemoveTestingFile_Folder {
     }
     
     Assert-ItemExist -Path $file
-    Remove-TestingFile -Name $filename -Path $folder
+    Remove-TT_TestingFile -Name $filename -Path $folder
     Assert-ItemNotExist -Path $file
 }
 
 function TestingHelperTest_GetRooTestingFolderPath {
     [CmdletBinding()] param ()
 
-    $f = Get-Module -Name TestingHelper 
-    $result = & $f {GetRooTestingFolderPath}
+    # $f = Get-Module -Name TestingHelper 
+    # $result = & $f {GetRooTestingFolderPath}
+    $result = & $testingModule {GetRooTestingFolderPath}
 
     Assert-AreEqual -Expected "Temp:" -Presented (Split-Path -Path $result -Qualifier)
 }
@@ -721,7 +721,7 @@ function TestingHelperTest_RemoveTestingFolder_Not_TestRunFolder{
 
     Assert-ItemExist -Path $t.FullName
 
-    Remove-TestingFolder -Path ".\NotStandardName"
+    Remove-TT_TestingFolder -Path ".\NotStandardName"
 
     Assert-ItemExist -Path $t
 
@@ -748,7 +748,7 @@ function TestingHelperTest_RemoveTestingFolder_Recurse{
 
     Assert-AreEqual -Expected 4 -Presented ((Get-ChildItem -Path $tf -Filter file*.txt -Recurse -File).Count)
 
-    Remove-TestingFolder -Path $runfolder
+    Remove-TT_TestingFolder -Path $runfolder
     Assert-ItemNotExist -Path $runfolder
 
     Remove-Item -Path $TestRoot
@@ -761,13 +761,13 @@ function TestingHelperTest_ImportTestingModule_TargetModule{
     Get-Module -Name $Dummy1* | Remove-Module -Force
     Assert-IsNull -Object (Get-Module -Name $Dummy1*)
 
-    Import-TestingModule -TargetModule $Dummy1
+    Import-TT_TestingModule -TargetModule $Dummy1
 
     Assert-IsNotNull -Object (Get-Module -Name ($Dummy1 +"Test"))
 
     $instance1 = Get-DummyModule1TestInstanceId
 
-    Import-TestingModule -TargetModule $Dummy1 -Force
+    Import-TT_TestingModule -TargetModule $Dummy1 -Force
 
     $instance2 = Get-DummyModule1TestInstanceId
 
@@ -796,7 +796,7 @@ function TestingHelperTest_ImportTestingModule_TargetModule_AlreadyLoaded{
     Get-Module -Name $Dummy1* | Remove-Module -Force
     Import-Module -name $Dummy1 -Global
 
-    Import-TestingModule -TargetModule $Dummy1 @WarningParameters
+    Import-TT_TestingModule -TargetModule $Dummy1 @WarningParameters
     
     Assert-IsNotNull -Object (Get-Module -Name ($Dummy1 +"Test"))
 
@@ -816,13 +816,13 @@ function TestingHelperTest_ImportTestingModule_TestingModule {
     Get-Module -Name $Dummy1* | Remove-Module -Force
     Assert-IsNull -Object (Get-Module -Name $Dummy1*)
 
-    Import-TestingModule -Name $TestDummyPath
+    Import-TT_TestingModule -Name $TestDummyPath
 
     Assert-IsNotNull -Object (Get-Module -Name $TestDummy1)
 
     $instance1 = Get-DummyModule1TestInstanceId
 
-    Import-TestingModule -Name $TestDummyPath -Force
+    Import-TT_TestingModule -Name $TestDummyPath -Force
 
     $instance2 = Get-DummyModule1TestInstanceId
 
@@ -839,15 +839,15 @@ function TestingHelperTest_ImportTargetModule{
     Get-Module -Name $Dummy1* | Remove-Module -Force
     Assert-IsNull -Object (Get-Module -Name $Dummy1*)
 
-    Import-TargetModule -Name $Dummy1
+    Import-TT_TargetModule -Name $Dummy1
     Assert-IsNotNull -Object (Get-Module -Name $Dummy1)
 
     $instance1 = Get-DummyModule1InstanceId
-    Import-TargetModule -Name $Dummy1
+    Import-TT_TargetModule -Name $Dummy1
     $instance2 = Get-DummyModule1InstanceId
     Assert-AreEqual -Expected $instance1 -Presented $instance2
 
-    Import-TargetModule -Name $Dummy1 -Force
+    Import-TT_TargetModule -Name $Dummy1 -Force
     $instance3 = Get-DummyModule1InstanceId
 
     Assert-AreNotEqual -Expected $instance1 -Presented $instance3
@@ -857,7 +857,7 @@ function TestingHelperTest_ImportTargetModule{
 }
 
 function TestingHelperTest_NewModule{
-    New-Module -Name "ModuleName" -Description "description of the Module"
+    New-TT_Module -Name "ModuleName" -Description "description of the Module"
 
     $psdPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psd1
     $psmPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psm1
@@ -897,12 +897,10 @@ function TestingHelperTest_NewModule{
     Assert-IsTrue -Condition ($json.configurations.cwd -eq '${workspaceFolder}')
     Assert-IsTrue -Condition ($json.configurations.type -eq 'PowerShell')
     Assert-IsTrue -Condition ($json.configurations.name -like '*ModuleName.ps1')
-
-
 }
 
 function TestingHelperTest_NewTestingModule{
-    New-TestingModule -ModuleName "ModuleName" -Path .
+    New-TT_TestingModule -ModuleName "ModuleName" -Path .
 
     $psdPathTest = Join-Path -Path . -ChildPath ModuleNameTest -AdditionalChildPath  ModuleNameTest.psd1
     $psmPathTest = Join-Path -Path . -ChildPath ModuleNameTest -AdditionalChildPath  ModuleNameTest.psm1
@@ -919,7 +917,7 @@ function TestingHelperTest_NewTestingModule{
 }
 
 function TestingHelperTest_NewTestingVsCodeLaunchJson{
-    New-TestingVsCodeLaunchJson -Path . -ModuleName "ModuleName"
+    New-TT_TestingVsCodeLaunchJson -Path . -ModuleName "ModuleName"
 
     $launchFile = Join-Path -Path . -ChildPath ".vscode" -AdditionalChildPath "launch.json"
 
