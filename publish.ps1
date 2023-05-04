@@ -5,8 +5,8 @@
     This script will publish the module to the PSGallery
 .NOTES
     You will need to create a NuGet API Key for the PSGallery at https://www.powershellgallery.com/account/apikeys
-# .LINK
-    # Specify a URI to a help page, this will show when Get-Help -Online is used.
+.LINK
+    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish.ps1
 .EXAMPLE
     # Publish the module to the PSGallery without prompting
 
@@ -15,7 +15,7 @@
     # Publish the module to the PSGallery using PAT on enviroment variable
 
     > $env:NUGETAPIKEY = <API Key>
-    > Publish.ps1
+    > ./publish.ps1
 #>
 
 [CmdletBinding(
@@ -36,7 +36,6 @@ param(
 if ( [string]::IsNullOrWhiteSpace($NuGetApiKey) ) {
     
     if ( [string]::IsNullOrWhiteSpace($env:NUGETAPIKEY) ) {
-        Write-Error -Message '$Env:NUGETAPIKEY is not set. Try running `$Env:NUGETAPIKEY = fdf nuget | Get-SecretValue`'
         Write-Error -Message '$Env:NUGETAPIKEY is not set. Try running `$Env:NUGETAPIKEY = (Find-DocsFile nugetapikey | rsk | Get-SecretData).Get()`'
         return
     }
@@ -76,5 +75,5 @@ if ($PSCmdlet.ShouldProcess($psdPath, "Publish-Module")) {
     # show an empty line
     Write-Information -InformationAction Continue -Message ""
     Write-Information -InformationAction Continue -Message $message 
-    publish-Module   -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForcePublish
+    Publish-Module   -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForcePublish
 }
