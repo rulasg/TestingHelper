@@ -13,7 +13,7 @@
     
     # Version number of this module.
 
-    ModuleVersion = '2.1'
+    ModuleVersion = '2.1.1'
     
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -28,7 +28,7 @@
     CompanyName="rulasg"
     
     # Copyright statement for this module
-    Copyright = '(c) 2021 rulasg. All rights reserved.'
+    Copyright = '(c) 2023 rulasg. All rights reserved.'
     
     # Description of the functionality provided by this module
     Description = 'Functions to help create Unit Testing for Powershell modules and run them'
@@ -111,7 +111,7 @@
             # ReleaseNotes = ''
 
             # Prerelease string of this module
-            Prerelease = 'dev'
+            Prerelease = 'alpha'
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             # RequireLicenseAcceptance = $false
