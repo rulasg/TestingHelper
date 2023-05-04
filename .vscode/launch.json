@@ -10,7 +10,7 @@
             "name": "PowerShell: TestingHelperTest.ps1",
             "type": "PowerShell",
             "request": "launch",
-            "script": "${workspaceRoot}/TestingHelperTest.ps1",
+            "script": "${workspaceRoot}/test.ps1",
             "cwd": "${workspaceFolder}"
         }
     ]
