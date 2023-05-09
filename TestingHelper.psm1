@@ -966,7 +966,7 @@ function Remove-TestingFile {
 function GetRooTestingFolderPath{
     $random = (New-Guid).ToString().Substring(0,6) # add a random number on each run to avoid colisions
     $rd = Get-Date -Format yyMMdd
-    $path = Join-Path -Path "Temp:" -ChildPath ("Posh_Testing_{}_{}" -f $rd,$random)
+    $path = Join-Path -Path "Temp:" -ChildPath ("Posh_Testing_{0}_{1}" -f $rd,$random)
     return $path
 }
 
