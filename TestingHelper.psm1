@@ -962,9 +962,11 @@ function Remove-TestingFile {
     Assert-itemNotExist -Path $target
 } 
 
+# Return the path of the root testing folder
 function GetRooTestingFolderPath{
+    $random = (New-Guid).ToString().Substring(0,6) # add a random number on each run to avoid colisions
     $rd = Get-Date -Format yyMMdd
-    $path = Join-Path -Path "Temp:" -ChildPath ("Posh_Testing_" + $rd)
+    $path = Join-Path -Path "Temp:" -ChildPath ("Posh_Testing_{}_{}" -f $rd,$random)
     return $path
 }
 
