@@ -42,7 +42,7 @@ function Import-TestingHelper{
     }
 }
 
-Import-TestingHelper -AllowPrerelease
+Import-TestingHelper -version 2.1.1-alpha #first version wiht Test-ModulelocalPsd1
 
 # Run test by PSD1 file
 Test-ModulelocalPSD1 -Path $PSScriptRoot
