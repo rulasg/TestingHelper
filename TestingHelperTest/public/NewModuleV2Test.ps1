@@ -2,7 +2,6 @@ function TestingHelperTest_NewModuleV2{
 
     New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9"
 
-    
     #PSD1
     $psdPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psd1
     Assert-ItemExist -Path $psdPath
@@ -53,9 +52,15 @@ function TestingHelperTest_NewModuleV2{
 
 
 function TestingHelperTest_NewModuleV2_RunModuleTest{
-    Assert-NotImplemented
-}
+    
+    New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9"
 
-function TestingHelperTest_NewModuleV2_RunPublish{
-    Assert-NotImplemented
+    $test = "ModuleName" | Join-Path -ChildPath "test.ps1" | Resolve-Path
+
+    $result = & $test
+
+    # Assert-AreEqual -Expected ModuleName -Presented $result.Name
+    Assert-AreEqual -Expected ModuleNameTest -Presented $result.TestModule
+    Assert-AreEqual -Expected 2 -Presented $result.Pass
+    Assert-AreEqual -Expected 2 -Presented $result.Tests
 }

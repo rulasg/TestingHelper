@@ -82,7 +82,7 @@ function New-ModuleV2 {
         }
 
         # publish.ps1
-        Import-Template -Path $modulePath -File "publich.ps1" -Template "template.publish.ps1"
+        # Import-Template -Path $modulePath -File "publich.ps1" -Template "template.publish.ps1"
             
         # Testing module
         if (-Not $AvoidTestingModule)
@@ -118,84 +118,6 @@ function New-ModuleV2 {
         }
     
     } Export-ModuleMember -Function New-Module
-
-# function New-ModuleManifestV2{
-#     [CmdletBinding()]
-#     Param
-#     (
-#         # Param1 help description
-#         [Parameter(Mandatory)][string]$Path,
-#         [Parameter(Mandatory)][string]$RootModule,
-#         [Parameter(Mandatory)][string]$Author,
-#         [Parameter(Mandatory)][string]$Description,
-#         [Parameter(Mandatory)][string]$ModuleName,
-#         [Parameter(Mandatory)][string]$ModuleVersion,
-#         [Parameter()][string]$CompanyName,
-#         [Parameter()][string]$Copyright
-#     )
-
-#     # Manifest
-#     $params = @{
-#         Path = ($modulePath | Join-Path -ChildPath "$ModuleName.psd1") 
-#         RootModule = "$ModuleName.psm1" 
-#         Author = $Author 
-#         ModuleVersion = $ModuleVersion 
-#         Description = $Description 
-#         CompanyName =   $CompanyName
-#         Copyright =     $Copyright
-#     }
-
-#     New-ModuleManifest @params
-# }
-
-# function New-TestingModuleV2{
-#     [CmdletBinding()]
-#     Param
-#     (
-#         # Param1 help description
-#         [Parameter(Mandatory)][string]$Name,
-#         [Parameter(Mandatory)][string]$Description,
-#         [Parameter()][string]$Author,
-#         [Parameter()][string]$CompanyName,
-#         [Parameter()][string]$Copyright,
-#         [Parameter()][string]$Version,
-#         [Parameter()][string]$Path,
-#         [Parameter()][switch]$AvoidTestFile,
-#         [Parameter()][String[]]$PublicCode
-#     ) 
-
-#     $testingModuleName = $ModuleName + "Test"
-#     $testingModulePath = Join-Path -Path $Path -ChildPath $testingModuleName
-
-#     # Sample test
-#     # $sampleTest = Get-Content -Path ($PSScriptRoot | Join-Path -ChildPath "sampletest.ps1.template")
-#     # $sampleTest = $sampleTest.Replace('_MODULE_TESTING_',$testingModuleName)
-
-#     $params = @{
-#         Path = $testingModulePath
-#         RootModule = "$testingModuleName.psm1" 
-#         ModuleName = $testingModuleName
-        
-#         Description = "Testing Module for $ModuleName"
-#         AvoidTestFile = $true
-
-#         ModuleVersion = $Version 
-#         Author = $Author 
-#         CompanyName = $CompanyName 
-#         Copyright = $Copyright  
-#     }
-#     # New-ModuleManifestV2 @params
-#     New-ModuleManifest @params
-
-#     Import-Template -Path $params.Path -File $params.RootModule -Template "template.module.psm1"
-    
-#     Import-Template -Template "template.testmodule.functions.public.ps1" -File "SampleFunctionTests.ps1" -Path ($testingModulePath | Join-Path -ChildPath "public") -Replaces @{
-#         '_MODULE_TESTING_' = $testingModuleName
-#     }
-
-#     Import-Template -Path $Path -File "test.ps1" -Template "template.test.ps1"
-#     Import-Template -Path ($Path | Join-Path -ChildPath '.vscode') -File 'launch.json' -Template "template.launch.json"
-# }  
 
 function Import-Template ($Path,$File,$Template,$Replaces){
 
