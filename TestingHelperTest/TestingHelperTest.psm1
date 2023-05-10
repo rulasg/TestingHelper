@@ -709,11 +709,24 @@ function TestingHelperTest_RemoveTestingFile_Folder {
 function TestingHelperTest_GetRooTestingFolderPath {
     [CmdletBinding()] param ()
 
-    # $f = Get-Module -Name TestingHelper 
-    # $result = & $f {GetRooTestingFolderPath}
     $result = & $testingModule {GetRooTestingFolderPath}
 
+    $split = ($result | Split-Path -leafbase) -split "_"
+    
+    Assert-Count -Expected 4 -Presented $split
     Assert-AreEqual -Expected "Temp:" -Presented (Split-Path -Path $result -Qualifier)
+    Assert-AreEqual -Expected ("Posh") -Presented $split[0]
+    Assert-AreEqual -Expected ("Testing") -Presented $split[1]
+    Assert-AreEqual -Expected (Get-Date -Format yyMMdd) -Presented $split[2]
+}
+
+function TestingHelperTest_GetRooTestingFolderPath_NotTheSame {
+    [CmdletBinding()] param ()
+
+    $result1 = & $testingModule {GetRooTestingFolderPath}
+    $result2 = & $testingModule {GetRooTestingFolderPath}
+
+    Assert-AreNotEqual -Expected $result1 -Presented $result2
 }
 function TestingHelperTest_RemoveTestingFolder_FolderNotExist{
 

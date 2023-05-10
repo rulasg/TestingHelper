@@ -1,4 +1,3 @@
-
 Write-Information -Message ("Loading {0} ..." -f ($PSCommandPath | Split-Path -LeafBase)) -InformationAction continue
 
 
@@ -23,21 +22,5 @@ Foreach($import in @($Public + $Private))
 # Read in or create an initial config file and variable
 # Export Public functions ($Public.BaseName) for WIP modules
 # Set variables visible to the module and its functions only
-
-
-# function Get-PSD1{
-
-#     $psd = Get-ChildItem -Path $PSScriptRoot -Filter *.psd1 
-
-#     $ret = Import-PowerShellDataFile -Path $psd.FullName
-
-#     $ret += @{ "PsdFullName" = $psd.FullName }
-#     $ret += @{ "Name" = $psd.BaseName }
-#     $ret += @{ "TestModuleName" = ("{0}Test" -f $psd.BaseName) }
-#     $ret += @{ "TestModulePath" = ($PSScriptRoot | Join-Path -ChildPath $ret.TestModuleName) }
-#     $ret += @{ "TestingFunctionPattern" = ("{0}_*" -f $ret.TestModuleName) }
-
-#     return $ret
-# } Export-ModuleMember -Function Get-PSD1
 
 Export-ModuleMember -Function * -Alias *
