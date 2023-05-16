@@ -11,10 +11,6 @@ Write-Host "Loading TestingHelperTest ..." -ForegroundColor DarkYellow
 $module = $PSScriptRoot | split-path -Parent | Join-Path -ChildPath "TestingHelper.psd1"
 $testingModule = Import-Module -Name $module -Prefix "TT_" -Force -PassThru
 
-$WarningParameters = @{
-    WarningAction = 'SilentlyContinue' 
-    WarningVariable = 'warningVar'
-}
 
 # Need to match the value of variable of same name of TestHelper
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder"
