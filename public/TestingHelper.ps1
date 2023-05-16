@@ -1,6 +1,3 @@
-
-Write-Host "Loading TestingHelper ..." -ForegroundColor DarkCyan
-
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder" 
 
 function Get-TestingModuleName {
@@ -265,7 +262,7 @@ function Test-ModulelocalPSD1 {
     [CmdletBinding()] 
     param (
         [Parameter( Position = 1)] [string] $TestName,
-        [Parameter( Position = 2)] [string] $Path = '.',
+        [Parameter( Position = 2)] [string] $Path = $MyInvocation.PSScriptRoot,
         [Parameter()] [switch] $ShowTestErrors
     )
 
