@@ -160,6 +160,7 @@ function Test-Module {
     )
 
     process {
+        Get-ModuleHeader | Write-Host -ForegroundColor Green
         write-host
         "[ {0} ] Running tests functions [ {1} ] " -f $Name,([string]::IsNullOrWhiteSpace($TestName) ? "*" : $TestName) | Write-Host -ForegroundColor Green
 
@@ -226,7 +227,7 @@ function Test-Module {
     }
 }
 
-function GetModuleManifest($Path){
+function Get-ModuleManifest($Path){
 
     $localPath = $Path | Convert-Path
 
@@ -246,18 +247,6 @@ function GetModuleManifest($Path){
     return $manifest
 }
 
-function GetTestingModuleManifest($path){
-
-    $name = $path | Split-Path -leafbase
-    $testingModulename = Get-TestingModuleName -TargetModule $name
-    $testingpath = $path | Join-Path -ChildPath $testingModulename
-
-    $ret = GetModuleManifest -Path $testingpath
-
-    return $ret
-}
-
-
 function Test-ModulelocalPSD1 {
     [CmdletBinding()] 
     param (
@@ -268,10 +257,11 @@ function Test-ModulelocalPSD1 {
 
     process {
 
-        $manifest = GetModuleManifest -Path ($Path | Convert-Path)
-        $testingmodulemanifest = GetTestingModuleManifest -path $manifest.Path
+        $manifest = Get-ModuleManifest -Path ($Path | Convert-Path)
+        $testingmodulemanifest = Get-TestingModuleManifest -ModulePath $manifest.Path
         $versionString = "{0} {1} {2}" -f $manifest.Name, $manifest.ModuleVersion, $manifest.PrivateData.PSData.Prerelease
 
+        Get-ModuleHeader | Write-Host -ForegroundColor Green
         write-host
         "[ {0} ] Running tests from functions [ {1} ] " -f $versionString,([string]::IsNullOrWhiteSpace($TestName) ? "*" : $TestName) | Write-Host -ForegroundColor Green
 
