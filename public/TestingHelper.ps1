@@ -299,7 +299,7 @@ function Test-ModulelocalPSD1 {
             $time = ($start | New-TimeSpan ).ToString("hh\:mm\:ss\:FFFF")
             
             # Add extra info to result
-            $result | Add-Member -NotePropertyName "Name" -NotePropertyValue $Name
+            $result | Add-Member -NotePropertyName "Name" -NotePropertyValue $manifest.Name
             $result | Add-Member -NotePropertyName "TestModule" -NotePropertyValue $TestingModuleName
             $result | Add-Member -NotePropertyName "TestsName" -NotePropertyValue $functionsTestName
             $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
