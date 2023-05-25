@@ -13,7 +13,7 @@
     
     # Version number of this module.
 
-    ModuleVersion = '2.1'
+    ModuleVersion = '2.6.1'
     
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -22,13 +22,13 @@
     GUID="95178d07-d2cf-4920-9194-b43b720556bb"
     
     # Author of this module
-    Author = 'raulg'
+    Author = 'rulasg'
     
     # Company or vendor of this module
-    CompanyName="raulg.eu"
+    CompanyName="rulasg"
     
     # Copyright statement for this module
-    Copyright = '(c) 2020 BiT21. All rights reserved.'
+    Copyright = '(c) 2023 rulasg. All rights reserved.'
     
     # Description of the functionality provided by this module
 
@@ -53,7 +53,7 @@
     # ProcessorArchitecture = ''
     
     # Modules that must be imported into the global environment prior to importing this module
-    RequiredModules = @('TestingHelper')
+    # RequiredModules = @('TestingHelper')
     
     # Assemblies that must be loaded prior to importing this module
     #RequiredAssemblies = @('BiT21.EncryptDecryptLib.dll')
@@ -71,16 +71,16 @@
     # NestedModules = @()
     
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = '*'
+    # FunctionsToExport = '*'
     
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport = '*'
     
     # Variables to export from this module
-    VariablesToExport = '*'
+    # VariablesToExport = '*'
     
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport = '*'
+    # AliasesToExport = '*'
     
     # DSC resources to export from this module
     # DscResourcesToExport = @()
