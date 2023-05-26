@@ -46,20 +46,3 @@ function Import-TestingModule {
     #Import Testing Module
     Import-Module -Name $testingModulePathOrName -Force:$Force -Global
 } Export-ModuleMember -Function Import-TestingModule
-
-function Import-TargetModule {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory)][string] $Name,
-        [Parameter()][string] $Manifest,
-        [switch] $Force,
-        [switch] $PassThru
-    )
-
-    if ($Manifest) {
-        Get-Item -Path $manifestFile | Import-Module -force -Force:$Force -Global
-        return
-    }
-    
-    Import-Module -Name $Name -Force:$Force -Global -Passthru:$PassThru
-} Export-ModuleMember -Function Import-TargetModule

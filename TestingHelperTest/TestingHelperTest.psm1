@@ -15,9 +15,6 @@ $testingModule = Import-Module -Name $module -Prefix "TT_" -Force -PassThru
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder"
 Set-Variable -Name RootTestingFolder -Value "Temp:/P"
 
-$Dummy1 = "DummyModule1"
-$DUMMY_1_PATH = $PSScriptRoot | Split-Path -Parent | Join-Path -ChildPath $Dummy1 | Resolve-Path
-
 function TestingHelperTest_Assert{
     [CmdletBinding()]
     param ()
@@ -777,6 +774,8 @@ function TestingHelperTest_ImportTestingModule_TargetModule{
     Get-Module -Name $Dummy1* | Remove-Module -Force
     Assert-IsNull -Object (Get-Module -Name $Dummy1*)
 
+    Import-Module -name $DUMMY_1_PATH -Global 
+
     Import-TT_TestingModule -TargetModule $Dummy1
 
     Assert-IsNotNull -Object (Get-Module -Name ($Dummy1 +"Test"))
@@ -795,7 +794,7 @@ function TestingHelperTest_ImportTestingModule_TargetModule_NotMatchingVerion{
 
     Get-Module -Name $Dummy1* | Remove-Module -Force
 
-    $dummyModule = Import-Module -name $Dummy1 -Global -PassThru
+    $dummyModule = Import-Module -name $DUMMY_1_PATH -Global -PassThru
     $wrongVersion = "2.5.1"
     
     Import-TT_TestingModule -TargetModule $Dummy1 -TargetModuleVersion $wrongVersion @WarningParameters
@@ -811,7 +810,7 @@ function TestingHelperTest_ImportTestingModule_TargetModule_AlreadyLoaded{
     [Cmdletbinding()] param ()
 
     Get-Module -Name $Dummy1* | Remove-Module -Force
-    Import-Module -name $Dummy1 -Global
+    Import-Module -name $DUMMY_1_PATH -Global
 
     Import-TT_TestingModule -TargetModule $Dummy1 @WarningParameters
     
@@ -826,7 +825,8 @@ function TestingHelperTest_ImportTestingModule_TestingModule {
 
     $TestDummy1 = $Dummy1 + "Test"
 
-    Import-Module -Name $Dummy1
+    Import-Module -name $DUMMY_1_PATH -Global
+
     $modulePath = (Get-Module -Name $Dummy1).Path
     $TestDummyPath = Join-Path -Path (Split-Path -Path $modulePath -Parent) -ChildPath $TestDummy1
     
@@ -848,29 +848,6 @@ function TestingHelperTest_ImportTestingModule_TestingModule {
     Get-Module -Name $Dummy1* | Remove-Module -Force
 
     Assert-IsNull -Object (Get-Module -Name $TestDummy1*)
-}
-
-function TestingHelperTest_ImportTargetModule{
-    [CmdletBinding()] param ()
-
-    Get-Module -Name $Dummy1* | Remove-Module -Force
-    Assert-IsNull -Object (Get-Module -Name $Dummy1*)
-
-    Import-TT_TargetModule -Name $Dummy1
-    Assert-IsNotNull -Object (Get-Module -Name $Dummy1)
-
-    $instance1 = Get-DummyModule1InstanceId
-    Import-TT_TargetModule -Name $Dummy1
-    $instance2 = Get-DummyModule1InstanceId
-    Assert-AreEqual -Expected $instance1 -Presented $instance2
-
-    Import-TT_TargetModule -Name $Dummy1 -Force
-    $instance3 = Get-DummyModule1InstanceId
-
-    Assert-AreNotEqual -Expected $instance1 -Presented $instance3
-
-    Get-Module -Name $Dummy1* | Remove-Module -Force
-    Assert-IsNull -Object (Get-Module -Name $Dummy1*)
 }
 
 function TestingHelperTest_NewModule{
