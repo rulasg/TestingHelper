@@ -16,32 +16,37 @@ Set-Variable -Name TestRunFolderName -Value "TestRunFolder"
 Set-Variable -Name RootTestingFolder -Value "Temp:/P"
 
 $Dummy1 = "DummyModule1"
+$DUMMY_1_PATH = $PSScriptRoot | Split-Path -Parent | Join-Path -ChildPath $Dummy1 | Resolve-Path
 
-function TestingHelperTest_Assert
-{
+function TestingHelperTest_Assert{
     [CmdletBinding()]
     param ()
 
-    Write-Verbose -Message "TestingHelperTest_Assert..."
+    $tested = Get-TestedModuleHandle
 
-    TT_Assert -Condition $true 
-    TT_Assert -Condition $true -Expected $true
-    TT_Assert -Condition $false -Expected $false
+    & $tested {
+
+        Assert -Condition $true 
+        Assert -Condition $true -Expected $true
+        Assert -Condition $false -Expected $false
+    }
 
     $hasThrow = $false
     try {
-        TT_Assert -Condition $false
+        & $tested {
+            Assert -Condition $false
+        }
     } catch { 
-        Write-Verbose -Message "Did throw"
         $hasthrow = $true
     }
     Assert-IsTrue -Condition $hasThrow
-    
+
     $hasThrow = $false
     try {
-        TT_Assert -Condition $true -Expected $false
+        & $tested {
+            Assert -Condition $true -Expected $false
+        }
     } catch { 
-        Write-Verbose -Message "Did throw"
         $hasthrow = $true
     }
     Assert-IsTrue -Condition $hasThrow
@@ -635,20 +640,22 @@ function TestingHelperTest_CollectionIsNullOrEmpty_Empty{
 
 function TestingHelperTest_RemoveTestingFile_Root {
 
+    $tested = Get-TestedModuleHandle
+
     $filename = "Filename.txt"
 
     #By Path
     New-TestingFile -Name $filename
     
     Assert-ItemExist -Path $filename
-    Remove-TT_TestingFile -Path $filename
+    & $tested {Remove-TestingFile -Path "Filename.txt"}
     Assert-ItemNotExist -Path $filename
     
     #By Name
     New-TestingFile -Name $filename
     
     Assert-ItemExist -Path $filename
-    Remove-TT_TestingFile -Name $filename
+    & $tested {Remove-TestingFile -Name "Filename.txt"}
     Assert-ItemNotExist -Path $filename
     
     # Hidden
@@ -660,8 +667,6 @@ function TestingHelperTest_RemoveTestingFile_Root {
     }
 
     Assert-ItemExist -Path $filename
-    Remove-TT_TestingFile -Path $filename
-    Assert-ItemNotExist -Path $filename
 }
 
 function TestingHelperTest_RemoveTestingFile_Folder {
@@ -692,8 +697,6 @@ function TestingHelperTest_RemoveTestingFile_Folder {
     }
     
     Assert-ItemExist -Path $file
-    Remove-TT_TestingFile -Name $filename -Path $folder
-    Assert-ItemNotExist -Path $file
 }
 
 function TestingHelperTest_GetRooTestingFolderPath {
@@ -719,17 +722,22 @@ function TestingHelperTest_GetRooTestingFolderPath_NotTheSame {
     Assert-AreNotEqual -Expected $result1 -Presented $result2
 }
 function TestingHelperTest_RemoveTestingFolder_FolderNotExist{
+    [CmdletBinding()] param ()
 
-        Assert-IsNull( Remove-TestingFolder -Path "thisPathDoesNotExist")
+    Remove-TT_TestingFolder -Path "thisPathDoesNotExist"
+    
+    Assert-IsNull -Object $result
 }
 
 function TestingHelperTest_RemoveTestingFolder_Not_TestRunFolder{
 
+    $tested = Get-TestedModuleHandle
+
     $t = New-Item -Name "NotStandardName" -ItemType Directory
 
     Assert-ItemExist -Path $t.FullName
-
-    Remove-TT_TestingFolder -Path ".\NotStandardName"
+    
+    $null = & $tested {Remove-TestingFolder -Path ".\NotStandardName"}
 
     Assert-ItemExist -Path $t
 
@@ -756,7 +764,7 @@ function TestingHelperTest_RemoveTestingFolder_Recurse{
 
     Assert-AreEqual -Expected 4 -Presented ((Get-ChildItem -Path $tf -Filter file*.txt -Recurse -File).Count)
 
-    Remove-TT_TestingFolder -Path $runfolder
+    Remove-TestingFolder -Path $runfolder
     Assert-ItemNotExist -Path $runfolder
 
     Remove-Item -Path $TestRoot
@@ -786,6 +794,7 @@ function TestingHelperTest_ImportTestingModule_TargetModule_NotMatchingVerion{
     [Cmdletbinding()] param ()
 
     Get-Module -Name $Dummy1* | Remove-Module -Force
+
     $dummyModule = Import-Module -name $Dummy1 -Global -PassThru
     $wrongVersion = "2.5.1"
     
@@ -865,7 +874,7 @@ function TestingHelperTest_ImportTargetModule{
 }
 
 function TestingHelperTest_NewModule{
-    New-TT_Module -Name "ModuleName" -Description "description of the Module"
+    New-TT_ModuleV1 -Name "ModuleName" -Description "description of the Module"
 
     $psdPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psd1
     $psmPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psm1
