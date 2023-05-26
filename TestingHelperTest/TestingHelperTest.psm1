@@ -15,11 +15,6 @@ $testingModule = Import-Module -Name $module -Prefix "TT_" -Force -PassThru
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder"
 Set-Variable -Name RootTestingFolder -Value "Temp:/P"
 
-$moduleRootPath = $MyInvocation.MyCommand.Path | Split-Path -Parent
-if (-not $env:PSModulePath.Contains($moduleRootPath)) {
-    Add-PSModulePath -Path $moduleRootPath
-}
-
 $Dummy1 = "DummyModule1"
 
 function TestingHelperTest_Assert
