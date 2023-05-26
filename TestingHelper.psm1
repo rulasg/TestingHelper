@@ -27,5 +27,5 @@ Foreach($import in @($Public + $Private))
 
 # TODO : Reduce the number of functions exported
 Export-ModuleMember -Function Assert-*
-Export-ModuleMember -Function New-Testing*
-Export-ModuleMember -Function Test-Module*
+# Export-ModuleMember -Function New-Testing*
+# Export-ModuleMember -Function Test-Module*
