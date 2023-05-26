@@ -61,7 +61,7 @@ function New-ModuleV1 {
     }
 
     return $modulePath
-} Export-ModuleMember -Function New-ModuleV1 -Alias New-Module
+} Export-ModuleMember -Function New-ModuleV1 -Alias New-ModuleV1
 
 function NewModulefile($Path, $ModuleName, $Author, $Description, $Append){
     $myString = 
@@ -93,6 +93,7 @@ Write-Host "Loading _XMODULE_ ..." -ForegroundColor DarkCyan
 
     $myString |  Out-File -FilePath (Join-Path -Path $Path -ChildPath "$ModuleName.psm1")
 } 
+
 function New-TestingModule($Path, $ModuleName){
 
     $testingModuleName = $ModuleName + "Test"
@@ -130,7 +131,8 @@ Export-ModuleMember -Function _MODULE_TESTING__*
     $toAppend = $toAppend.Replace('_MODULE_TESTING_',$testingModuleName)
 
     $null = New-Module -Path $Path -Name $testingModuleName -Description "Testing module for $ModuleName" -AvoidTestFile -AppendToModuleFile $toAppend
-}   
+} Export-ModuleMember -Function New-TestingModule
+
 function New-TestingVsCodeLaunchJson($Path, $ModuleName){
     $testScript = 
 @'
@@ -159,4 +161,4 @@ function New-TestingVsCodeLaunchJson($Path, $ModuleName){
         -Value $testScript `
         -Force `
         | Out-Null
-}
+} Export-ModuleMember -Function New-TestingVsCodeLaunchJson

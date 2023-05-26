@@ -24,6 +24,6 @@ function Get-TestedModuleManifest{
 }
 
 # return handle of the tested module
-function Get-ModuleHandle{
+function Get-TestedModuleHandle{
     Get-TestedModuleManifestPath |  Import-Module -PassThru
-}
+} Export-ModuleMember -Function Get-TestedModuleHandle
