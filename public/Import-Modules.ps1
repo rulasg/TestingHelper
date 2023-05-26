@@ -45,7 +45,7 @@ function Import-TestingModule {
     
     #Import Testing Module
     Import-Module -Name $testingModulePathOrName -Force:$Force -Global
-}
+} Export-ModuleMember -Function Import-TestingModule
 
 function Import-TargetModule {
     [CmdletBinding()]
@@ -62,4 +62,4 @@ function Import-TargetModule {
     }
     
     Import-Module -Name $Name -Force:$Force -Global -Passthru:$PassThru
-}
+} Export-ModuleMember -Function Import-TargetModule

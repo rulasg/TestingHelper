@@ -117,7 +117,7 @@ function New-ModuleV2 {
             }
         }
     
-    } Export-ModuleMember -Function New-Module
+} Export-ModuleMember -Function New-ModuleV2
 
 function Import-Template ($Path,$File,$Template,$Replaces){
 

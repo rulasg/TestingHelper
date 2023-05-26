@@ -74,7 +74,7 @@ function Test-Module {
             $local | Pop-TestingFolder
         }
     }
-}
+} Export-ModuleMember -Function Test-Module
 
 function Test-ModulelocalPSD1 {
     [CmdletBinding()] 
@@ -157,7 +157,7 @@ function Test-ModulelocalPSD1 {
             $local | Pop-TestingFolder
         }
     }
-}
+} Export-ModuleMember -Function Test-ModulelocalPSD1
 
 function Out-SingleResultData($Name,$Value, $Color){
     $testColor = $Value -eq 0 ? "DarkCyan" : $Color

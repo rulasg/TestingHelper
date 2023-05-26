@@ -7,7 +7,7 @@ function GetExpectedHeader{
 }
 
 function TestingHelperTest_GetModuleHeader {
-    $module = Get-ModuleHandle
+    $module = Get-TestedModuleHandle
         
     $result = & $module {
         Get-ModuleHeader
@@ -48,14 +48,14 @@ function TestingHelperTest_TestModulelocalPSD1_ResultObject{
     Assert-AreEqual -Expected "ModuleNameTest_*" -Presented $result.TestsName
 }
 
-# Testing TestingHelperTest private function Get-ModuleHandle
+# Testing TestingHelperTest private function Get-TestedModuleHandle
 function TestingHelperTest_GetModuleHandle {
     $localPath = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent
     $psdpath = Get-ChildItem -Path $localPath -Filter "*.psd1" -ErrorAction SilentlyContinue
     $manifest = Import-PowerShellDataFile -Path $psdpath
 
     # Internal TestingHelperTest function
-    $result = Get-ModuleHandle
+    $result = Get-TestedModuleHandle
 
     Assert-IsNotNull -Object $result
     Assert-AreEqual -Expected ($manifest.RootModule | Split-Path -LeafBase) -Presented $result.Name

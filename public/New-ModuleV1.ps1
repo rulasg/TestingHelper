@@ -61,7 +61,7 @@ function New-ModuleV1 {
     }
 
     return $modulePath
-} Export-ModuleMember -Function New-ModuleV1 -Alias New-Module
+} Export-ModuleMember -Function New-ModuleV1 -Alias New-ModuleV1
 
 function NewModulefile($Path, $ModuleName, $Author, $Description, $Append){
     $myString = 
