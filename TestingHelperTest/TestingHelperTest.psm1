@@ -1,4 +1,3 @@
-using Module .\TestingHelperTestHelper.psm1
 
 Write-Host "Loading TestingHelperTest ..." -ForegroundColor DarkYellow
 
@@ -965,3 +964,5 @@ Foreach($import in @($Public + $Private))
         Write-Error -Message "Failed to import function $($import.fullname): $_"
     }
 }
+
+Export-ModuleMember -Function "TestingHelperTest_*"
