@@ -114,6 +114,7 @@ function New-ModuleV2 {
 
             Import-Template -Template "template.testmodule.functions.public.ps1" -File "SampleFunctionTests.ps1" -Path $testingModulePublicPath -Replaces @{
                 '_MODULE_TESTING_' = $testingModuleName
+                '_MODULE_TESTED_' = $ModuleName
             }
         }
     
