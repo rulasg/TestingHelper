@@ -51,12 +51,14 @@ function TestingHelperTest_NewModuleV2{
 }
 
 
-function TestingHelperTest_NewModuleV2_RunModuleTest_RunFromAnyLocation{
+function TestingHelperTest_NewModuleV2_RunModuleTest_RunFromAnyLocation_AnyName{
     # We will be running the test.ps1 uing the testing TestingHlper and not the tested TestingHelper that created the module.
-    
-    New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9"
 
-    $test = "ModuleName" | Join-Path -ChildPath "test.ps1" | Resolve-Path
+    $ModuleName = "ModuleName_{0}" -f (New-Guid).ToString().Substring(0,8)
+    
+    New-TT_Modulev2 -Name $ModuleName -Description "description of the Module" -Version "9.9.9"
+
+    $test = $ModuleName | Join-Path -ChildPath "test.ps1" | Resolve-Path
 
     # Add prefix to call the script calling commandlet to call the tested version of TestingHelper
     (Get-Content -Path $test) -replace "Test-ModulelocalPSD1","Test-TT_ModulelocalPSD1" | Set-Content -Path $test
@@ -65,11 +67,11 @@ function TestingHelperTest_NewModuleV2_RunModuleTest_RunFromAnyLocation{
     New-TestingFolder -PassThru | Set-Location
 
     # Run the test.ps1 from random folder
-    $testnewPath = Join-Path -Path ".." -ChildPath "ModuleName" -AdditionalChildPath "test.ps1"
+    $testnewPath = Join-Path -Path ".." -ChildPath $ModuleName -AdditionalChildPath "test.ps1"
     $result = & $testnewPath
 
     # Assert-AreEqual -Expected ModuleName -Presented $result.Name
-    Assert-AreEqual -Expected ModuleNameTest -Presented $result.TestModule
+    Assert-AreEqual -Expected ($ModuleName+"Test") -Presented $result.TestModule
     Assert-AreEqual -Expected 2 -Presented $result.Pass
     Assert-AreEqual -Expected 2 -Presented $result.Tests
 }

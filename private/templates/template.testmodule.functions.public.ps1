@@ -11,7 +11,7 @@ function _MODULE_TESTING__GetPublicString{
 
 function _MODULE_TESTING__GetPrivateString {
 
-    $testedModulePath = $PSScriptRoot | split-path -Parent | split-path -Parent | Join-Path -ChildPath "ModuleName.psd1"
+    $testedModulePath = $PSScriptRoot | split-path -Parent | split-path -Parent | Join-Path -ChildPath "_MODULE_TESTED_.psd1"
     $testedModule = Import-Module -Name $testedModulePath -Force -PassThru
 
     $sampleString = "this is a sample string"
