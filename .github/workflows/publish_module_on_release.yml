@@ -1,0 +1,26 @@
+name: Publish on Release Published
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  publish_Production:
+    runs-on: ubuntu-latest
+    environment: powershellgallery
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: environment
+        env:
+          EVENT_CONTEXT: ${{ toJSON(github.event) }}
+        run: |
+          echo $EVENT_CONTEXT
+      - name: run script
+        shell: pwsh
+        run: | 
+          dir -force
