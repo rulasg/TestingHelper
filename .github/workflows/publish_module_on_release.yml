@@ -14,13 +14,32 @@ jobs:
     environment: powershellgallery
     steps:
       - uses: actions/checkout@v3
-
-      - name: environment
-        env:
+      - env:
           EVENT_CONTEXT: ${{ toJSON(github.event) }}
         run: |
           echo $EVENT_CONTEXT
-      - name: run script
+
+      - name: publish_ps1
         shell: pwsh
         run: | 
-          dir -force
+          $ref = "${{github.event.ref}}"
+
+          If ([string]::IsNullOrEmpty($ref)) {
+            # Release published trigger
+            $tag = "${{github.event.release.tag_name}}"
+            $releaseName = "${{github.event.release.name}}"
+            write-host -message "Release [$releaseName] on tag [$tag]"
+          } else {
+            # Read Tag o Branch name
+            $tag = $ref.Split('/')[2]
+            write-host "workflow_dispatch triggered on ref leaf [$tag]"
+          }
+
+          If([string]::IsNullorwhitespace($tag)) {
+            # Tag name is empty, exit
+            write-error "Tag name is empty"
+            exit 1
+          }
+
+          ./publish.ps1 -VersionTag $tag -NugetApiKey "${{secrets.NUGETAPIKEY}}"
+
