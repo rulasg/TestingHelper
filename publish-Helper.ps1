@@ -44,7 +44,7 @@ function Invoke-PublishModuleToPSGallery{
         # Just reach this point when testing call failure
         Invoke-PublishModule -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForcePublish
     }
-} Export-ModuleMember -Function Invoke-PublishModuleToPSGallery
+}
 
 function Update-PublishModuleManifest {
     [CmdletBinding(SupportsShouldProcess)]
@@ -72,7 +72,7 @@ function Update-PublishModuleManifest {
         Write-Error -Message "Failed to update module manifest with version tag [$VersionTag]"
         exit 1
     }
-} Export-ModuleMember -Function Update-PublishModuleManifest
+} 
 
 function Invoke-PublishModule {
     [CmdletBinding()]
