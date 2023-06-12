@@ -63,6 +63,8 @@ function Update-PublishModuleManifest {
         "Updating module manifest with version tag [$VersionTag] ..." | Write-Information
         Update-ModuleManifest  @parameters   
         
+    } else {
+        Write-Warning -Message "Update-ModuleManifest skipped. Any PSD1 publish will not have the proper version."
     }
 
     if($?){

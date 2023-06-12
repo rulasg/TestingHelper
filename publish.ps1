@@ -1,3 +1,34 @@
+<#
+.SYNOPSIS
+    Publish module to PSGallery
+
+.DESCRIPTION
+    Publish module to PSGallery
+
+.PARAMETER VersionTag
+    Update the module manifest with the version tag (Sample: v10.0.01-alpha)
+
+.PARAMETER NuGetApiKey
+    PAT for the PSGallery
+
+.PARAMETER DependencyInjection
+    DependencyInjection SCRIPTBLOCK to dot source mainly for testing
+
+.EXAMPLE
+    .\publish.ps1 -VersionTag v10.0.01-alpha -NuGetApiKey $NUGETAPIKEY
+
+.EXAMPLE
+    $env:$NUGETAPIKEY = '****'
+    .\publish.ps1 -VersionTag v10.0.01-alpha 
+
+.EXAMPLE
+    .\publish.ps1 -VersionTag v10.0.01-alpha -NuGetApiKey $NUGETAPIKEY -DependencyInjection $SCRIPTBLOCK_FOR_TESTING
+
+.LINK
+    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish.ps1
+
+#>
+
 
 [cmdletbinding(SupportsShouldProcess, ConfirmImpact='High')]
 param(
@@ -21,7 +52,8 @@ if ($DependencyInjection) {
 if($VersionTag){
 
     try {
-        Update-PublishModuleManifest  $VersionTag 
+        # Force manifest update even with -whatif
+        Update-PublishModuleManifest  $VersionTag -whatif:$false
     }
     catch {
         Write-Error -Message "Failed to update module manifest with version tag [$VersionTag]. Error: $_"
