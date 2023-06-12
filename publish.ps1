@@ -41,5 +41,5 @@ if ( [string]::IsNullOrWhiteSpace($NuGetApiKey) ) {
 }
 
 # Publish module to PSGallery
-Invoke-PublishModuleToPSGallery -NuGetApiKey $NuGetApiKey -Force -WhatIf:$WhatIf
+Invoke-PublishModuleToPSGallery -NuGetApiKey $NuGetApiKey -Force
 

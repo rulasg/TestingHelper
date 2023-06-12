@@ -36,7 +36,6 @@ function Invoke-PublishModuleToPSGallery{
     if ($Force -and -not $Confirm){
         $ConfirmPreference = 'None'
     }
-
     
     # Publish the module with ShouldProcess (-whatif, -confirm)
     if ($PSCmdlet.ShouldProcess($psdPath, "Publish-Module")) {
