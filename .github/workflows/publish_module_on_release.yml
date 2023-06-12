@@ -41,5 +41,5 @@ jobs:
             exit 1
           }
 
-          ./publish.ps1 -VersionTag $tag -NugetApiKey "${{secrets.NUGETAPIKEY}}" -Whatif
+          ./publish.ps1 -VersionTag $tag -NugetApiKey "${{secrets.NUGETAPIKEY}}"
 
