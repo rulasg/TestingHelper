@@ -14,7 +14,6 @@ jobs:
     environment: powershellgallery
     steps:
       - uses: actions/checkout@v3
-
       - env:
           EVENT_CONTEXT: ${{ toJSON(github.event) }}
         run: |
@@ -44,4 +43,3 @@ jobs:
 
           ./publish.ps1 -VersionTag $tag -NugetApiKey "${{secrets.NUGETAPIKEY}}" -Whatif
 
-     
