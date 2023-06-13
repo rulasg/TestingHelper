@@ -1,3 +1,20 @@
+# add help to script
+
+<#
+.SYNOPSIS
+    Publish a PowerShell module to the PowerShell Gallery.
+
+.DESCRIPTION
+    Functions library for publishing a PowerShell module to the PowerShell Gallery.
+
+    This script is intended to be used as a helper for the Publish.ps1 script.
+    It is not intended to be used directly.
+
+.LINK
+    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish-Helper.ps1
+
+#>
+
 
 Write-Information -MessageData ("Loading {0} ..." -f ($PSCommandPath | Split-Path -LeafBase))
 

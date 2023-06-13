@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+    RootModule of the module V2 TestingHelper framework.
+.DESCRIPTION
+    This is the RootModule of a library that will load the module code from .ps1 files presented on public and private folders
+    This structure allows to split the code of a module on different files allowing a better maintenance and collaborative development.
+    Check rulasg/DemoPsModule as a module smaple or rulasg/TestingHelper as the helper of this framework.
+.LINK
+    https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.module.psm1
+#>
 
 
 #Get public and private function definition files.
