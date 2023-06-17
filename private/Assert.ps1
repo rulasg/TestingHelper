@@ -15,15 +15,3 @@ function Test-Assert {
         Write-AssertionDot -Color DarkMagenta
     }
 }
-
-function Write-AssertionDot {
-    [CmdletBinding()]
-    param ( 
-        [Parameter()] [string] $Color
-    )
-    Write-Host "." -NoNewline -ForegroundColor $Color
-}
-
-function Write-AssertionSectionEnd{
-    Write-AssertionDot -Color Yellow
-}
