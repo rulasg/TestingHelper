@@ -7,4 +7,5 @@ function Trace-Message {
     )
 
     Write-Verbose -Message $Message
-}
+
+} Export-ModuleMember -Function Trace-Message
