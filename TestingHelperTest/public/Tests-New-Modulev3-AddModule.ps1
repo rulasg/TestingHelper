@@ -49,6 +49,7 @@ function TestingHelperTest_NewModuleV3_AddModule_FailCall_NewModuleManifest {
     # reset module
     Import-Module -Name $TESTED_MANIFEST_PATH -Prefix "TT_" -Force
 }
+
 function TestingHelperTest_NewModuleV3_AddModule_DefaultManifest {
 
     $moduleName = "MyModule"
@@ -60,6 +61,7 @@ function TestingHelperTest_NewModuleV3_AddModule_DefaultManifest {
     Assert-AddModuleV3 -Name $moduleName -Path $result -Expected $defaultsManifest
 
 }
+
 function TestingHelperTest_NewModuleV3_AddModule_MyManifest {
 
     $moduleName = "MyModule"
@@ -104,6 +106,7 @@ function Get-DefaultsManifest {
     $defaultsManifest = Import-PowerShellDataFile -Path defaults.psd1 
     return $defaultsManifest
 }
+
 function Assert-AddModuleV3 {
     param(
         [Parameter()][string]$Name,
@@ -119,13 +122,17 @@ function Assert-AddModuleV3 {
     # Update fullExpected with expected
     ForEach($key in $Expected.Keys) { $fullExpected[$key] = $Expected[$key]}
 
-    #PSD1
-    $psdPath = $Path | Join-Path -ChildPath  $psdname
-    Assert-ItemExist -Path $psdPath
-
     #PSM1
     $psmPath = $Path | Join-Path -ChildPath $psmName
     Assert-ItemExist -Path $psmPath
+
+    # public private
+    Assert-ItemExist -Path ($Path | Join-Path -ChildPath "public") -Comment "public folder"
+    Assert-ItemExist -Path ($Path | Join-Path -ChildPath "private") -Comment "private folder"
+
+    #PSD1
+    $psdPath = $Path | Join-Path -ChildPath  $psdname
+    Assert-ItemExist -Path $psdPath
 
     #manifest
     $presented = Import-PowerShellDataFile -Path $psdPath
