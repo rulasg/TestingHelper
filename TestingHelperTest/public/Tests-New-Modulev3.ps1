@@ -25,9 +25,29 @@ function TestingHelperTest_NewModuleV3_WithOutName {
 function TestingHelperTest_NewModuleV3_AddModule_FailCall_NewModuleManifest {
 
     # test when failing calling dependency Microsoft.PowerShell.Core/New-ModuleManifest
-    # Probably we need a Dependency Injection to mock the call to New-ModuleManifest
 
-    Assert-NotImplemented
+    # Inject depepdency
+    $module = Import-Module -Name $TESTED_MANIFEST_PATH -Prefix "LL_" -Force -PassThru
+    & $module {
+        . {
+            function script:New-MyModuleManifest {
+                [CmdletBinding()]
+                param(
+                    [Parameter(Mandatory)][string]$Path,
+                    [Parameter(Mandatory)][string]$RootModule
+                )
+                throw "Injected error from New-MymoduleManifest."
+            }
+        }
+    }
+
+    $result = Add-LL_ModuleV3 -Name "MyModule" @ErrorParameters
+
+    Assert-IsNull -Object $result -Comment "No module is created"
+    Assert-Contains -Expected "Injected error from New-MymoduleManifest." -Presented ($errorVar.Exception.Message)
+
+    # reset module
+    Import-Module -Name $TESTED_MANIFEST_PATH -Prefix "TT_" -Force
 }
 function TestingHelperTest_NewModuleV3_AddModule_DefaultManifest {
 
@@ -44,7 +64,6 @@ function TestingHelperTest_NewModuleV3_AddModule_MyManifest {
 
     $moduleName = "MyModule"
 
-    
     $param = @{
         RootModule        = "MyModule.psm1"
         Author            = "Me"

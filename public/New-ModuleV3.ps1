@@ -88,11 +88,11 @@ function Add-ModuleV3 {
 
     try {
         # Create the PSD1 file
-        New-ModuleManifest  -Path $psd1Path -RootModule $rootModule
+        New-MyModuleManifest  -Path $psd1Path -RootModule $rootModule
 
         # Update with metadata
         if ($Metadata.Count -gt 0) {
-            Update-ModuleManifest -Path $psd1Path @metadata
+            Update-MyModuleManifest -Path $psd1Path -Metadata $metadata
         }
     }
     catch {
