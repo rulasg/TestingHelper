@@ -12,8 +12,7 @@ function Add-ModuleV3 {
     (
         [Parameter()][string]$Path,
         [Parameter(Mandatory)][string]$Name,
-        [Parameter()][hashtable]$Metadata,
-        [Parameter()][switch]$AvoidSampleCode
+        [Parameter()][hashtable]$Metadata
     ) 
 
     # Path

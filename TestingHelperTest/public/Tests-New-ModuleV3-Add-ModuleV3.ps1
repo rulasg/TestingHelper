@@ -6,8 +6,21 @@ function TestingHelperTest_NewModuleV3_WithName {
 
     $result = New-TT_ModuleV3 -Name $moduleName
 
-    Assert-AddModuleV3 -Name $moduleName -Path $result 
+    Assert-AreEqualPath -Expected $moduleName -Presented $result
+    Assert-AddModuleV3 -Name $moduleName -Path $moduleName 
+}
 
+function TestingHelperTest_NewModuleV3_WithNameRemotePath {
+
+    $moduleName = "MyModule"
+    $folderName = "FolderName"
+    New-TestingFolder -Name $folderName
+    $expectedPath = $folderName | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -Path $folderName
+
+    Assert-AreEqualPath -Expected $expectedPath -Presented $result
+    Assert-AddModuleV3 -Name $moduleName -Path $expectedPath 
 }
 
 function TestingHelperTest_NewModuleV3_WithOutName {
@@ -101,58 +114,3 @@ function TestingHelperTest_NewModuleV3_AddModule_WrongPathName {
     Assert-ContainsPattern -Expected "Error creating the PSD1 file.*" -Presented ($errorVar.Exception.Message)
 }
 
-function Get-DefaultsManifest {
-    New-ModuleManifest -Path defaults.psd1 -RootModule defaults.psm1
-    $defaultsManifest = Import-PowerShellDataFile -Path defaults.psd1 
-    return $defaultsManifest
-}
-
-function Assert-AddModuleV3 {
-    param(
-        [Parameter()][string]$Name,
-        [Parameter()][string]$Path,
-        [Parameter()][hashtable]$Expected
-    )
-    
-    $psdname = $Name + ".psd1"
-    $psmName = $Name + ".psm1"
-
-    $fullExpected = Get-DefaultsManifest
-    
-    # Update fullExpected with expected
-    ForEach($key in $Expected.Keys) { $fullExpected[$key] = $Expected[$key]}
-
-    #PSM1
-    $psmPath = $Path | Join-Path -ChildPath $psmName
-    Assert-ItemExist -Path $psmPath
-
-    # public private
-    Assert-ItemExist -Path ($Path | Join-Path -ChildPath "public") -Comment "public folder"
-    Assert-ItemExist -Path ($Path | Join-Path -ChildPath "private") -Comment "private folder"
-
-    #PSD1
-    $psdPath = $Path | Join-Path -ChildPath  $psdname
-    Assert-ItemExist -Path $psdPath
-
-    #manifest
-    $presented = Import-PowerShellDataFile -Path $psdPath
-
-    # GUID
-    # PrivateData
-    Assert-AreEqual -Expected $fullExpected.AliasesToExport   -Presented $presented.AliasesToExport   -Comment "Manifest AliasesToExport"
-    Assert-AreEqual -Expected $fullExpected.Author            -Presented $presented.Author            -Comment "Manifest Author"
-    Assert-AreEqual -Expected $fullExpected.CmdletsToExport   -Presented $presented.CmdletsToExport   -Comment "Manifest CmdletsToExport"
-    Assert-AreEqual -Expected $fullExpected.VariablesToExport -Presented $presented.VariablesToExport -Comment "Manifest VariablesToExport"
-    Assert-AreEqual -Expected $fullExpected.ModuleVersion     -Presented $presented.ModuleVersion     -Comment "Manifest ModuleVersion"
-    Assert-AreEqual -Expected $fullExpected.Copyright         -Presented $presented.Copyright         -Comment "Manifest Copyright"
-    Assert-AreEqual -Expected $fullExpected.CompanyName       -Presented $presented.CompanyName       -Comment "Manifest CompanyName"
-    
-    # Not Strings
-    Assert-AreEqual -Expected ($fullExpected.FunctionsToExport | ConvertTo-Json) -Presented ($presented.FunctionsToExport | ConvertTo-Json) -Comment "Manifest FunctionsToExport"
-
-    #Exceptions
-    Assert-AreEqual -Expected "$Name.psm1" -Presented $presented.RootModule -Comment "Manifest RootModule"
-    Assert-AreEqual -Expected ($fullExpected.Description ?? "") -Presented ($presented.Description ?? "") -Comment "Manifest Description"
-
-    Write-AssertionSectionEnd
-}
