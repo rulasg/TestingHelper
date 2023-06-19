@@ -46,4 +46,5 @@ function Import-TestingHelper{
 Import-TestingHelper -AllowPrerelease
 
 # Run test by PSD1 file
-Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors
+# Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_NewModuleV3_AddTestingModuleV3*
+Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors 
