@@ -10,5 +10,5 @@ function Import-Template ($Path,$File,$Template,$Replaces){
         }
     }
 
-    $script |  Out-File -FilePath (Join-Path -Path $Path -ChildPath $File)
+    $script | Set-Content -Path (Join-Path -Path $Path -ChildPath $File)
 }

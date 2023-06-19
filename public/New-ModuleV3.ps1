@@ -36,8 +36,18 @@ function New-ModuleV3 {
 
         # Create the module
         if ($Name) {
-            $Description
-            $modulePath = Add-ModuleV3 @args
+
+            # Updatemanifest with the parameters
+            $metadata = @{}
+            if($Description){ $metadata.Description = $Description}
+            if($Author){ $metadata.Description = $Author}
+            if($Version){ $metadata.Description = $Version}
+
+            $modulePath = Add-ModuleV3 -Name $Name -Path $Path -Metadata $metadata
+
+            if(!$modulePath){
+                return $null
+            }
         }
 
         return $modulePath
@@ -53,39 +63,77 @@ function New-ModuleV3 {
     $null if the module was not created
 #>
 function Add-ModuleV3 {
-    <#
-    .Synopsis
-       Created a Powershell module with V2 format.
-    #>
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory)][string]$Path,
-        [Parameter(Mandatory)][string]$Name
+        [Parameter()][string]$Path,
+        [Parameter(Mandatory)][string]$Name,
+        [Parameter()][hashtable]$Metadata
     ) 
 
     # Path
-    $modulePath = Join-Path -Path $Path -ChildPath $Name
+    $modulePath = Get-ModulePath -Name $Name -Path $Path
 
-    if($modulePath | Test-Path){
-        Write-Error "Path already exists."
+    # If $null Get-ModulePath failed
+    if(!$modulePath){
         return $null
     }
 
-    if(Test-Path($modulePath)){
-        write-Error -Message "Folder already exists"
-    } else {
-       $null = New-Item -ItemType Directory -Name $modulePath
-    }
-
-    $psd1Path = ($modulePath | Join-Path -ChildPath "$Name.psd1") 
-    $rootModule = "$Name.psm1"
-
-    New-ModuleManifest -Path $psd1Path -RootModule $rootModule
-
     # PSM1
+    $rootModule = "$Name.psm1"
     Import-Template -Path $modulePath -File $rootModule -Template "template.module.psm1"
+
+    # PSD1
+    $psd1Path = ($modulePath | Join-Path -ChildPath "$Name.psd1") 
+
+    try {
+        # Create the PSD1 file
+        New-ModuleManifest  -Path $psd1Path -RootModule $rootModule
+
+        # Update with metadata
+        if ($Metadata.Count -gt 0) {
+            Update-ModuleManifest -Path $psd1Path @metadata
+        }
+    }
+    catch {
+        Write-Error -Message ("Error creating the PSD1 file. " + $_.Exception.Message)
+        return $null
+    }
 
     return $modulePath
 
 } Export-ModuleMember -Function Add-ModuleV3
+
+function Get-ModulePath{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Name,
+        [Parameter()][string]$Path
+    )
+
+    try {
+
+        $path = [string]::IsNullOrWhiteSpace($Path) ? '.' : $Path
+
+        $modulePath = $Path | Join-Path -ChildPath $Name
+            
+        if($modulePath | Test-Path){
+            Write-Error "Path already exists."
+            return $null
+        } else {
+           $null = New-Item -ItemType Directory -Name $modulePath
+
+           if($modulePath | Test-Path){
+                "Create folder [$modulePath]" | Write-Information
+           } else {
+               Write-Error "Path could not be created."
+               return $null
+           }
+        }
+        return $modulePath
+    }
+    catch {
+        Write-Error -Message "Failed to find or create module path."
+        return $null
+    }
+}

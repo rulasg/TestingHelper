@@ -1,12 +1,35 @@
 
 
-function TestingHelperTest_NewModuleV3_WithName{
+function TestingHelperTest_NewModuleV3_WithName {
+
+    $moduleName = "MyModule"
+
+    $result = New-TT_ModuleV3 -Name $moduleName
+
+    Assert-AddModuleV3 -Name $moduleName -Path $result 
+
+}
+
+function TestingHelperTest_NewModuleV3_WithOutName {
+
+    $result = New-TT_ModuleV3
+
+    Assert-IsNull -Object $result
+
+    $dirContent = Get-ChildItem
+
+    Assert-Count -Expected 0 -Presented $dirContent
+
+}
+
+function TestingHelperTest_NewModuleV3_AddModule_FailCall_NewModuleManifest {
+
+    # test when failing calling dependency Microsoft.PowerShell.Core/New-ModuleManifest
+    # Probably we need a Dependency Injection to mock the call to New-ModuleManifest
 
     Assert-NotImplemented
 }
-
-
-function TestingHelperTest_NewModuleV3_AddModule{
+function TestingHelperTest_NewModuleV3_AddModule_DefaultManifest {
 
     $moduleName = "MyModule"
 
@@ -14,69 +37,96 @@ function TestingHelperTest_NewModuleV3_AddModule{
 
     $defaultsManifest = Get-DefaultsManifest
 
-    $assertParam = @{
-        Path = $result
-        Name = $moduleName
-        Description = $defaultsManifest.Description
-
-        #ManifestDefaults
-        Author = $defaultsManifest.Author
-        CompanyName = $defaultsManifest.CompanyName
-        ModuleVersion = $defaultsManifest.ModuleVersion
-        Copyright = $defaultsManifest.CopyRight
-        FunctionsToExport = $defaultsManifest.FunctionsToExport
-    }
-    Assert-AddModuleV3 -param $assertParam
+    Assert-AddModuleV3 -Name $moduleName -Path $result -Expected $defaultsManifest
 
 }
+function TestingHelperTest_NewModuleV3_AddModule_MyManifest {
 
-function TestingHelperTest_NewModuleV3_CreateModule_WithOutName{
+    $moduleName = "MyModule"
+
     
+    $param = @{
+        RootModule        = "MyModule.psm1"
+        Author            = "Me"
+        CompanyName       = "MyCompany"
+        ModuleVersion     = "6.6.6"
+        Description       = "MyDescription of the module"
+        FunctionsToExport = @("MyFunction")
+        CopyRight         = "(c) 2020 MyCompany. All rights reserved."
+    } 
+    
+    $result = Add-TT_ModuleV3 -Name $moduleName -Path '.' -Metadata $param
+
+    Assert-AddModuleV3 -Name $moduleName -Path $result -Expected $param
+
 }
 
-function TestingHelperTest_NewModuleV3_PathAlreadyExists{
+function TestingHelperTest_NewModuleV3_AddModule_PathAlreadyExists {
 
     "MyModule" | New-TestingFolder 
 
     $result = Add-TT_ModuleV3 -Name "MyModule" -Path '.' @ErrorParameters
-
+    
     Assert-IsNull -Object $result -Comment "No module is created"
     Assert-Count -Expected 1 -Presented $errorVar -Comment "One error is thrown"
     Assert-Contains -Expected "Path already exists." -Presented ($errorVar.Exception.Message)
 }
 
-function Get-DefaultsManifest{
+function TestingHelperTest_NewModuleV3_AddModule_WrongPathName {
+    
+    $result = Add-TT_ModuleV3 -Name "MyModule" -Path 'WrongName_"*?"like' @ErrorParameters
+
+    Assert-IsNull -Object $result -Comment "No module is created"
+    Assert-ContainsPattern -Expected "Error creating the PSD1 file.*" -Presented ($errorVar.Exception.Message)
+}
+
+function Get-DefaultsManifest {
     New-ModuleManifest -Path defaults.psd1 -RootModule defaults.psm1
     $defaultsManifest = Import-PowerShellDataFile -Path defaults.psd1 
     return $defaultsManifest
 }
-function Assert-AddModuleV3{
+function Assert-AddModuleV3 {
     param(
-        [Parameter()][hashtable]$param
+        [Parameter()][string]$Name,
+        [Parameter()][string]$Path,
+        [Parameter()][hashtable]$Expected
     )
     
-    $psdname = $param.Name + ".psd1"
-    $psmName = $param.Name + ".psm1"
+    $psdname = $Name + ".psd1"
+    $psmName = $Name + ".psm1"
+
+    $fullExpected = Get-DefaultsManifest
+    
+    # Update fullExpected with expected
+    ForEach($key in $Expected.Keys) { $fullExpected[$key] = $Expected[$key]}
 
     #PSD1
-    $psdPath = $param.Path |Join-Path -ChildPath  $psdname
+    $psdPath = $Path | Join-Path -ChildPath  $psdname
     Assert-ItemExist -Path $psdPath
 
     #PSM1
-    $psmPath = $param.Path | Join-Path -ChildPath $psmName
+    $psmPath = $Path | Join-Path -ChildPath $psmName
     Assert-ItemExist -Path $psmPath
 
     #manifest
-    $manifest = Import-PowerShellDataFile -Path $psdPath
+    $presented = Import-PowerShellDataFile -Path $psdPath
 
-    Assert-AreEqual -Expected $psmName -Presented $manifest.RootModule -Comment "RootModule"
-    Assert-AreEqual -Expected $param.FunctionsToExport -Presented $manifest.FunctionsToExport -Comment "Manifest FunctionsToExport"
-    Assert-AreEqual -Expected $param.CompanyName -Presented $manifest.CompanyName -Comment "Manifest CompanyName"
-    Assert-AreEqual -Expected $param.ModuleVersion -Presented $manifest.ModuleVersion -Comment "Manifest ModuleVersion"
-    Assert-AreEqual -Expected $param.Copyright -Presented $manifest.Copyright -Comment "Manifest Copyright"
-    Assert-AreEqual -Expected $param.Author -Presented $manifest.Author -Comment "Manifest Author"
+    # GUID
+    # PrivateData
+    Assert-AreEqual -Expected $fullExpected.AliasesToExport   -Presented $presented.AliasesToExport   -Comment "Manifest AliasesToExport"
+    Assert-AreEqual -Expected $fullExpected.Author            -Presented $presented.Author            -Comment "Manifest Author"
+    Assert-AreEqual -Expected $fullExpected.CmdletsToExport   -Presented $presented.CmdletsToExport   -Comment "Manifest CmdletsToExport"
+    Assert-AreEqual -Expected $fullExpected.VariablesToExport -Presented $presented.VariablesToExport -Comment "Manifest VariablesToExport"
+    Assert-AreEqual -Expected $fullExpected.ModuleVersion     -Presented $presented.ModuleVersion     -Comment "Manifest ModuleVersion"
+    Assert-AreEqual -Expected $fullExpected.Copyright         -Presented $presented.Copyright         -Comment "Manifest Copyright"
+    Assert-AreEqual -Expected $fullExpected.CompanyName       -Presented $presented.CompanyName       -Comment "Manifest CompanyName"
+    
+    # Not Strings
+    Assert-AreEqual -Expected ($fullExpected.FunctionsToExport | ConvertTo-Json) -Presented ($presented.FunctionsToExport | ConvertTo-Json) -Comment "Manifest FunctionsToExport"
 
-    Assert-AreEqual -Expected ($param.Description ?? "") -Presented ($manifest.Description ?? "") -Comment "Manifest Description"
+    #Exceptions
+    Assert-AreEqual -Expected "$Name.psm1" -Presented $presented.RootModule -Comment "Manifest RootModule"
+    Assert-AreEqual -Expected ($fullExpected.Description ?? "") -Presented ($presented.Description ?? "") -Comment "Manifest Description"
 
     Write-AssertionSectionEnd
 }
