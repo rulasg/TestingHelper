@@ -10,3 +10,8 @@ $InfoParameters = @{
     InformationAction = 'SilentlyContinue'
     InformationVariable = 'infoVar'
 }
+
+$ErrorParameters = @{
+    ErrorAction = 'Silently'
+    ErrorVariable = 'errorVar'
+}
