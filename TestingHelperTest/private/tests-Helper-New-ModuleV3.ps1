@@ -13,7 +13,9 @@ function Assert-AddModuleV3 {
         # Metadata for the manifest to assert
         [Parameter()][hashtable]$Expected,
         # Switch to check SampleCode
-        [Parameter()][switch]$AddSampleCode
+        [Parameter()][switch]$AddSampleCode,
+        #Switch to assert devcontainerjson file
+        [Parameter()][switch]$AddDevContainerJson
     )
     
     $psdname = $Name + ".psd1"
@@ -36,6 +38,11 @@ function Assert-AddModuleV3 {
     if ($AddSampleCode) {
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "public" | Join-Path -ChildPath "samplePublicFunction.ps1") -Comment "public function"
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "private" | Join-Path -ChildPath "samplePrivateFunction.ps1") -Comment "private function"
+    }
+
+    # Devcontainer.json
+    if ($AddDevContainerJson) {
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath ".devcontainer" | Join-Path -ChildPath "devcontainer.json") -Comment "devcontainer.json"
     }
 
     #PSD1

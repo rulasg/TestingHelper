@@ -35,7 +35,9 @@ function New-ModuleV3 {
             # Add Testing module
             [Parameter()][switch]$AddTesting,
             # Add Sample Code to the module and test
-            [Parameter()][switch]$AddSampleCode
+            [Parameter()][switch]$AddSampleCode,
+            # Add devcontainer Json file
+            [Parameter()][switch]$AddDevContainerJson
         )
 
         $retModulePath = $null
@@ -66,6 +68,11 @@ function New-ModuleV3 {
             if(! $result){
                 return $null
             }
+        }
+
+        # Add devcontainer.json file
+        if($AddDevContainerJson){
+            Import-Template -Path ($modulePath | Join-Path -ChildPath ".devcontainer") -File "devcontainer.json" -Template "template.devcontainer.json"
         }
 
         return $retModulePath

@@ -114,7 +114,7 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_Simple{
 }
 
 function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddSampleCode{
-    
+
     $moduleName = "MyModule"
     $path = '.'
     $modulePath = $path | Join-Path -ChildPath $moduleName
@@ -125,4 +125,17 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddSampleCode{
 
     Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddSampleCode
     Assert-TestingV3 -Name $moduleName -Path $modulePath -AddSampleCode
+}
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddDevcontainerjson{
+    
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddDevContainerJson
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddDevContainerJson
 }
