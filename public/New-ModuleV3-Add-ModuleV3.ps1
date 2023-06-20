@@ -15,11 +15,12 @@ function Add-ModuleV3 {
         [Parameter()][hashtable]$Metadata
     ) 
 
-    # Path
-    $modulePath = Get-ModulePath -Name $Name -Path $Path
+    # Resolve Path. Check if fails
+    $modulePath = Get-ModulePath -Path $Path -Name $Name
+    if(!$modulePath){return $null}
 
-    # If $null Get-ModulePath failed
-    if(!$modulePath){
+    # Create the module folder. Fail if exists
+    if(!($modulePath | Add-Folder)){
         return $null
     }
 

@@ -31,11 +31,18 @@ function New-ModuleV3 {
             # Version of the module
             [Parameter()][string]$Version,
             # Path where the module will be created. Default is current folder 
-            [Parameter()][string]$Path
+            [Parameter()][string]$Path,
+            # Add Testing module
+            [Parameter()][switch]$AddTesting
         )
 
+        $retModulePath = $null
+
+        $modulePath = Get-ModulePath -Name $Name -Path $Path -AppendName
+        $moduleName = Get-ModuleName -Name $Name -ModulePath $modulePath
+
         # Create the module
-        if ($Name) {
+        if ($moduleName) {
 
             # Updatemanifest with the parameters
             $metadata = @{}
@@ -43,49 +50,19 @@ function New-ModuleV3 {
             if($Author){ $metadata.Description = $Author}
             if($Version){ $metadata.Description = $Version}
 
-            $modulePath = Add-ModuleV3 -Name $Name -Path $Path -Metadata $metadata
+            $retModulePath = Add-ModuleV3 -Name $moduleName -Path $modulePath -Metadata $metadata
 
-            if(!$modulePath){
+            if(!$retModulePath){
                 return $null
             }
         }
 
-        return $modulePath
+        if ($AddTesting) {
+            if(!( Add-TestingToModuleV3 -Name $Name -Path $modulePath)){
+                return $null
+            }
+        }
+
+        return $retModulePath
     
 } Export-ModuleMember -Function New-ModuleV3
-
-
-
-function Get-ModulePath{
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][string]$Name,
-        [Parameter()][string]$Path
-    )
-
-    try {
-
-        $path = [string]::IsNullOrWhiteSpace($Path) ? '.' : $Path
-
-        $modulePath = $Path | Join-Path -ChildPath $Name
-            
-        if($modulePath | Test-Path){
-            Write-Error "Path already exists."
-            return $null
-        } else {
-           $null = New-Item -ItemType Directory -Name $modulePath
-
-           if($modulePath | Test-Path){
-                "Create folder [$modulePath]" | Write-Information
-           } else {
-               Write-Error "Path could not be created."
-               return $null
-           }
-        }
-        return $modulePath
-    }
-    catch {
-        Write-Error -Message "Failed to find or create module path."
-        return $null
-    }
-}

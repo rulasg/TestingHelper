@@ -6,8 +6,11 @@ function Get-DefaultsManifest {
 
 function Assert-AddModuleV3 {
     param(
+        # Name of the folder to Assert
         [Parameter()][string]$Name,
+        # ModulePath where to Assert the Module Content
         [Parameter()][string]$Path,
+        # Metadata for the manifest to assert
         [Parameter()][hashtable]$Expected
     )
     
@@ -52,4 +55,56 @@ function Assert-AddModuleV3 {
     Assert-AreEqual -Expected ($fullExpected.Description ?? "") -Presented ($presented.Description ?? "") -Comment "Manifest Description"
 
     Write-AssertionSectionEnd
+}
+
+function Assert-TestingV3 {
+    param(
+        [Parameter()][string]$Name,
+        [Parameter()][string]$Path,
+        [Parameter()][hashtable]$Expected
+    )
+
+    # $modulePath = $Path | Join-Path -ChildPath $Name
+    $testingModuleName = $moduleName + "Test"
+    $testingModulePath = $path | Join-Path -ChildPath $testingModuleName
+
+    Assert-AddModuleV3 -Name $testingModuleName -Path $testingModulePath -Expected $Expected
+    Assert-LaunchJson -Path $modulePath
+    Assert-TestScript -Path $modulePath -Name $moduleName
+}
+
+function Assert-LaunchJson{
+    [CmdletBinding()]
+    param(
+        [Parameter()][string]$Name,
+        [Parameter()][string]$Path
+    )
+
+    $launchFile = $Path | Join-Path -ChildPath $Name -AdditionalChildPath ".vscode" , "launch.json"
+
+    Assert-ItemExist -Path $launchFile -Comment "launch.json exists"
+    $json = Get-Content -Path $launchFile | ConvertFrom-Json
+
+    Assert-IsTrue -Condition ($json.configurations[0].name -eq 'PowerShell: Run Test')
+    Assert-IsTrue -Condition ($json.configurations[0].type -eq 'PowerShell')
+    Assert-IsTrue -Condition ($json.configurations[0].Request -eq "launch")
+    Assert-IsTrue -Condition ($json.configurations[0].Script -eq '${workspaceFolder}/test.ps1')
+    Assert-IsTrue -Condition ($json.configurations[0].cwd -eq '${workspaceFolder}')
+
+    Assert-IsTrue -Condition ($json.configurations[1].name -eq 'PowerShell Interactive Session')
+    Assert-IsTrue -Condition ($json.configurations[1].type -eq 'PowerShell')
+    Assert-IsTrue -Condition ($json.configurations[1].Request -eq "launch")
+    Assert-IsTrue -Condition ($json.configurations[1].cwd -eq '')
+}
+
+function Assert-TestScript{
+    [CmdletBinding()]
+    param(
+        [Parameter()][string]$Name,
+        [Parameter()][string]$Path
+    )
+
+    $testps1Path = $Path | Join-Path -ChildPath "test.ps1"
+
+    Assert-ItemExist -Path $testps1Path -Comment "test.ps1 exists"
 }

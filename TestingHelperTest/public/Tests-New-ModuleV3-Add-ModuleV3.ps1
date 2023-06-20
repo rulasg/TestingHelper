@@ -14,7 +14,6 @@ function TestingHelperTest_NewModuleV3_WithNameRemotePath {
 
     $moduleName = "MyModule"
     $folderName = "FolderName"
-    New-TestingFolder -Name $folderName
     $expectedPath = $folderName | Join-Path -ChildPath $moduleName
 
     $result = New-TT_ModuleV3 -Name $moduleName -Path $folderName
@@ -25,20 +24,23 @@ function TestingHelperTest_NewModuleV3_WithNameRemotePath {
 
 function TestingHelperTest_NewModuleV3_WithOutName {
 
-    $result = New-TT_ModuleV3
+    # Figure out the Name from folder Name and path
+
+    New-TestingFolder -Name "folderName" -PassThru | Set-Location
+    $localPath = Get-Location | Convert-Path
+
+    $result = New-TT_ModuleV3 @ErrorParameters
 
     Assert-IsNull -Object $result
-
-    $dirContent = Get-ChildItem
-
-    Assert-Count -Expected 0 -Presented $dirContent
-
+    Assert-Contains -Expected "Path and Name cannot be null or empty at the same time." -Presented $errorVar.Exception.Message
 }
 
 function TestingHelperTest_NewModuleV3_AddModule_FailCall_NewModuleManifest {
 
-    # test when failing calling dependency Microsoft.PowerShell.Core/New-ModuleManifest
+    # test when failing calling dependency Microsoft PowerShell.Core/New-ModuleManifest
 
+    $modulename = "MyModule"
+    
     # Inject depepdency
     $module = Import-Module -Name $TESTED_MANIFEST_PATH -Prefix "LL_" -Force -PassThru
     & $module {
@@ -54,10 +56,12 @@ function TestingHelperTest_NewModuleV3_AddModule_FailCall_NewModuleManifest {
         }
     }
 
-    $result = Add-LL_ModuleV3 -Name "MyModule" @ErrorParameters
+    $result = Add-LL_ModuleV3 -Name $modulename  @ErrorParameters
 
     Assert-IsNull -Object $result -Comment "No module is created"
+    Assert-IsNotNull -Object $errorVar.Exception -Comment "Error is thrown"
     Assert-Contains -Expected "Injected error from New-MymoduleManifest." -Presented ($errorVar.Exception.Message)
+    Assert-ContainsPattern -Expected "Error creating the PSD1 file.*" -Presented ($errorVar.Exception.Message)
 
     # reset module
     Import-Module -Name $TESTED_MANIFEST_PATH -Prefix "TT_" -Force
@@ -67,12 +71,13 @@ function TestingHelperTest_NewModuleV3_AddModule_DefaultManifest {
 
     $moduleName = "MyModule"
 
-    $result = Add-TT_ModuleV3 -Name $moduleName -Path '.'
+    $result = Add-TT_ModuleV3 -Name $moduleName
 
     $defaultsManifest = Get-DefaultsManifest
 
-    Assert-AddModuleV3 -Name $moduleName -Path $result -Expected $defaultsManifest
+    Assert-AreEqualPath -Expected $moduleName -Presented $result
 
+    Assert-AddModuleV3 -Name $moduleName -Path $moduleName -Expected $defaultsManifest
 }
 
 function TestingHelperTest_NewModuleV3_AddModule_MyManifest {
@@ -89,28 +94,22 @@ function TestingHelperTest_NewModuleV3_AddModule_MyManifest {
         CopyRight         = "(c) 2020 MyCompany. All rights reserved."
     } 
     
-    $result = Add-TT_ModuleV3 -Name $moduleName -Path '.' -Metadata $param
+    $result = Add-TT_ModuleV3 -Name $moduleName -Metadata $param
 
     Assert-AddModuleV3 -Name $moduleName -Path $result -Expected $param
 
 }
 
-function TestingHelperTest_NewModuleV3_AddModule_PathAlreadyExists {
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_Simple{
 
-    "MyModule" | New-TestingFolder 
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
 
-    $result = Add-TT_ModuleV3 -Name "MyModule" -Path '.' @ErrorParameters
-    
-    Assert-IsNull -Object $result -Comment "No module is created"
-    Assert-Count -Expected 1 -Presented $errorVar -Comment "One error is thrown"
-    Assert-Contains -Expected "Path already exists." -Presented ($errorVar.Exception.Message)
-}
+    $result = New-TT_ModuleV3 -Name $moduleName -AddTesting
 
-function TestingHelperTest_NewModuleV3_AddModule_WrongPathName {
-    
-    $result = Add-TT_ModuleV3 -Name "MyModule" -Path 'WrongName_"*?"like' @ErrorParameters
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
 
-    Assert-IsNull -Object $result -Comment "No module is created"
-    Assert-ContainsPattern -Expected "Error creating the PSD1 file.*" -Presented ($errorVar.Exception.Message)
+    Assert-TestingV3 -Name $moduleName -Path $modulePath
 }
 
