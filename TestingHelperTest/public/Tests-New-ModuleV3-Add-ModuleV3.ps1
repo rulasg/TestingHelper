@@ -151,3 +151,30 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddLICENSE{
     Assert-AreEqualPath -Expected $modulePath -Presented $result
     Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddLicense
 }
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddReadme{
+    
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddReadme
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddReadme
+}
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddReadme_WithDescription{
+    
+    $myDescription = "This is my Description"
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddReadme -Description $myDescription
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+
+    $readMePath = $modulePath | Join-Path -ChildPath "README.md"
+    Assert-IsTrue -Condition ((Get-Content -Path $readMePath) -contains $myDescription)
+}

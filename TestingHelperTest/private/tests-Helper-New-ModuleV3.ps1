@@ -17,7 +17,10 @@ function Assert-AddModuleV3 {
         #Switch to assert devcontainerjson file
         [Parameter()][switch]$AddDevContainerJson,
         # Switch to asser licens file
-        [Parameter()][switch]$AddLicense
+        [Parameter()][switch]$AddLicense,
+        # Swithc to assert ReadME file
+        [Parameter()][switch]$AddReadMe
+
     )
     
     $psdname = $Name + ".psd1"
@@ -50,6 +53,13 @@ function Assert-AddModuleV3 {
     # License
     if ($AddLicense) {
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "LICENSE") -Comment "LICENSE"
+    }
+
+    # ReadMe
+    if ($AddReadMe) {
+        $readMePath = $Path | Join-Path -ChildPath "README.md"
+        Assert-ItemExist -Path $readMePath -Comment "README.md"
+        Assert-IsTrue -Condition ((Get-Content -Path $readMePath) -contains "# $modulename")
     }
 
     #PSD1

@@ -39,7 +39,9 @@ function New-ModuleV3 {
             # Add devcontainer Json file
             [Parameter()][switch]$AddDevContainerJson,
             # Add a MIT Licenses file
-            [Parameter()][switch]$AddLicense
+            [Parameter()][switch]$AddLicense,
+            # Add Readme file
+            [Parameter()][switch]$AddReadme
         )
 
         $retModulePath = $null
@@ -81,6 +83,15 @@ function New-ModuleV3 {
         if($AddLicense){
             Import-Template -Path $modulePath -File "LICENSE" -Template "template.LICENSE.txt"
         }
+
+        # Add Readme file
+        if($AddReadme){
+            Import-Template -Path $modulePath -File "README.md" -Template "template.README.md" -Replaces @{
+                "_MODULE_NAME_" = $moduleName
+                "_MODULE_DESCRIPTION_" = ($Description ?? "A powershell module that will hold Powershell functionality.")
+            }
+        }
+
 
         return $retModulePath
     
