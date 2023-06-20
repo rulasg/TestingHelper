@@ -139,3 +139,15 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddDevcontainerjson{
 
     Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddDevContainerJson
 }
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddLICENSE{
+    
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddLicense
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddLicense
+}

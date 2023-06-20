@@ -37,7 +37,9 @@ function New-ModuleV3 {
             # Add Sample Code to the module and test
             [Parameter()][switch]$AddSampleCode,
             # Add devcontainer Json file
-            [Parameter()][switch]$AddDevContainerJson
+            [Parameter()][switch]$AddDevContainerJson,
+            # Add a MIT Licenses file
+            [Parameter()][switch]$AddLicense
         )
 
         $retModulePath = $null
@@ -73,6 +75,11 @@ function New-ModuleV3 {
         # Add devcontainer.json file
         if($AddDevContainerJson){
             Import-Template -Path ($modulePath | Join-Path -ChildPath ".devcontainer") -File "devcontainer.json" -Template "template.devcontainer.json"
+        }
+
+        # Add License file
+        if($AddLicense){
+            Import-Template -Path $modulePath -File "LICENSE" -Template "template.LICENSE.txt"
         }
 
         return $retModulePath

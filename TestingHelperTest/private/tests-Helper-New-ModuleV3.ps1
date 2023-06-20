@@ -15,7 +15,9 @@ function Assert-AddModuleV3 {
         # Switch to check SampleCode
         [Parameter()][switch]$AddSampleCode,
         #Switch to assert devcontainerjson file
-        [Parameter()][switch]$AddDevContainerJson
+        [Parameter()][switch]$AddDevContainerJson,
+        # Switch to asser licens file
+        [Parameter()][switch]$AddLicense
     )
     
     $psdname = $Name + ".psd1"
@@ -43,6 +45,11 @@ function Assert-AddModuleV3 {
     # Devcontainer.json
     if ($AddDevContainerJson) {
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath ".devcontainer" | Join-Path -ChildPath "devcontainer.json") -Comment "devcontainer.json"
+    }
+
+    # License
+    if ($AddLicense) {
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "LICENSE") -Comment "LICENSE"
     }
 
     #PSD1
