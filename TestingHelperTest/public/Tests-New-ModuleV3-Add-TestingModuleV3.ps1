@@ -35,9 +35,6 @@ function TestingHelperTest_NewModuleV3_AddTestingToModule_AddTestingModuleV3_NoP
     Assert-TestingV3 -Name $moduleName -Path $modulePath -Expected $param
 }
 
-function TestingHelperTest_NewModuleV3_AddTestingToModule_AddTestingModuleV3_WhatIf{
-    Assert-NotImplemented
-}
 
 function TestingHelperTest_NewModuleV3_AddTestingToModule_Simple{
     
@@ -54,5 +51,9 @@ function TestingHelperTest_NewModuleV3_AddTestingToModule_Simple{
 }
 
 function TestingHelperTest_NewModuleV3_AddTestingToModule_WhatIf{
+    Assert-NotImplemented
+}
+
+function TestingHelperTest_NewModuleV3_AddTestingToModule_AddTestModuleV3_WhatIf{
     Assert-NotImplemented
 }

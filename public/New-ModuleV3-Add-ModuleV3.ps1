@@ -12,7 +12,8 @@ function Add-ModuleV3 {
     (
         [Parameter()][string]$Path,
         [Parameter(Mandatory)][string]$Name,
-        [Parameter()][hashtable]$Metadata
+        [Parameter()][hashtable]$Metadata,
+        [Parameter()][switch]$AddSampleCode
     ) 
 
     # Resolve Path. Check if fails
@@ -31,6 +32,12 @@ function Add-ModuleV3 {
     # public private
     $null = New-Item -ItemType Directory -Force -Path ($modulePath | Join-Path -ChildPath "public")
     $null = New-Item -ItemType Directory -Force -Path ($modulePath | Join-Path -ChildPath "private")
+
+    # Sample code
+    if ($AddSampleCode) {
+        Import-Template -Path ($modulePath | Join-Path -ChildPath "public") -File "samplePublicFunction.ps1" -Template "template.module.functions.public.ps1"
+        Import-Template -Path ($modulePath | Join-Path -ChildPath "private") -File "samplePrivateFunction.ps1" -Template "template.module.functions.private.ps1"
+    }
 
     # PSD1
     $psd1Path = ($modulePath | Join-Path -ChildPath "$Name.psd1") 

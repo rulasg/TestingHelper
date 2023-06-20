@@ -29,21 +29,31 @@ function Add-TestingToModuleV3{
     (
         [Parameter(Mandatory)][string]$Path,
         [Parameter(Mandatory)][string]$Name,
-        [Parameter()][hashtable]$Metadata
+        [Parameter()][hashtable]$Metadata,
+        [Parameter()][switch]$AddSampleCode
     ) 
 
+    $testModulePath = Add-TestModuleV3 -Path $Path -Name $Name -Metadata $Metadata
 
-    $result = Add-TestModuleV3 -Path $Path -Name $Name -Metadata $Metadata
-
-    if (!$result) {
+    if (!$testModulePath) {
         Write-Error -Message ("Error creating Testing for Module [$Name].")
         return $null
+    }
+
+    # Sample test
+    if ($AddSampleCode) {
+        $testingModulePublicPath = $testModulePath | Join-Path -ChildPath "public"
+
+        Import-Template -Template "template.testmodule.functions.public.ps1" -File "SampleFunctionTests.ps1" -Path $testingModulePublicPath -Replaces @{
+            '_MODULE_TESTING_' = $testingModuleName
+            '_MODULE_TESTED_' = $ModuleName
+        }
     }
 
     # Get root folder
     $modulePath = Get-ModulePath -Path $Path
 
-    # test script
+    # test.ps1 script
     $testScriptPath = $modulePath | Join-Path -ChildPath "test.ps1"
     if($testScriptPath | Test-Path){
         Write-Warning "test.ps1 already exists."

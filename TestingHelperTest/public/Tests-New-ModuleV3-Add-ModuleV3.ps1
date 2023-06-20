@@ -113,3 +113,16 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_Simple{
     Assert-TestingV3 -Name $moduleName -Path $modulePath
 }
 
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddSampleCode{
+    
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddTesting -AddSampleCode
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddSampleCode
+    Assert-TestingV3 -Name $moduleName -Path $modulePath -AddSampleCode
+}

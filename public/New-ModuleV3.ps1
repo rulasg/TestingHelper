@@ -33,7 +33,9 @@ function New-ModuleV3 {
             # Path where the module will be created. Default is current folder 
             [Parameter()][string]$Path,
             # Add Testing module
-            [Parameter()][switch]$AddTesting
+            [Parameter()][switch]$AddTesting,
+            # Add Sample Code to the module and test
+            [Parameter()][switch]$AddSampleCode
         )
 
         $retModulePath = $null
@@ -50,7 +52,7 @@ function New-ModuleV3 {
             if($Author){ $metadata.Description = $Author}
             if($Version){ $metadata.Description = $Version}
 
-            $retModulePath = Add-ModuleV3 -Name $moduleName -Path $modulePath -Metadata $metadata
+            $retModulePath = Add-ModuleV3 -Name $moduleName -Path $modulePath -Metadata $metadata -AddSampleCode:$AddSampleCode
 
             if(!$retModulePath){
                 return $null
@@ -58,7 +60,10 @@ function New-ModuleV3 {
         }
 
         if ($AddTesting) {
-            if(!( Add-TestingToModuleV3 -Name $Name -Path $modulePath)){
+            $result = Add-TestingToModuleV3 -Name $Name -Path $modulePath -AddSampleCode:$AddSampleCode
+            
+            # Check if the module was created
+            if(! $result){
                 return $null
             }
         }

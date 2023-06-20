@@ -11,7 +11,9 @@ function Assert-AddModuleV3 {
         # ModulePath where to Assert the Module Content
         [Parameter()][string]$Path,
         # Metadata for the manifest to assert
-        [Parameter()][hashtable]$Expected
+        [Parameter()][hashtable]$Expected,
+        # Switch to check SampleCode
+        [Parameter()][switch]$AddSampleCode
     )
     
     $psdname = $Name + ".psd1"
@@ -29,6 +31,12 @@ function Assert-AddModuleV3 {
     # public private
     Assert-ItemExist -Path ($Path | Join-Path -ChildPath "public") -Comment "public folder"
     Assert-ItemExist -Path ($Path | Join-Path -ChildPath "private") -Comment "private folder"
+
+    # Sample code
+    if ($AddSampleCode) {
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "public" | Join-Path -ChildPath "samplePublicFunction.ps1") -Comment "public function"
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "private" | Join-Path -ChildPath "samplePrivateFunction.ps1") -Comment "private function"
+    }
 
     #PSD1
     $psdPath = $Path | Join-Path -ChildPath  $psdname
@@ -61,7 +69,8 @@ function Assert-TestingV3 {
     param(
         [Parameter()][string]$Name,
         [Parameter()][string]$Path,
-        [Parameter()][hashtable]$Expected
+        [Parameter()][hashtable]$Expected,
+        [Parameter()][switch]$AddSampleCode
     )
 
     # $modulePath = $Path | Join-Path -ChildPath $Name
@@ -71,6 +80,11 @@ function Assert-TestingV3 {
     Assert-AddModuleV3 -Name $testingModuleName -Path $testingModulePath -Expected $Expected
     Assert-LaunchJson -Path $modulePath
     Assert-TestScript -Path $modulePath -Name $moduleName
+
+    if ($AddSampleCode) {
+        $samplePublicPath = $testingModulePath | Join-Path -ChildPath "public" -AdditionalChildPath SampleFunctionTests.ps1
+        Assert-ItemExist -Path $samplePublicPath
+    }
 }
 
 function Assert-LaunchJson{
