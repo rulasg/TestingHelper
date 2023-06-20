@@ -178,3 +178,31 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddReadme_WithDescri
     $readMePath = $modulePath | Join-Path -ChildPath "README.md"
     Assert-IsTrue -Condition ((Get-Content -Path $readMePath) -contains $myDescription)
 }
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddAbout{
+    
+    $myDescription = "This is my Description"
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
+
+    $param = @{
+        Description = "This is my Description"
+        Author = "Me"
+    }
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddAbout @param
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+
+    $moduleMonifest = Import-PowerShellDataFile -path ($modulePath | Join-Path -ChildPath "$moduleName.psd1" )
+    Assert-AreEqual -Expected $param.Description -Presented $moduleMonifest.Description
+    Assert-AreEqual -Expected $param.Author -Presented $moduleMonifest.Author
+    
+    $aboutContent = Get-Content -Path ($modulePath | Join-Path -ChildPath "en-US" -AdditionalChildPath "about_MyModule.help.txt") | Out-String
+    Assert-IsTrue -Condition ($aboutContent.Contains("about_$moduleName"))
+    Assert-IsTrue -Condition ($aboutContent.Contains($moduleMonifest.Author))
+    Assert-IsTrue -Condition ($aboutContent.Contains($moduleMonifest.Description))
+    Assert-IsTrue -Condition ($aboutContent.Contains($moduleMonifest.CopyRight))
+    Assert-IsTrue -Condition ($aboutContent.Contains("Powershell Testing UnitTest Module TestingHelper"))
+}

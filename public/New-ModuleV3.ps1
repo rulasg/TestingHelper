@@ -41,7 +41,9 @@ function New-ModuleV3 {
             # Add a MIT Licenses file
             [Parameter()][switch]$AddLicense,
             # Add Readme file
-            [Parameter()][switch]$AddReadme
+            [Parameter()][switch]$AddReadme,
+            #Add about topic
+            [Parameter()][switch]$AddAbout
         )
 
         $retModulePath = $null
@@ -55,8 +57,8 @@ function New-ModuleV3 {
             # Updatemanifest with the parameters
             $metadata = @{}
             if($Description){ $metadata.Description = $Description}
-            if($Author){ $metadata.Description = $Author}
-            if($Version){ $metadata.Description = $Version}
+            if($Author){ $metadata.Author = $Author}
+            if($Version){ $metadata.Version = $Version}
 
             $retModulePath = Add-ModuleV3 -Name $moduleName -Path $modulePath -Metadata $metadata -AddSampleCode:$AddSampleCode
 
@@ -86,9 +88,23 @@ function New-ModuleV3 {
 
         # Add Readme file
         if($AddReadme){
+            $moduleManifest = Get-ModuleManifest -Path $modulePath
+
             Import-Template -Path $modulePath -File "README.md" -Template "template.README.md" -Replaces @{
                 "_MODULE_NAME_" = $moduleName
-                "_MODULE_DESCRIPTION_" = ($Description ?? "A powershell module that will hold Powershell functionality.")
+                "_MODULE_DESCRIPTION_" = ($moduleManifest.Description ?? "A powershell module that will hold Powershell functionality.")
+            }
+        }
+
+        # Add about 
+        if($AddAbout){
+            $moduleManifest = Get-ModuleManifest -Path $modulePath
+
+            Import-Template -Path ($modulePath | Join-Path -ChildPath "en-US") -File "about_$moduleName.help.txt" -Template "template.about.help.txt" -Replaces @{
+                "_MODULE_NAME_"        = ($moduleName ?? "<ModuleName>")
+                "_MODULE_DESCRIPTION_" = ($moduleManifest.Description ?? "<Description>")
+                "_AUTHOR_"             = ($moduleManifest.Author ?? "<Author>")
+                "_COPYRIGHT_"          = ($moduleManifest.CopyRight ?? "<CopyRight>")
             }
         }
 
