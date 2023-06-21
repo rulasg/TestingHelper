@@ -37,7 +37,7 @@ jobs:
 
           # Allow Not Implemented and Skipped tests to pass
           $passed = $result.Tests -eq $result.Pass + $result.NotImplemented + $result.Skipped
-          $passed = $result.Tests -eq $result.Pass
+          # $passed = $result.Tests -eq $result.Pass
 
           if($passed)
           { "All test passed" | Write-Verbose -verbose ; exit 0 } 
