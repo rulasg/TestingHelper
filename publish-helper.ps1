@@ -11,7 +11,7 @@
     It is not intended to be used directly.
 
 .LINK
-    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish-Helper.ps1
+    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish-helper.ps1
 
 #>
 

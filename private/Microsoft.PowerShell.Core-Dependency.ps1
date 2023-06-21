@@ -1,0 +1,19 @@
+# Dependecy with Microsoft.PowerShell.Core functions
+
+function script:New-MyModuleManifest {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][string]$RootModule
+    )
+    New-ModuleManifest  -Path $psd1Path -RootModule $RootModule
+}
+
+function script:Update-MyModuleManifest {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][hashtable]$Metadata
+    )
+    Update-ModuleManifest  -Path $Path @Metadata
+}
