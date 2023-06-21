@@ -23,7 +23,9 @@ function Assert-AddModuleV3 {
         # Switch to assert Publish script
         [Parameter()][switch]$AddPublishScript,
         # Switch to assert release script
-        [Parameter()][switch]$AddReleaseScript
+        [Parameter()][switch]$AddReleaseScript,
+        # Switch to assert sync script
+        [Parameter()][switch]$AddSyncScript
 
     )
     
@@ -75,6 +77,12 @@ function Assert-AddModuleV3 {
     # release script
     if ($AddReleaseScript) {
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "release.ps1") -Comment "release.ps1"
+    }
+
+    # sync script
+    if ($AddSyncScript) {
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync.ps1") -Comment "sync.ps1"
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync-helper.ps1") -Comment "sync-helper.ps1"
     }
 
     #PSD1

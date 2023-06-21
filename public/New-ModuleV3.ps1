@@ -42,12 +42,14 @@ function New-ModuleV3 {
             [Parameter()][switch]$AddLicense,
             # Add Readme file
             [Parameter()][switch]$AddReadme,
-            #Add about topic
+            # Add about topic
             [Parameter()][switch]$AddAbout,
             # Add Publish script
             [Parameter()][switch]$AddPublishScript,
-            #Add release script
-            [Parameter()][switch]$AddReleaseScript
+            # Add release script
+            [Parameter()][switch]$AddReleaseScript,
+            # Add sync script
+            [Parameter()][switch]$AddSyncScript
         )
 
         $retModulePath = $null
@@ -122,6 +124,14 @@ function New-ModuleV3 {
         if($AddReleaseScript){
             Import-Template -Path $modulePath -File "release.ps1" -Template "template.v3.release.ps1"
         }
+
+        # Add Sync
+        if($AddSyncScript){
+            Import-Template -Path $modulePath -File "sync.ps1" -Template "template.v3.sync.ps1"
+            Import-Template -Path $modulePath -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
+        }
+
+
 
 
         return $retModulePath
