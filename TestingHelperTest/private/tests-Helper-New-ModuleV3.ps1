@@ -29,7 +29,9 @@ function Assert-AddModuleV3 {
         # Switch to assert PSScriptAnalyzer workflow
         [Parameter()][switch]$AddPSScriptAnalyzerWorkflow,
         # Switch to assert testing workflow
-        [Parameter()][switch]$AddTestingWorkflow
+        [Parameter()][switch]$AddTestingWorkflow,
+        # Switch to assert publish workflow
+        [Parameter()][switch]$AddPublishWorkflow
 
     )
     
@@ -99,6 +101,12 @@ function Assert-AddModuleV3 {
     if ($AddTestingWorkflow) {
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Assert-ItemExist -Path ($destination | Join-Path -ChildPath "test_with_TestingHelper.yml") -Comment "test_with_TestingHelper.yml"
+    }
+
+    # PublishWorkflow
+    if ($AddPublishWorkflow) {
+        $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
+        Assert-ItemExist -Path ($destination | Join-Path -ChildPath "publish_module_on_release.yml") -Comment "publish_module_on_release.yml"
     }
 
     #PSD1

@@ -263,3 +263,14 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddTestingWorkflow {
     Assert-AreEqualPath -Expected $modulePath -Presented $result
     Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddTestingWorkflow
 }
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddPublishWorkflow {
+    
+    $moduleName = "MyModule"
+    $modulePath = '.' | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddPublishWorkflow
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddPublishWorkflow
+}

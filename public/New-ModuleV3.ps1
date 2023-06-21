@@ -53,8 +53,9 @@ function New-ModuleV3 {
             # Add PSScriptAnalyzer workflow
             [Parameter()][switch]$AddPSScriptAnalyzerWorkflow,
             # Add testing workflow
-            [Parameter()][switch]$AddTestingWorkflow
-
+            [Parameter()][switch]$AddTestingWorkflow,
+            # Add publish workflow
+            [Parameter()][switch]$AddPublishWorkflow
         )
 
         $retModulePath = $null
@@ -148,8 +149,11 @@ function New-ModuleV3 {
             Import-Template -Path $destination -File "test_with_TestingHelper.yml" -Template "template.v3.test_with_TestingHelper.yml"
         }
 
-
-
+        # Add Publish Workflow
+        if($AddPublishWorkflow){
+            $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
+            Import-Template -Path $destination -File "publish_module_on_release.yml" -Template "template.v3.publish_module_on_release.yml"
+        }
 
         return $retModulePath
     
