@@ -51,7 +51,9 @@ function New-ModuleV3 {
             # Add sync script
             [Parameter()][switch]$AddSyncScript,
             # Add PSScriptAnalyzer workflow
-            [Parameter()][switch]$AddPSScriptAnalyzer
+            [Parameter()][switch]$AddPSScriptAnalyzerWorkflow,
+            # Add testing workflow
+            [Parameter()][switch]$AddTestingWorkflow
 
         )
 
@@ -135,9 +137,15 @@ function New-ModuleV3 {
         }
 
         # Add PSScriptAnalyzer
-        if($AddPSScriptAnalyzer){
+        if($AddPSScriptAnalyzerWorkflow){
             $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
             Import-Template -Path $destination -File "PSScriptAnalyzer.yml" -Template "template.PSScriptAnalyzer.yml"
+        }
+
+        # Add Testing
+        if($AddTestingWorkflow){
+            $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
+            Import-Template -Path $destination -File "test_with_TestingHelper.yml" -Template "template.v3.test_with_TestingHelper.yml"
         }
 
 

@@ -27,7 +27,9 @@ function Assert-AddModuleV3 {
         # Switch to assert sync script
         [Parameter()][switch]$AddSyncScript,
         # Switch to assert PSScriptAnalyzer workflow
-        [Parameter()][switch]$AddPSScriptAnalyzer
+        [Parameter()][switch]$AddPSScriptAnalyzerWorkflow,
+        # Switch to assert testing workflow
+        [Parameter()][switch]$AddTestingWorkflow
 
     )
     
@@ -88,9 +90,15 @@ function Assert-AddModuleV3 {
     }
 
     # PSScriptAnalyzer
-    if ($AddPSScriptAnalyzer) {
+    if ($AddPSScriptAnalyzerWorkflow) {
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Assert-ItemExist -Path ($destination | Join-Path -ChildPath "PSScriptAnalyzer.yml") -Comment "PSScriptAnalyzer.yml"
+    }
+
+    # TestingWorkflow
+    if ($AddTestingWorkflow) {
+        $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
+        Assert-ItemExist -Path ($destination | Join-Path -ChildPath "test_with_TestingHelper.yml") -Comment "test_with_TestingHelper.yml"
     }
 
     #PSD1

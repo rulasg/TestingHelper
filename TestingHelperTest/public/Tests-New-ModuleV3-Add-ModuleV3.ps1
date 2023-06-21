@@ -247,8 +247,19 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddPSScriptAnalyzer 
     $moduleName = "MyModule"
     $modulePath = '.' | Join-Path -ChildPath $moduleName
 
-    $result = New-TT_ModuleV3 -Name $moduleName -AddPSScriptAnalyzer
+    $result = New-TT_ModuleV3 -Name $moduleName -AddPSScriptAnalyzerWorkflow
 
     Assert-AreEqualPath -Expected $modulePath -Presented $result
-    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddPSScriptAnalyzer
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddPSScriptAnalyzerWorkflow
+}
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddTestingWorkflow {
+    
+    $moduleName = "MyModule"
+    $modulePath = '.' | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddTestingWorkflow
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddTestingWorkflow
 }
