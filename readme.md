@@ -2,6 +2,12 @@
 
 This `module` contains `functions` to help create and run Unit Testing for Powershell modules.
 
+## CI/CD Status
+
+[![PSScriptAnalyzer](https://github.com/rulasg/TestingHelper/actions/workflows/PSScriptAnalyzer.yml/badge.svg)](https://github.com/rulasg/TestingHelper/actions/workflows/PSScriptAnalyzer.yml)
+[![Test with TestingHelper](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml/badge.svg)](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml)
+[![Publish on Release Published](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml/badge.svg)](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml)
+
 ## How to use it
 
 This library will allow you to create quick unit testing for a given module. It will provide Asset statements too for the assertion section of your tests.
