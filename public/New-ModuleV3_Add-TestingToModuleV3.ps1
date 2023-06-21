@@ -42,9 +42,9 @@ function Add-TestingToModuleV3{
 
     # Sample test
     if ($AddSampleCode) {
-        $testingModulePublicPath = $testModulePath | Join-Path -ChildPath "public"
+        $destination = $testModulePath | Join-Path -ChildPath "public"
 
-        Import-Template -Template "template.testmodule.functions.public.ps1" -File "SampleFunctionTests.ps1" -Path $testingModulePublicPath -Replaces @{
+        Import-Template -Path $destination -File "SampleFunctionTests.ps1" -Template "template.testmodule.functions.public.ps1" -Replaces @{
             '_MODULE_TESTING_' = $testingModuleName
             '_MODULE_TESTED_' = $ModuleName
         }
@@ -68,7 +68,8 @@ function Add-TestingToModuleV3{
         Write-Warning "launch.json already exists."
     }
     else{
-        Import-Template -Path ($modulePath | Join-Path -ChildPath '.vscode') -File "launch.json" -Template "template.launch.json"
+        $destination = $modulePath | Join-Path -ChildPath '.vscode'
+        Import-Template -Path $destination -File "launch.json" -Template "template.launch.json"
     }
 
     return $modulePath

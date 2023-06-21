@@ -90,7 +90,8 @@ function New-ModuleV3 {
 
         # Add devcontainer.json file
         if($AddDevContainerJson){
-            Import-Template -Path ($modulePath | Join-Path -ChildPath ".devcontainer") -File "devcontainer.json" -Template "template.devcontainer.json"
+            $destination = $modulePath | Join-Path -ChildPath ".devcontainer"
+            Import-Template -Path $destination -File "devcontainer.json" -Template "template.devcontainer.json"
         }
 
         # Add License file
@@ -101,7 +102,6 @@ function New-ModuleV3 {
         # Add Readme file
         if($AddReadme){
             $moduleManifest = Get-ModuleManifest -Path $modulePath
-
             Import-Template -Path $modulePath -File "README.md" -Template "template.README.md" -Replaces @{
                 "_MODULE_NAME_" = $moduleName
                 "_MODULE_DESCRIPTION_" = ($moduleManifest.Description ?? "A powershell module that will hold Powershell functionality.")
@@ -111,8 +111,8 @@ function New-ModuleV3 {
         # Add about 
         if($AddAbout){
             $moduleManifest = Get-ModuleManifest -Path $modulePath
-
-            Import-Template -Path ($modulePath | Join-Path -ChildPath "en-US") -File "about_$moduleName.help.txt" -Template "template.about.help.txt" -Replaces @{
+            $destination = $modulePath | Join-Path -ChildPath "en-US"
+            Import-Template -Path $destination -File "about_$moduleName.help.txt" -Template "template.about.help.txt" -Replaces @{
                 "_MODULE_NAME_"        = ($moduleName ?? "<ModuleName>")
                 "_MODULE_DESCRIPTION_" = ($moduleManifest.Description ?? "<Description>")
                 "_AUTHOR_"             = ($moduleManifest.Author ?? "<Author>")
@@ -140,7 +140,7 @@ function New-ModuleV3 {
         # Add PSScriptAnalyzer
         if($AddPSScriptAnalyzerWorkflow){
             $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-            Import-Template -Path $destination -File "PSScriptAnalyzer.yml" -Template "template.PSScriptAnalyzer.yml"
+            Import-Template -Path $destination -File "PSScriptAnalyzer.yml" -Template "template.v3.PSScriptAnalyzer.yml"
         }
 
         # Add Testing

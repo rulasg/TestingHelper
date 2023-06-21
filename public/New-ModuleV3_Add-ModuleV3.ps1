@@ -35,8 +35,10 @@ function Add-ModuleV3 {
 
     # Sample code
     if ($AddSampleCode) {
-        Import-Template -Path ($modulePath | Join-Path -ChildPath "public") -File "samplePublicFunction.ps1" -Template "template.module.functions.public.ps1"
-        Import-Template -Path ($modulePath | Join-Path -ChildPath "private") -File "samplePrivateFunction.ps1" -Template "template.module.functions.private.ps1"
+        $destination = $modulePath | Join-Path -ChildPath "public"
+        Import-Template -Path $destination -File "samplePublicFunction.ps1" -Template "template.module.functions.public.ps1"
+        $destination = $modulePath | Join-Path -ChildPath "private"
+        Import-Template -Path $destination -File "samplePrivateFunction.ps1" -Template "template.module.functions.private.ps1"
     }
 
     # PSD1
