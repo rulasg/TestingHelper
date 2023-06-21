@@ -43,7 +43,7 @@ param(
 # Load helper 
 # We dot souce the ps1 to allow all code to be in the same scope as the script
 # Easier to inject for testing with DependecyInjection parameter
-. ($PSScriptRoot | Join-Path -ChildPath "publish-Helper.ps1")
+. ($PSScriptRoot | Join-Path -ChildPath "publish-helper.ps1")
 if ($DependencyInjection) { 
     . $DependencyInjection 
 }
