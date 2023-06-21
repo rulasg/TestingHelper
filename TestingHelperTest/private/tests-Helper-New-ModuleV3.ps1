@@ -19,7 +19,9 @@ function Assert-AddModuleV3 {
         # Switch to asser licens file
         [Parameter()][switch]$AddLicense,
         # Swithc to assert ReadME file
-        [Parameter()][switch]$AddReadMe
+        [Parameter()][switch]$AddReadMe,
+        # Switch to assert Publish script
+        [Parameter()][switch]$AddPublishScript
 
     )
     
@@ -60,6 +62,12 @@ function Assert-AddModuleV3 {
         $readMePath = $Path | Join-Path -ChildPath "README.md"
         Assert-ItemExist -Path $readMePath -Comment "README.md"
         Assert-IsTrue -Condition ((Get-Content -Path $readMePath) -contains "# $modulename")
+    }
+
+    # Publish
+    if ($AddPublishScript) {
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "publish.ps1") -Comment "Publish-Module.ps1"
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "publish-helper.ps1") -Comment "Publish-Module.ps1"
     }
 
     #PSD1

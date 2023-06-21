@@ -206,3 +206,15 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddAbout{
     Assert-IsTrue -Condition ($aboutContent.Contains($moduleMonifest.CopyRight))
     Assert-IsTrue -Condition ($aboutContent.Contains("Powershell Testing UnitTest Module TestingHelper"))
 }
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddPublishScript{
+    
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddPublishScript
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddPublishScript
+}

@@ -43,7 +43,9 @@ function New-ModuleV3 {
             # Add Readme file
             [Parameter()][switch]$AddReadme,
             #Add about topic
-            [Parameter()][switch]$AddAbout
+            [Parameter()][switch]$AddAbout,
+            # Add Publish script
+            [Parameter()][switch]$AddPublishScript
         )
 
         $retModulePath = $null
@@ -106,6 +108,12 @@ function New-ModuleV3 {
                 "_AUTHOR_"             = ($moduleManifest.Author ?? "<Author>")
                 "_COPYRIGHT_"          = ($moduleManifest.CopyRight ?? "<CopyRight>")
             }
+        }
+
+        # Add Publishing
+        if($AddPublishScript){
+            Import-Template -Path $modulePath -File "publish.ps1" -Template "template.v3.publish.ps1"
+            Import-Template -Path $modulePath -File "publish-helper.ps1" -Template "template.v3.publish-helper.ps1"
         }
 
 
