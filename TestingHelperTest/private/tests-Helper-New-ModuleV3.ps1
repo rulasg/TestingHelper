@@ -21,7 +21,9 @@ function Assert-AddModuleV3 {
         # Swithc to assert ReadME file
         [Parameter()][switch]$AddReadMe,
         # Switch to assert Publish script
-        [Parameter()][switch]$AddPublishScript
+        [Parameter()][switch]$AddPublishScript,
+        # Switch to assert release script
+        [Parameter()][switch]$AddReleaseScript
 
     )
     
@@ -68,6 +70,11 @@ function Assert-AddModuleV3 {
     if ($AddPublishScript) {
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "publish.ps1") -Comment "Publish-Module.ps1"
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "publish-helper.ps1") -Comment "Publish-Module.ps1"
+    }
+
+    # release script
+    if ($AddReleaseScript) {
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "release.ps1") -Comment "release.ps1"
     }
 
     #PSD1

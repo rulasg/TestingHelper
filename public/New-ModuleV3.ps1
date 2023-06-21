@@ -45,7 +45,9 @@ function New-ModuleV3 {
             #Add about topic
             [Parameter()][switch]$AddAbout,
             # Add Publish script
-            [Parameter()][switch]$AddPublishScript
+            [Parameter()][switch]$AddPublishScript,
+            #Add release script
+            [Parameter()][switch]$AddReleaseScript
         )
 
         $retModulePath = $null
@@ -114,6 +116,11 @@ function New-ModuleV3 {
         if($AddPublishScript){
             Import-Template -Path $modulePath -File "publish.ps1" -Template "template.v3.publish.ps1"
             Import-Template -Path $modulePath -File "publish-helper.ps1" -Template "template.v3.publish-helper.ps1"
+        }
+
+        # Add Release
+        if($AddReleaseScript){
+            Import-Template -Path $modulePath -File "release.ps1" -Template "template.v3.release.ps1"
         }
 
 

@@ -218,3 +218,15 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddPublishScript{
     Assert-AreEqualPath -Expected $modulePath -Presented $result
     Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddPublishScript
 }
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddReleaseScript{
+    
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddReleaseScript
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddReleaseScript
+}
