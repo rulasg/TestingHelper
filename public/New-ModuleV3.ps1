@@ -49,7 +49,10 @@ function New-ModuleV3 {
             # Add release script
             [Parameter()][switch]$AddReleaseScript,
             # Add sync script
-            [Parameter()][switch]$AddSyncScript
+            [Parameter()][switch]$AddSyncScript,
+            # Add PSScriptAnalyzer workflow
+            [Parameter()][switch]$AddPSScriptAnalyzer
+
         )
 
         $retModulePath = $null
@@ -129,6 +132,12 @@ function New-ModuleV3 {
         if($AddSyncScript){
             Import-Template -Path $modulePath -File "sync.ps1" -Template "template.v3.sync.ps1"
             Import-Template -Path $modulePath -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
+        }
+
+        # Add PSScriptAnalyzer
+        if($AddPSScriptAnalyzer){
+            $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
+            Import-Template -Path $destination -File "PSScriptAnalyzer.yml" -Template "template.PSScriptAnalyzer.yml"
         }
 
 

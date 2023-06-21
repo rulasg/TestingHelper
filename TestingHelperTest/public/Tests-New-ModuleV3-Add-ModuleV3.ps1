@@ -231,13 +231,24 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddReleaseScript{
     Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddReleaseScript
 }
 
-function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddReleaseScript{
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddSyncScript{
     
     $moduleName = "MyModule"
     $modulePath = '.' | Join-Path -ChildPath $moduleName
 
-    $result = New-TT_ModuleV3 -Name $moduleName -AddReleaseScript
+    $result = New-TT_ModuleV3 -Name $moduleName -AddSyncScript
 
     Assert-AreEqualPath -Expected $modulePath -Presented $result
-    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddReleaseScript
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddSyncScript
+}
+
+function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_AddPSScriptAnalyzer {
+    
+    $moduleName = "MyModule"
+    $modulePath = '.' | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddPSScriptAnalyzer
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddPSScriptAnalyzer
 }

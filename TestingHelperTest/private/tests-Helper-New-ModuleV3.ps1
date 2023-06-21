@@ -25,7 +25,9 @@ function Assert-AddModuleV3 {
         # Switch to assert release script
         [Parameter()][switch]$AddReleaseScript,
         # Switch to assert sync script
-        [Parameter()][switch]$AddSyncScript
+        [Parameter()][switch]$AddSyncScript,
+        # Switch to assert PSScriptAnalyzer workflow
+        [Parameter()][switch]$AddPSScriptAnalyzer
 
     )
     
@@ -83,6 +85,12 @@ function Assert-AddModuleV3 {
     if ($AddSyncScript) {
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync.ps1") -Comment "sync.ps1"
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync-helper.ps1") -Comment "sync-helper.ps1"
+    }
+
+    # PSScriptAnalyzer
+    if ($AddPSScriptAnalyzer) {
+        $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
+        Assert-ItemExist -Path ($destination | Join-Path -ChildPath "PSScriptAnalyzer.yml") -Comment "PSScriptAnalyzer.yml"
     }
 
     #PSD1
