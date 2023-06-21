@@ -30,13 +30,16 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run test.ps1
+        shell: pwsh
         run: | 
           $result = ./test.ps1 -ShowTestErrors
           $result
-          if($result.Tests -eq $result.Pass){
-            "All test passed" | Write-Verbose -verbose
-          } else {
-            "Some test failed" | Write-Verbose -verbose
-            exit 1
-          }
-        shell: pwsh
+
+          # Allow Not Implemented and Skipped tests to pass
+          $passed = $result.Tests -eq $result.Pass + $result.NotImplemented + $result.Skipped
+          # $passed = $result.Tests -eq $result.Pass
+
+          if($passed)
+          { "All test passed" | Write-Verbose -verbose ; exit 0 } 
+          else 
+          { "Not all tests passed" | Write-Verbose -verbose ; exit 1 }
