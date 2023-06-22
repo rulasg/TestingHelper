@@ -76,8 +76,8 @@ function Assert-AddModuleV3 {
 
     # Deploy
     if ($AddDeployScript) {
-        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy.ps1") -Comment "Deploy-Module.ps1"
-        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy-helper.ps1") -Comment "Deploy-Module.ps1"
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy.ps1") -Comment "deploy.ps1"
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy-helper.ps1") -Comment "deploy-helper.ps1"
     }
 
     # release script
