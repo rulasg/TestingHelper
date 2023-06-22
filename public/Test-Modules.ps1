@@ -93,7 +93,6 @@ function Invoke-TestingHelper {
         $versionString = "{0} {1} {2}" -f $manifest.Name, $manifest.ModuleVersion, $manifest.PrivateData.PSData.Prerelease
 
         Get-ModuleHeader | Write-Host -ForegroundColor Green
-        write-host
         "[ {0} ] Running tests from functions [ {1} ] " -f $versionString,([string]::IsNullOrWhiteSpace($TestName) ? "*" : $TestName) | Write-Host -ForegroundColor Green
 
         $local = Push-TestingFolder
@@ -137,14 +136,7 @@ function Invoke-TestingHelper {
             $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
 
             # Display single line result
-            Write-Host  -ForegroundColor DarkCyan 
-            $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
-            " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
-            Out-SingleResultData -Name "Pass"           -Value $result.Pass           -Color "Yellow"
-            Out-SingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
-            Out-SingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
-            Out-SingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
-            Write-Host  -ForegroundColor DarkCyan 
+            Show-ResultSingleLine -Result $result
 
             # Displayy all results strucutre
             $result
@@ -174,6 +166,19 @@ function Test-ModulelocalPSD1 {
         Invoke-TestingHelper -TestName:$TestName -Path:$Path -ShowTestErrors:$ShowTestErrors
     }
 } Export-ModuleMember -Function Test-ModulelocalPSD1
+
+function Show-ResultSingleLine($Result) {
+
+    # Display single line result
+    Write-Host  -ForegroundColor DarkCyan 
+    $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
+    " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
+    Out-SingleResultData -Name "Pass"           -Value $result.Pass           -Color "Yellow"
+    Out-SingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
+    Out-SingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
+    Out-SingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
+    Write-Host  -ForegroundColor DarkCyan 
+}
 
 function Out-SingleResultData($Name,$Value, $Color){
     $testColor = $Value -eq 0 ? "DarkCyan" : $Color
