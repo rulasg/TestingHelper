@@ -21,17 +21,21 @@ jobs:
 
       - name: deploy_ps1
         shell: pwsh
+        env:
+          NUGETAPIKEY: ${{ secrets.NUGETAPIKEY }}
+          EVENT_REF: ${{ github.event.ref }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_NAME: ${{ github.event.release.name }}
         run: | 
-          $ref = "${{github.event.ref}}"
+          $env:EVENT_REF = $env:REF
 
-          If ([string]::IsNullOrEmpty($ref)) {
+          If ([string]::IsNullOrEmpty($env:EVENT_REF)) {
             # Release published trigger
-            $tag = "${{github.event.release.tag_name}}"
-            $releaseName = "${{github.event.release.name}}"
-            write-host -message "Release [$releaseName] on tag [$tag]"
+            $tag = $env:RELEASE_TAG
+            write-host -message "Release [$env:RELEASE_NAME] on tag [$tag]"
           } else {
             # Read Tag o Branch name
-            $tag = $ref.Split('/')[2]
+            $tag = $env:EVENT_REF.Split('/')[2]
             write-host "workflow_dispatch triggered on ref leaf [$tag]"
           }
 
@@ -41,5 +45,4 @@ jobs:
             exit 1
           }
 
-          ./deploy.ps1 -VersionTag $tag -NugetApiKey "${{secrets.NUGETAPIKEY}}"
-
+          ./deploy.ps1 -VersionTag $tag -NugetApiKey $env:NUGETAPIKEY
