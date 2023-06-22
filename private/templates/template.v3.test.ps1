@@ -22,7 +22,6 @@ function Import-TestingHelper{
         [Parameter()][switch]$AllowPrerelease,
         [Parameter()][switch]$PassThru
     )
-
     
     if ($Version) {
         $V = $Version.Split('-')
