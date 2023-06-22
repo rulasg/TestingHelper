@@ -107,7 +107,7 @@ function Invoke-DeployModule {
         Force = $Force
     }
 
-    Publish-Module-Module @parameters
+    Publish-Module @parameters
 
     if($?){
         Write-Information -MessageData "Deployed module [$Name] to PSGallery"
