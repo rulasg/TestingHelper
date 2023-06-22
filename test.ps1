@@ -13,7 +13,10 @@
 #>
 
 [CmdletBinding()]
-param ()
+param (
+    #Switch ShowTestErrors
+    [Parameter()][switch]$ShowTestErrors
+)
 
 function Import-TestingHelper{
     [CmdletBinding()]
@@ -22,7 +25,6 @@ function Import-TestingHelper{
         [Parameter()][switch]$AllowPrerelease,
         [Parameter()][switch]$PassThru
     )
-
     
     if ($Version) {
         $V = $Version.Split('-')
@@ -45,4 +47,4 @@ function Import-TestingHelper{
 Import-TestingHelper -AllowPrerelease
 
 # Run test by PSD1 file
-Invoke-TestingHelper
+Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors
