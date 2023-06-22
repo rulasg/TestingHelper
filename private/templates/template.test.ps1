@@ -45,4 +45,4 @@ function Import-TestingHelper{
 Import-TestingHelper -AllowPrerelease
 
 # Run test by PSD1 file
-Invoke-TestingHelper
+Test-ModulelocalPSD1

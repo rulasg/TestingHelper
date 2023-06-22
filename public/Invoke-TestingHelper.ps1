@@ -52,22 +52,15 @@ function Test-Module {
             $result | Add-Member -NotePropertyName "TestsName" -NotePropertyValue $functionsTestName
             $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
             $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
-
-            # Display single line result
-            Write-Host  -ForegroundColor DarkCyan 
-            $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
-            " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
-            Out-SingleResultData -Name "Pass"           -Value $result.Pass           -Color "Yellow"
-            Out-SingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
-            Out-SingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
-            Out-SingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
-            Write-Host  -ForegroundColor DarkCyan 
-
-            # Displayy all results strucutre
-            $result
-
-            # Save result to global variable
-            $global:ResultTestingHelper = $result
+            
+             # Save result to global variable
+             $global:ResultTestingHelper = $result
+            
+             # Displayy all results strucutre
+             $global:ResultTestingHelper | Write-Output
+ 
+             # Display single line result
+             Show-ResultSingleLine -Result $result
 
             # unload testing module
             Remove-Module -Name $TestingModuleName -Force
@@ -135,14 +128,14 @@ function Invoke-TestingHelper {
             $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
             $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
 
-            # Display single line result
-            Show-ResultSingleLine -Result $result
-
-            # Displayy all results strucutre
-            $result
-
             # Save result to global variable
             $global:ResultTestingHelper = $result
+            
+            # Displayy all results strucutre
+            $global:ResultTestingHelper | Write-Output
+
+            # Display single line result
+            Show-ResultSingleLine -Result $result
 
             # unload testing module
             Remove-Module -Name $TestingModuleName -Force

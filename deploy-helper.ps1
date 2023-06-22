@@ -55,7 +55,7 @@ function Invoke-DeployModuleToPSGallery{
     }
     
     # Deploy the module with ShouldProcess (-whatif, -confirm)
-    if ($PSCmdlet.ShouldProcess($psdPath, "Deploy-Module")) {
+    if ($PSCmdlet.ShouldProcess($psdPath, "Invoke-DeployModule")) {
         "Deploying {0} {1} {2} to PSGallery ..." -f $($psd1.RootModule), $($psd1.ModuleVersion), $($psd1.PrivateData.pSData.Prerelease) | Write-Information
         # During testing we should use -WhatIf paarmetre when calling for deploy. 
         # Just reach this point when testing call failure

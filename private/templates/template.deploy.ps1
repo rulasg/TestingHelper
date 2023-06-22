@@ -70,10 +70,10 @@ if ($Force -and -not $Confirm){
 }
 
 # Deploy the module with ShouldProcess (-whatif, -confirm)
-if ($PSCmdlet.ShouldProcess($psdPath, "Deploy-Module")) {
+if ($PSCmdlet.ShouldProcess($psdPath, "Publish-Module")) {
     $message ="Deploying {0} {1} {2} to PSGallery ..." -f $($psdPath.Name), $($psd1.ModuleVersion), $($psd1.PrivateData.pSData.Prerelease)  
     # show an empty line
     Write-Information -InformationAction Continue -Message ""
     Write-Information -InformationAction Continue -Message $message 
-    Deploy-Module   -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForceDeploy
+    Publish-Module   -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForceDeploy
 }

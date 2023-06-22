@@ -76,8 +76,8 @@ function Assert-AddModuleV3 {
 
     # Deploy
     if ($AddDeployScript) {
-        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy.ps1") -Comment "Deploy-Module.ps1"
-        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy-helper.ps1") -Comment "Deploy-Module.ps1"
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy.ps1") -Comment "deploy.ps1"
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy-helper.ps1") -Comment "deploy-helper.ps1"
     }
 
     # release script
@@ -94,7 +94,7 @@ function Assert-AddModuleV3 {
     # PSScriptAnalyzer
     if ($AddPSScriptAnalyzerWorkflow) {
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Assert-ItemExist -Path ($destination | Join-Path -ChildPath "PSScriptAnalyzer.yml") -Comment "PSScriptAnalyzer.yml"
+        Assert-ItemExist -Path ($destination | Join-Path -ChildPath "powershell.yml") -Comment "powershell.yml"
     }
 
     # TestingWorkflow

@@ -31,8 +31,10 @@ function Out-ContentToFile {
         [Parameter(Mandatory=$true)][string]$filePath
     )
 
-    if ($PSCmdlet.ShouldProcess($filePath, "Save content [{0}] to file" -f $content.Length)) {
-        $content | Out-File -FilePath $filePath -Force
+    process{
+        if ($PSCmdlet.ShouldProcess($filePath, "Save content [{0}] to file" -f $content.Length)) {
+            $content | Out-File -FilePath $filePath -Force
+        }
     }
 }
 
@@ -44,7 +46,12 @@ function Save-UrlContentToFile {
     )
 
     $fileContent = Get-UrlContent -Url $url
-    $fileContent | Out-ContentToFile -FilePath $filePath
 
-    Write-Information -MessageData "Saved content to [$filePath] from [$url]"
+    if ([string]::IsNullOrWhiteSpace($fileContent)) {
+        Write-Error -Message "Content from [$url] is empty"
+        return
+    } else {
+        $fileContent | Out-ContentToFile -FilePath $filePath
+        Write-Information -MessageData "Saved content to [$filePath] from [$url]"
+    }
 }
