@@ -1,9 +1,11 @@
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder" 
 
 function Test-Module {
+    [System.ObsoleteAttribute("This function is obsolete. Use Invoke-TestingHelper instead", $true)]
     [CmdletBinding()] 
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName,Position = 0)] [string] $Name,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName,Position = 0)] 
+        [string] $Name,
         [Parameter( Position = 1)] [string] $TestName,
         [Parameter()] [switch] $ShowTestErrors
     )
@@ -76,7 +78,7 @@ function Test-Module {
     }
 } Export-ModuleMember -Function Test-Module
 
-function Test-ModulelocalPSD1 {
+function Invoke-TestingHelper {
     [CmdletBinding()] 
     param (
         [Parameter( Position = 1)] [string] $TestName,
@@ -156,6 +158,20 @@ function Test-ModulelocalPSD1 {
         finally {
             $local | Pop-TestingFolder
         }
+    }
+} Export-ModuleMember -Function Invoke-TestingHelper
+
+function Test-ModulelocalPSD1 {
+    [System.ObsoleteAttribute("This function is obsolete. Use Invoke-TestingHelper instead", $true)]
+    [CmdletBinding()] 
+    param (
+        [Parameter( Position = 1)] [string] $TestName,
+        [Parameter( Position = 2)] [string] $Path = $MyInvocation.PSScriptRoot,
+        [Parameter()] [switch] $ShowTestErrors
+    )
+
+    process {
+        Invoke-TestingHelper -TestName:$TestName -Path:$Path -ShowTestErrors:$ShowTestErrors
     }
 } Export-ModuleMember -Function Test-ModulelocalPSD1
 
