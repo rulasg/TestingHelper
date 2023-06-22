@@ -6,7 +6,7 @@ function script:New-MyModuleManifest {
         [Parameter(Mandatory)][string]$Path,
         [Parameter(Mandatory)][string]$RootModule
     )
-    New-ModuleManifest  -Path $psd1Path -RootModule $RootModule
+    New-ModuleManifest  -Path $Path -RootModule $RootModule
 }
 
 function script:Update-MyModuleManifest {

@@ -132,24 +132,30 @@ function Get-TestModuleName {
 } 
 
 function Add-Folder{
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,ValueFromPipeline)][string]$Path
     )
 
-    try {
-        #test if path exists
-        if($Path | Test-Path){
-            Write-Error "Path already exists."
+    process {
+
+        try {
+            #test if path exists
+            if($Path | Test-Path){
+                Write-Error "Path already exists."
+                return $false
+            } else {
+                if ($PSCmdlet.ShouldProcess($Path, "New-Item -ItemType Directory")) {
+                    $null = New-Item -ItemType Directory -Path $Path
+                }
+                
+                return $true
+            }
+        } 
+        catch {
+            Write-Error -Message "Failed to add path."
             return $false
-        } else {
-            $null = New-Item -ItemType Directory -Name $Path
-            return $true
         }
-    } 
-    catch {
-        Write-Error -Message "Failed to add path."
-        return $false
     }
 
 }

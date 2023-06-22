@@ -35,7 +35,6 @@ function TestingHelperTest_NewModuleV3_WithOutName {
     # Figure out the Name from folder Name and path
 
     New-TestingFolder -Name "folderName" -PassThru | Set-Location
-    $localPath = Get-Location | Convert-Path
 
     $result = New-TT_ModuleV3 @ErrorParameters
 
@@ -124,7 +123,6 @@ function TestingHelperTest_NewModuleV3_AddReadme_WithDescription{
 
 function TestingHelperTest_NewModuleV3_AddAbout{
     
-    $myDescription = "This is my Description"
     $moduleName = "MyModule"
     $path = '.'
     $modulePath = $path | Join-Path -ChildPath $moduleName
@@ -141,6 +139,7 @@ function TestingHelperTest_NewModuleV3_AddAbout{
     $moduleMonifest = Import-PowerShellDataFile -path ($modulePath | Join-Path -ChildPath "$moduleName.psd1" )
     Assert-AreEqual -Expected $param.Description -Presented $moduleMonifest.Description
     Assert-AreEqual -Expected $param.Author -Presented $moduleMonifest.Author
+    Assert-AreEqual -Expected "$moduleName.psm1" -Presented $moduleMonifest.RootModule
     
     $aboutContent = Get-Content -Path ($modulePath | Join-Path -ChildPath "en-US" -AdditionalChildPath "about_MyModule.help.txt") | Out-String
     Assert-IsTrue -Condition ($aboutContent.Contains("about_$moduleName"))

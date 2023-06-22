@@ -184,9 +184,9 @@ function Out-SingleResultData($Name,$Value, $Color){
     $testColor = $Value -eq 0 ? "DarkCyan" : $Color
 
     "{0}" -f $Name | Write-Host  -ForegroundColor $testColor -NoNewline 
-    "["     -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
-    $Value            | Write-Host  -ForegroundColor $testColor -NoNewline 
-    "] "     -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
+    "["   -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
+    $Value         | Write-Host  -ForegroundColor $testColor -NoNewline 
+    "] "  -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
 }
 
 function Get-TestingFunctionPrefix ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }

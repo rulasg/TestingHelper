@@ -145,12 +145,12 @@ function Assert-TestingV3 {
     )
 
     # $modulePath = $Path | Join-Path -ChildPath $Name
-    $testingModuleName = $moduleName + "Test"
+    $testingModuleName = $Name + "Test"
     $testingModulePath = $path | Join-Path -ChildPath $testingModuleName
 
     Assert-AddModuleV3 -Name $testingModuleName -Path $testingModulePath -Expected $Expected
     Assert-LaunchJson -Path $modulePath
-    Assert-TestScript -Path $modulePath -Name $moduleName
+    Assert-TestScript -Path $modulePath
 
     if ($AddSampleCode) {
         $samplePublicPath = $testingModulePath | Join-Path -ChildPath "public" -AdditionalChildPath SampleFunctionTests.ps1
@@ -161,11 +161,10 @@ function Assert-TestingV3 {
 function Assert-LaunchJson{
     [CmdletBinding()]
     param(
-        [Parameter()][string]$Name,
         [Parameter()][string]$Path
     )
 
-    $launchFile = $Path | Join-Path -ChildPath $Name -AdditionalChildPath ".vscode" , "launch.json"
+    $launchFile = $Path | Join-Path -ChildPath ".vscode" -AdditionalChildPath "launch.json"
 
     Assert-ItemExist -Path $launchFile -Comment "launch.json exists"
     $json = Get-Content -Path $launchFile | ConvertFrom-Json
@@ -185,7 +184,6 @@ function Assert-LaunchJson{
 function Assert-TestScript{
     [CmdletBinding()]
     param(
-        [Parameter()][string]$Name,
         [Parameter()][string]$Path
     )
 

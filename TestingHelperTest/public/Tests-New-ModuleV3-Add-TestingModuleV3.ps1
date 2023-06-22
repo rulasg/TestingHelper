@@ -26,8 +26,6 @@ function TestingHelperTest_NewModuleV3_AddTestingToModule_AddTestingModuleV3_NoP
 
     $moduleName = "MyModule"
     $modulePath = '.' | Join-Path -ChildPath $moduleName
-    $testingModuleName = $moduleName + "Test"
-    $testingModulePath = $modulePath | Join-Path -ChildPath $testingModuleName
 
     $result = Add-TT_TestingToModuleV3 -Name $moduleName -Path $modulePath
  
