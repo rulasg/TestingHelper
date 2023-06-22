@@ -17,5 +17,5 @@ param()
 
 Save-UrlContentToFile -Url 'https://raw.githubusercontent.com/rulasg/DemoPsModule/main/test.ps1'            -FilePath 'test.ps1'
 Save-UrlContentToFile -Url 'https://raw.githubusercontent.com/rulasg/DemoPsModule/main/release.ps1'         -FilePath 'release.ps1'
-Save-UrlContentToFile -Url 'https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish.ps1'         -FilePath 'publish.ps1'
-Save-UrlContentToFile -Url 'https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish-helper.ps1'  -FilePath 'publish-helper.ps1'
+Save-UrlContentToFile -Url 'https://raw.githubusercontent.com/rulasg/DemoPsModule/main/deploy.ps1'         -FilePath 'deploy.ps1'
+Save-UrlContentToFile -Url 'https://raw.githubusercontent.com/rulasg/DemoPsModule/main/deploy-helper.ps1'  -FilePath 'deploy-helper.ps1'

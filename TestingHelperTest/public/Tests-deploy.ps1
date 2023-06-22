@@ -1,10 +1,10 @@
 
-$publish_ps1 = $PSScriptRoot | Split-path -Parent | split-path -Parent | Join-Path -ChildPath 'publish.ps1'
+$deploy_ps1 = $PSScriptRoot | Split-path -Parent | split-path -Parent | Join-Path -ChildPath 'deploy.ps1'
 $manifestPath = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent | Join-Path -ChildPath 'TestingHelper.psd1'
 
 $SCRITPBLOCK_WITHNOEXCEPTION = {
         
-    function Invoke-PublishModule {
+    function Invoke-DeployModule {
         [CmdletBinding()]
         param(
             [Parameter(Mandatory=$true)][string]$Name,
@@ -12,15 +12,15 @@ $SCRITPBLOCK_WITHNOEXCEPTION = {
             [Parameter(Mandatory=$false)][switch]$Force
         )
         
-        "Invoke-PublishModule called with Name: $Name, NuGetApiKey: $NuGetApiKey, Force: $Force" | Write-Information
+        "Invoke-DeployModule called with Name: $Name, NuGetApiKey: $NuGetApiKey, Force: $Force" | Write-Information
         
         return 0
     }
 }
-$EXCEPTION_MESSAGE = 'Some throw exception comming from Publish-Module Injection'
+$EXCEPTION_MESSAGE = 'Some throw exception comming from Deploy-Module Injection'
 $SCRITPBLOCK_WITHEXCEPTION = {
         
-    function Invoke-PublishModule {
+    function Invoke-DeployModule {
         [CmdletBinding()]
         param(
             [Parameter(Mandatory=$true)][string]$Name,
@@ -28,20 +28,20 @@ $SCRITPBLOCK_WITHEXCEPTION = {
             [Parameter(Mandatory=$false)][switch]$Force
         )
         
-        "Invoke-PublishModule called With THROW with Name: $Name, NuGetApiKey: $NuGetApiKey, Force: $Force" | Write-Information
+        "Invoke-DeployModule called With THROW with Name: $Name, NuGetApiKey: $NuGetApiKey, Force: $Force" | Write-Information
 
         throw $EXCEPTION_MESSAGE
     }
 }
 
-$PUBLISH_CALL_PARAMS = @{
+$DEPLOY_CALL_PARAMS = @{
     ErrorAction = 'SilentlyContinue' 
     ErrorVar = 'errorVar'
     InformationAction = 'SilentlyContinue' 
     InformationVar = 'infoVar'
     DependencyInjection = $SCRITPBLOCK_WITHNOEXCEPTION
 }
-$PUBLISH_CALL_PARAMS_WITHEXCEPTION = @{
+$DEPLOY_CALL_PARAMS_WITHEXCEPTION = @{
     ErrorAction = 'SilentlyContinue' 
     ErrorVar = 'errorVar'
     InformationAction = 'SilentlyContinue' 
@@ -49,68 +49,68 @@ $PUBLISH_CALL_PARAMS_WITHEXCEPTION = @{
     DependencyInjection = $SCRITPBLOCK_WITHEXCEPTION
 }
 
-function TestingHelperTest_Publish_NoTag_NoKey{
+function TestingHelperTest_deploy_NoTag_NoKey{
 
     # Fails due to lack of key as parameter of environment
     
     # Clear key env variable 
     $env:NUGETAPIKEY = $null
 
-    & $publish_ps1 @PUBLISH_CALL_PARAMS
+    & $deploy_ps1 @DEPLOY_CALL_PARAMS
 
     # Assert for error
-    Assert-IsFalse $? -Comment "Publish command should fail with Exit <> 0" 
+    Assert-IsFalse $? -Comment "Deploy command should fail with Exit <> 0" 
     Assert-AreEqual -Expected 1 -Presented $LASTEXITCODE
     Assert-Count -Expected 1 -Presented $errorVar
     Assert-IsTrue -Condition ($errorVar[0].exception.Message.Contains('$Env:NUGETAPIKEY is not set.') )
-} Export-ModuleMember -Function TestingHelperTest_Publish_NoTag_NoKey
+} Export-ModuleMember -Function TestingHelperTest_deploy_NoTag_NoKey
 
-function TestingHelperTest_Publish_WithKey{
+function TestingHelperTest_deploy_WithKey{
 
-    & $publish_ps1 -NuGetApiKey "something" @PUBLISH_CALL_PARAMS
+    & $deploy_ps1 -NuGetApiKey "something" @DEPLOY_CALL_PARAMS
 
-    Assert-IsTrue $? -Comment "Publish command should success with Exit <> 0" 
-    Assert-Publish_PS1_Invoke-PublishModule -Presented $infoVar
-} Export-ModuleMember -Function TestingHelperTest_Publish_WithKey
+    Assert-IsTrue $? -Comment "Deploy command should success with Exit <> 0" 
+    Assert-Deploy_PS1_Invoke-DeployModule -Presented $infoVar
+} Export-ModuleMember -Function TestingHelperTest_deploy_WithKey
 
-function TestingHelperTest_Publish_WithKey_WhatIf{
+function TestingHelperTest_deploy_WithKey_WhatIf{
 
-    & $publish_ps1 -NuGetApiKey "something" -WhatIf @PUBLISH_CALL_PARAMS 
+    & $deploy_ps1 -NuGetApiKey "something" -WhatIf @DEPLOY_CALL_PARAMS 
 
-    Assert-IsTrue $? -Comment "Publish command should success with Exit <> 0" 
+    Assert-IsTrue $? -Comment "Deploy command should success with Exit <> 0" 
 
-    # Invoke-PublishModule should not be called
-    Assert-ContainsNotPattern -Expected "Publishing *" -Presented $infoVar.MessageData
-} Export-ModuleMember -Function TestingHelperTest_Publish_WithKey_WhatIf
+    # Invoke-DeployModule should not be called
+    Assert-ContainsNotPattern -Expected "Deploying *" -Presented $infoVar.MessageData
+} Export-ModuleMember -Function TestingHelperTest_deploy_WithKey_WhatIf
 
-function TestingHelperTest_Publish_WithWrongKey_Injected{
+function TestingHelperTest_deploy_WithWrongKey_Injected{
 
     $hasThrow = $false
     try {
-        & $publish_ps1 -NuGetApiKey "something"  @PUBLISH_CALL_PARAMS_WITHEXCEPTION
+        & $deploy_ps1 -NuGetApiKey "something"  @DEPLOY_CALL_PARAMS_WITHEXCEPTION
     }
     catch {
-        # Assert-IsTrue $? -Comment "Publish command should success with Exit <> 0" 
+        # Assert-IsTrue $? -Comment "Deploy command should success with Exit <> 0" 
         Assert-AreEqual -Expected $EXCEPTION_MESSAGE -Presented $_.exception.Message
         $hasThrow = $true
     }
-    Assert-IsTrue -Condition $hasThrow -Comment "Publish command should fail with Exit <> 0"
+    Assert-IsTrue -Condition $hasThrow -Comment "Deploy command should fail with Exit <> 0"
 
-    Assert-Publish_PS1_Invoke-PublishModule -Presented $infoVar
-} Export-ModuleMember -Function TestingHelperTest_Publish_WithWrongKey_Injected
+    Assert-Deploy_PS1_Invoke-DeployModule -Presented $infoVar
+} Export-ModuleMember -Function TestingHelperTest_deploy_WithWrongKey_Injected
 
-function TestingHelperTest_Publish_Key_InEnvironment{
+function TestingHelperTest_deploy_Key_InEnvironment{
 
     $Env:NUGETAPIKEY = "something"
 
-    & $publish_ps1 -NuGetApiKey "something" @PUBLISH_CALL_PARAMS
+    & $deploy_ps1 -NuGetApiKey "something" @DEPLOY_CALL_PARAMS
     
-    Assert-IsTrue $? -Comment "Publish command should success with Exit <> 0" 
+    Assert-IsTrue $? -Comment "Deploy command should success with Exit <> 0" 
 
-    Assert-Publish_PS1_Invoke-PublishModule -Presented $infoVar
-} Export-ModuleMember -Function TestingHelperTest_Publish_Key_InEnvironment
+    Assert-Deploy_PS1_Invoke-DeployModule -Presented $infoVar
+} Export-ModuleMember -Function TestingHelperTest_deploy_Key_InEnvironment
 
-function TestingHelperTest_Publish_With_VersionTag{
+function TestingHelperTest_deploy_With_VersionTag{
 
     # Confirm that we extract from the tag the paramers
 
@@ -120,14 +120,14 @@ function TestingHelperTest_Publish_With_VersionTag{
 
     $versionTag = '1.0.0-alpha'
 
-    & $publish_ps1 -VersionTag $versionTag @PUBLISH_CALL_PARAMS
+    & $deploy_ps1 -VersionTag $versionTag @DEPLOY_CALL_PARAMS
 
     Assert-Manifest -Version "1.0.0" -Prerelease "alpha" -Comment "Valid version tag [$versionTag]"
 
     Reset-Manifest
-} Export-ModuleMember -Function TestingHelperTest_Publish_With_VersionTag
+} Export-ModuleMember -Function TestingHelperTest_deploy_With_VersionTag
 
-function TestingHelperTest_Publish_With_VersionTag_FormatVersion_Valid{
+function TestingHelperTest_deploy_With_VersionTag_FormatVersion_Valid{
     
     $Env:NUGETAPIKEY = "something"
 
@@ -154,16 +154,16 @@ function TestingHelperTest_Publish_With_VersionTag_FormatVersion_Valid{
         $ExpectedVersion = $versionTag.Split('-')[0] -replace '[a-zA-Z_]'
         $ExpectedPrerelease = $versionTag.Split('-')[1] ??[string]::Empty
         
-        & $publish_ps1 -VersionTag $versionTag @PUBLISH_CALL_PARAMS
+        & $deploy_ps1 -VersionTag $versionTag @DEPLOY_CALL_PARAMS
 
-        Assert-Publish_PS1_Invoke-PublishModule -Presented $infoVar
+        Assert-Deploy_PS1_Invoke-DeployModule -Presented $infoVar
         Assert-Manifest -Version $ExpectedVersion -Prerelease $ExpectedPrerelease -Comment "Valid version tag [$versionTag]"
 
         Reset-Manifest
     }
-} Export-ModuleMember -Function TestingHelperTest_Publish_With_VersionTag_FormatVersion_Valid
+} Export-ModuleMember -Function TestingHelperTest_deploy_With_VersionTag_FormatVersion_Valid
 
-function TestingHelperTest_Publish_With_VersionTag_FormatVersion_NotValid{
+function TestingHelperTest_deploy_With_VersionTag_FormatVersion_NotValid{
 
     $Env:NUGETAPIKEY = "something"
         
@@ -183,9 +183,9 @@ function TestingHelperTest_Publish_With_VersionTag_FormatVersion_NotValid{
     $NotValid + $NotValid3Parts| ForEach-Object {
         $versionTag = $_
  
-        & $publish_ps1 -VersionTag $versionTag @PUBLISH_CALL_PARAMS
+        & $deploy_ps1 -VersionTag $versionTag @DEPLOY_CALL_PARAMS
         
-        Assert-IsFalse -Condition $? -Comment "Publish command should fail with Exit <> 0"
+        Assert-IsFalse -Condition $? -Comment "Deploy command should fail with Exit <> 0"
         # Assert-ContainsPattern -Expected "Cannot process argument transformation on parameter 'ModuleVersion'.*" -Presented $errorVar.exception.Message
         Assert-ContainsPattern -Expected "Failed to update module manifest with version tag*" -Presented $errorVar.exception.Message
         Assert-ContainsPattern -Expected "*$versionTag*" -Presented $errorVar.exception.Message
@@ -193,14 +193,14 @@ function TestingHelperTest_Publish_With_VersionTag_FormatVersion_NotValid{
         Reset-Manifest
     }
 
-}  Export-ModuleMember -Function TestingHelperTest_Publish_With_VersionTag_FormatVersion_NotValid
+}  Export-ModuleMember -Function TestingHelperTest_deploy_With_VersionTag_FormatVersion_NotValid
 
-function Assert-Publish_PS1_Invoke-PublishModule{
+function Assert-Deploy_PS1_Invoke-DeployModule{
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)][object] $Presented
     )
-    Assert-ContainsPattern -Expected "Publishing TestingHelper.psm1*" -Presented $Presented.MessageData
+    Assert-ContainsPattern -Expected "Deploying TestingHelper.psm1*" -Presented $Presented.MessageData
 
 }
 

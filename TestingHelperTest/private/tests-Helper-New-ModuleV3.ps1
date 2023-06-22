@@ -20,8 +20,8 @@ function Assert-AddModuleV3 {
         [Parameter()][switch]$AddLicense,
         # Swithc to assert ReadME file
         [Parameter()][switch]$AddReadMe,
-        # Switch to assert Publish script
-        [Parameter()][switch]$AddPublishScript,
+        # Switch to assert Deploy script
+        [Parameter()][switch]$AddDeployScript,
         # Switch to assert release script
         [Parameter()][switch]$AddReleaseScript,
         # Switch to assert sync script
@@ -30,8 +30,8 @@ function Assert-AddModuleV3 {
         [Parameter()][switch]$AddPSScriptAnalyzerWorkflow,
         # Switch to assert testing workflow
         [Parameter()][switch]$AddTestingWorkflow,
-        # Switch to assert publish workflow
-        [Parameter()][switch]$AddPublishWorkflow
+        # Switch to assert deploy workflow
+        [Parameter()][switch]$AddDeployWorkflow
 
     )
     
@@ -74,10 +74,10 @@ function Assert-AddModuleV3 {
         Assert-IsTrue -Condition ((Get-Content -Path $readMePath) -contains "# $modulename")
     }
 
-    # Publish
-    if ($AddPublishScript) {
-        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "publish.ps1") -Comment "Publish-Module.ps1"
-        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "publish-helper.ps1") -Comment "Publish-Module.ps1"
+    # Deploy
+    if ($AddDeployScript) {
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy.ps1") -Comment "Deploy-Module.ps1"
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy-helper.ps1") -Comment "Deploy-Module.ps1"
     }
 
     # release script
@@ -103,10 +103,10 @@ function Assert-AddModuleV3 {
         Assert-ItemExist -Path ($destination | Join-Path -ChildPath "test_with_TestingHelper.yml") -Comment "test_with_TestingHelper.yml"
     }
 
-    # PublishWorkflow
-    if ($AddPublishWorkflow) {
+    # DeployWorkflow
+    if ($AddDeployWorkflow) {
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Assert-ItemExist -Path ($destination | Join-Path -ChildPath "publish_module_on_release.yml") -Comment "publish_module_on_release.yml"
+        Assert-ItemExist -Path ($destination | Join-Path -ChildPath "deploy_module_on_release.yml") -Comment "deploy_module_on_release.yml"
     }
 
     #PSD1

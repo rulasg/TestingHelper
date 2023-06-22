@@ -1,21 +1,21 @@
 <#
 .SYNOPSIS
-    Publish the Module to PSGallery
+    Deploy the Module to PSGallery
 .DESCRIPTION
-    This script will publish the module to the PSGallery
+    This script will deploy the module to the PSGallery
 .NOTES
     You will need to create a NuGet API Key for the PSGallery at https://www.powershellgallery.com/account/apikeys
 .LINK
-    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish.ps1
+    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/deploy.ps1
 .EXAMPLE
-    # Publish the module to the PSGallery without prompting
+    # Deploy the module to the PSGallery without prompting
 
-    > Publish.ps1 -Force -NuGetApiKey "<API Key>""
+    > Deploy.ps1 -Force -NuGetApiKey "<API Key>""
 .EXAMPLE
-    # Publish the module to the PSGallery using PAT on enviroment variable
+    # Deploy the module to the PSGallery using PAT on enviroment variable
 
     > $env:NUGETAPIKEY = <API Key>
-    > ./publish.ps1
+    > ./deploy.ps1
 #>
 
 [CmdletBinding(
@@ -25,10 +25,10 @@
 param(
     # The NuGet API Key for the PSGallery
     [Parameter(Mandatory=$false)] [string]$NuGetApiKey,
-    # Force the publish without prompting for confirmation
+    # Force the deploy without prompting for confirmation
     [Parameter(Mandatory=$false)] [switch]$Force,
-    # Force publishing package to the gallery. Equivalente to Import-Module -Force
-    [Parameter(Mandatory=$false)] [switch]$ForcePublish
+    # Force deploying package to the gallery. Equivalente to Import-Module -Force
+    [Parameter(Mandatory=$false)] [switch]$ForceDeploy
 )
 
 # check that $NuggetApiKey is null or whitespace
@@ -69,11 +69,11 @@ if ($Force -and -not $Confirm){
     $ConfirmPreference = 'None'
 }
 
-# Publish the module with ShouldProcess (-whatif, -confirm)
-if ($PSCmdlet.ShouldProcess($psdPath, "Publish-Module")) {
-    $message ="Publishing {0} {1} {2} to PSGallery ..." -f $($psdPath.Name), $($psd1.ModuleVersion), $($psd1.PrivateData.pSData.Prerelease)  
+# Deploy the module with ShouldProcess (-whatif, -confirm)
+if ($PSCmdlet.ShouldProcess($psdPath, "Deploy-Module")) {
+    $message ="Deploying {0} {1} {2} to PSGallery ..." -f $($psdPath.Name), $($psd1.ModuleVersion), $($psd1.PrivateData.pSData.Prerelease)  
     # show an empty line
     Write-Information -InformationAction Continue -Message ""
     Write-Information -InformationAction Continue -Message $message 
-    Publish-Module   -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForcePublish
+    Deploy-Module   -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForceDeploy
 }
