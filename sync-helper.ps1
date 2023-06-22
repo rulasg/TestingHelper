@@ -44,7 +44,13 @@ function Save-UrlContentToFile {
     )
 
     $fileContent = Get-UrlContent -Url $url
-    $fileContent | Out-ContentToFile -FilePath $filePath
 
-    Write-Information -MessageData "Saved content to [$filePath] from [$url]"
+    # check if $fileContent length is greater than 0
+    if ([string]::IsNullOrWhiteSpace($fileContent)) {
+        Write-Error -Message "Content from [$url] is empty"
+        return
+    } else {
+        $fileContent | Out-ContentToFile -FilePath $filePath
+        Write-Information -MessageData "Saved content to [$filePath] from [$url]"
+    }
 }
