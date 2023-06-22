@@ -12,17 +12,17 @@ This `module` contains `functions` to help create and run Unit Testing for Power
 **Main**
 [![powershell](https://github.com/rulasg/TestingHelper/actions/workflows/powershell.yml/badge.svg?branch=main)](https://github.com/rulasg/TestingHelper/actions/workflows/powershell.yml)
 [![Test with TestingHelper](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml/badge.svg?branch=main)](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml)
-[![Publish on Release Published](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml/badge.svg?branch=main)](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml)
+[![Deploy on Release Published](https://github.com/rulasg/TestingHelper/actions/workflows/deploy_module_on_release.yml/badge.svg?branch=main)](https://github.com/rulasg/TestingHelper/actions/workflows/deploy_module_on_release.yml)
 
 **release/v3**
 [![powershell](https://github.com/rulasg/TestingHelper/actions/workflows/powershell.yml/badge.svg?branch=release%2Fv3)](https://github.com/rulasg/TestingHelper/actions/workflows/powershell.yml)
 [![Test with TestingHelper](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml/badge.svg?branch=release%2Fv3)](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml)
-[![Publish on Release Published](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml/badge.svg?branch=release%2Fv3)](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml)
+[![Deploy on Release Published](https://github.com/rulasg/TestingHelper/actions/workflows/deploy_module_on_release.yml/badge.svg?branch=release%2Fv3)](https://github.com/rulasg/TestingHelper/actions/workflows/deploy_module_on_release.yml)
 
 **release/v2**
 [![powershell](https://github.com/rulasg/TestingHelper/actions/workflows/powershell.yml/badge.svg?branch=release%2Fv2)](https://github.com/rulasg/TestingHelper/actions/workflows/powershell.yml)
 [![Test with TestingHelper](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml/badge.svg?branch=release%2Fv2)](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml)
-[![Publish on Release Published](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml/badge.svg?branch=release%2Fv2)](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml)
+[![Deploy on Release Published](https://github.com/rulasg/TestingHelper/actions/workflows/Deploy_module_on_release.yml/badge.svg?branch=release%2Fv2)](https://github.com/rulasg/TestingHelper/actions/workflows/deploy_module_on_release.yml)
 
 ## How to use it
 
