@@ -61,7 +61,7 @@ function TestingHelperTest_NewModuleV2_RunModuleTest_RunFromAnyLocation_AnyName{
     $test = $ModuleName | Join-Path -ChildPath "test.ps1" | Resolve-Path
 
     # Add prefix to call the script calling commandlet to call the tested version of TestingHelper
-    (Get-Content -Path $test) -replace "Test-ModulelocalPSD1","Test-TT_ModulelocalPSD1" | Set-Content -Path $test
+    (Get-Content -Path $test) -replace "Invoke-TestingHelper","Invoke-TT_TestingHelper" | Set-Content -Path $test
 
     # mode to a different random folder
     New-TestingFolder -PassThru | Set-Location

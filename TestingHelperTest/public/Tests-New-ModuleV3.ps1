@@ -1,3 +1,13 @@
+
+function TestingHelperTest_NewModule_UseAlias{
+    
+    $result = Get-Command -Name New-TT_Module -Module TestingHelper
+    
+    Assert-AreEqual -Expected "Alias" -Presented $result.CommandType
+    Assert-AreEqual -Expected "New-TT_ModuleV3" -Presented $result.Definition
+    Assert-AreEqual -Expected "TestingHelper" -Presented $result.ModuleName
+}
+
 function TestingHelperTest_NewModuleV3_WithName {
 
     $moduleName = "MyModule"
