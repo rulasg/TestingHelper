@@ -23,7 +23,7 @@ function TestingHelperTest_AddModuleHeaderToTest{
     $test = "ModuleName" | Join-Path -ChildPath "test.ps1" | Resolve-Path
 
     # Add prefix to call the script calling commandlet to call the tested version of TestingHelper
-    (Get-Content -Path $test) -replace "Test-ModulelocalPSD1","Test-TT_ModulelocalPSD1" | Set-Content -Path $test
+    (Get-Content -Path $test) -replace "Invoke-TestingHelper","Invoke-TT_TestingHelper" | Set-Content -Path $test
 
     # Run the test.ps1 
     $null = & $test @InfoParameters
@@ -38,7 +38,7 @@ function TestingHelperTest_TestModulelocalPSD1_ResultObject{
     $test = "ModuleName" | Join-Path -ChildPath "test.ps1" | Resolve-Path
 
     # Add prefix to call the script calling commandlet to call the tested version of TestingHelper
-    (Get-Content -Path $test) -replace "Test-ModulelocalPSD1","Test-TT_ModulelocalPSD1" | Set-Content -Path $test
+    (Get-Content -Path $test) -replace "Invoke-TestingHelper","Invoke-TT_TestingHelper" | Set-Content -Path $test
 
     # Run the test.ps1 
     $result = & $test @InfoParameters
