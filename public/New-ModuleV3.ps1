@@ -141,7 +141,7 @@ function New-ModuleV3 {
     # Add PSScriptAnalyzer
     if($AddPSScriptAnalyzerWorkflow){
         $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Import-Template -Path $destination -File "PSScriptAnalyzer.yml" -Template "template.v3.PSScriptAnalyzer.yml"
+        Import-Template -Path $destination -File "powershell.yml" -Template "template.v3.powershell.yml"
     }
 
     # Add Testing
