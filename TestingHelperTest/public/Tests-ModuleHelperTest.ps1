@@ -16,24 +16,9 @@ function TestingHelperTest_GetModuleHeader {
     Assert-AreEqual -Expected (GetExpectedHeader) -Presented $result
 }
 
-function TestingHelperTest_AddModuleHeaderToTest{
+function TestingHelperTest_TestPS1{
 
-    New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9"
-
-    $test = "ModuleName" | Join-Path -ChildPath "test.ps1" | Resolve-Path
-
-    # Add prefix to call the script calling commandlet to call the tested version of TestingHelper
-    (Get-Content -Path $test) -replace "Invoke-TestingHelper","Invoke-TT_TestingHelper" | Set-Content -Path $test
-
-    # Run the test.ps1 
-    $null = & $test @InfoParameters
-
-    Assert-AreEqual -Expected (GetExpectedHeader) -Presented $infoVar[0]
-}
-
-function TestingHelperTest_InvokeTestingHelper_TestPS1{
-
-    New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9"
+    New-TT_Module -Name "ModuleName" -Description "description of the Module" -AddTesting
 
     $test = "ModuleName" | Join-Path -ChildPath "test.ps1" | Resolve-Path
 
@@ -48,9 +33,9 @@ function TestingHelperTest_InvokeTestingHelper_TestPS1{
     Assert-AreEqual -Expected "ModuleNameTest_*" -Presented $result.TestsName
 }
 
-function TestingHelperTest_InvokeTestingHelper_WithPath{
+function TestingHelperTest_TestPS1_WithPath{
 
-    New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9"
+    New-TT_Module -Name "ModuleName" -Description "description of the Module" -AddTesting
 
     $result = Invoke-TT_TestingHelper -Path "./ModuleName"
 
@@ -61,6 +46,7 @@ function TestingHelperTest_InvokeTestingHelper_WithPath{
 
 # Testing TestingHelperTest private function Get-TestedModuleHandle
 function TestingHelperTest_GetModuleHandle {
+    
     $localPath = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent
     $psdpath = Get-ChildItem -Path $localPath -Filter "*.psd1" -ErrorAction SilentlyContinue
     $manifest = Import-PowerShellDataFile -Path $psdpath
