@@ -49,7 +49,7 @@ $DEPLOY_CALL_PARAMS_WITHEXCEPTION = @{
     DependencyInjection = $SCRITPBLOCK_WITHEXCEPTION
 }
 
-function TestingHelperTest_deploy_NoTag_NoKey{
+function TestingHelperTest_Deploy_NoTag_NoKey{
 
     # Fails due to lack of key as parameter of environment
     
@@ -63,17 +63,17 @@ function TestingHelperTest_deploy_NoTag_NoKey{
     Assert-AreEqual -Expected 1 -Presented $LASTEXITCODE
     Assert-Count -Expected 1 -Presented $errorVar
     Assert-IsTrue -Condition ($errorVar[0].exception.Message.Contains('$Env:NUGETAPIKEY is not set.') )
-} Export-ModuleMember -Function TestingHelperTest_deploy_NoTag_NoKey
+} Export-ModuleMember -Function TestingHelperTest_Deploy_NoTag_NoKey
 
-function TestingHelperTest_deploy_WithKey{
+function TestingHelperTest_Deploy_WithKey{
 
     & $deploy_ps1 -NuGetApiKey "something" @DEPLOY_CALL_PARAMS
 
     Assert-IsTrue $? -Comment "Deploy command should success with Exit <> 0" 
     Assert-Deploy_PS1_Invoke-DeployModule -Presented $infoVar
-} Export-ModuleMember -Function TestingHelperTest_deploy_WithKey
+} Export-ModuleMember -Function TestingHelperTest_Deploy_WithKey
 
-function TestingHelperTest_deploy_WithKey_WhatIf{
+function TestingHelperTest_Deploy_WithKey_WhatIf{
 
     & $deploy_ps1 -NuGetApiKey "something" -WhatIf @DEPLOY_CALL_PARAMS 
 
@@ -81,9 +81,9 @@ function TestingHelperTest_deploy_WithKey_WhatIf{
 
     # Invoke-DeployModule should not be called
     Assert-ContainsNotPattern -Expected "Deploying *" -Presented $infoVar.MessageData
-} Export-ModuleMember -Function TestingHelperTest_deploy_WithKey_WhatIf
+} Export-ModuleMember -Function TestingHelperTest_Deploy_WithKey_WhatIf
 
-function TestingHelperTest_deploy_WithWrongKey_Injected{
+function TestingHelperTest_Deploy_WithWrongKey_Injected{
 
     $hasThrow = $false
     try {
@@ -97,9 +97,9 @@ function TestingHelperTest_deploy_WithWrongKey_Injected{
     Assert-IsTrue -Condition $hasThrow -Comment "Deploy command should fail with Exit <> 0"
 
     Assert-Deploy_PS1_Invoke-DeployModule -Presented $infoVar
-} Export-ModuleMember -Function TestingHelperTest_deploy_WithWrongKey_Injected
+} Export-ModuleMember -Function TestingHelperTest_Deploy_WithWrongKey_Injected
 
-function TestingHelperTest_deploy_Key_InEnvironment{
+function TestingHelperTest_Deploy_Key_InEnvironment{
 
     $Env:NUGETAPIKEY = "something"
 
@@ -108,9 +108,9 @@ function TestingHelperTest_deploy_Key_InEnvironment{
     Assert-IsTrue $? -Comment "Deploy command should success with Exit <> 0" 
 
     Assert-Deploy_PS1_Invoke-DeployModule -Presented $infoVar
-} Export-ModuleMember -Function TestingHelperTest_deploy_Key_InEnvironment
+} Export-ModuleMember -Function TestingHelperTest_Deploy_Key_InEnvironment
 
-function TestingHelperTest_deploy_With_VersionTag{
+function TestingHelperTest_Deploy_With_VersionTag{
 
     # Confirm that we extract from the tag the paramers
 
@@ -125,9 +125,9 @@ function TestingHelperTest_deploy_With_VersionTag{
     Assert-Manifest -Version "1.0.0" -Prerelease "alpha" -Comment "Valid version tag [$versionTag]"
 
     Reset-Manifest
-} Export-ModuleMember -Function TestingHelperTest_deploy_With_VersionTag
+} Export-ModuleMember -Function TestingHelperTest_Deploy_With_VersionTag
 
-function TestingHelperTest_deploy_With_VersionTag_FormatVersion_Valid{
+function TestingHelperTest_Deploy_With_VersionTag_FormatVersion_Valid{
     
     $Env:NUGETAPIKEY = "something"
 
@@ -161,9 +161,9 @@ function TestingHelperTest_deploy_With_VersionTag_FormatVersion_Valid{
 
         Reset-Manifest
     }
-} Export-ModuleMember -Function TestingHelperTest_deploy_With_VersionTag_FormatVersion_Valid
+} Export-ModuleMember -Function TestingHelperTest_Deploy_With_VersionTag_FormatVersion_Valid
 
-function TestingHelperTest_deploy_With_VersionTag_FormatVersion_NotValid{
+function TestingHelperTest_Deploy_With_VersionTag_FormatVersion_NotValid{
 
     $Env:NUGETAPIKEY = "something"
         
@@ -193,7 +193,7 @@ function TestingHelperTest_deploy_With_VersionTag_FormatVersion_NotValid{
         Reset-Manifest
     }
 
-}  Export-ModuleMember -Function TestingHelperTest_deploy_With_VersionTag_FormatVersion_NotValid
+}  Export-ModuleMember -Function TestingHelperTest_Deploy_With_VersionTag_FormatVersion_NotValid
 
 function Assert-Deploy_PS1_Invoke-DeployModule{
     [CmdletBinding()]
