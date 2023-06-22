@@ -2,25 +2,25 @@
 
 <#
 .SYNOPSIS
-    Publish a PowerShell module to the PowerShell Gallery.
+    Deploy a PowerShell module to the PowerShell Gallery.
 
 .DESCRIPTION
-    Functions library for publishing a PowerShell module to the PowerShell Gallery.
+    Functions library for deploying a PowerShell module to the PowerShell Gallery.
 
-    This script is intended to be used as a helper for the Publish.ps1 script.
+    This script is intended to be used as a helper for the Deploy.ps1 script.
     It is not intended to be used directly.
 
 .LINK
-    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish-helper.ps1
+    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/deploy-helper.ps1
 
 #>
 
 
 Write-Information -MessageData ("Loading {0} ..." -f ($PSCommandPath | Split-Path -LeafBase))
 
-# This functionalty should be moved to TestingHelper module to allow a simple Publish.ps1 code.
+# This functionalty should be moved to TestingHelper module to allow a simple Deploy.ps1 code.
 
-function Invoke-PublishModuleToPSGallery{
+function Invoke-DeployModuleToPSGallery{
     [CmdletBinding(
     SupportsShouldProcess,
     ConfirmImpact='High'
@@ -28,10 +28,10 @@ function Invoke-PublishModuleToPSGallery{
     param(
         # The NuGet API Key for the PSGallery
         [Parameter(Mandatory=$true)] [string]$NuGetApiKey,
-        # Force the publish without prompting for confirmation
+        # Force the deploy without prompting for confirmation
         [Parameter(Mandatory=$false)] [switch]$Force,
-        # Force publishing package to the gallery. Equivalente to Import-Module -Force
-        [Parameter(Mandatory=$false)] [switch]$ForcePublish
+        # Force deploying package to the gallery. Equivalente to Import-Module -Force
+        [Parameter(Mandatory=$false)] [switch]$ForceDeploy
     )
 
     # look for psd1 file on the same folder as this script
@@ -54,25 +54,25 @@ function Invoke-PublishModuleToPSGallery{
         $ConfirmPreference = 'None'
     }
     
-    # Publish the module with ShouldProcess (-whatif, -confirm)
-    if ($PSCmdlet.ShouldProcess($psdPath, "Publish-Module")) {
-        "Publishing {0} {1} {2} to PSGallery ..." -f $($psd1.RootModule), $($psd1.ModuleVersion), $($psd1.PrivateData.pSData.Prerelease) | Write-Information
-        # During testing we should use -WhatIf paarmetre when calling for publish. 
+    # Deploy the module with ShouldProcess (-whatif, -confirm)
+    if ($PSCmdlet.ShouldProcess($psdPath, "Deploy-Module")) {
+        "Deploying {0} {1} {2} to PSGallery ..." -f $($psd1.RootModule), $($psd1.ModuleVersion), $($psd1.PrivateData.pSData.Prerelease) | Write-Information
+        # During testing we should use -WhatIf paarmetre when calling for deploy. 
         # Just reach this point when testing call failure
-        Invoke-PublishModule -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForcePublish
+        Invoke-DeployModule -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForceDeploy
     }
 }
 
-function Update-PublishModuleManifest {
+function Update-DeployModuleManifest {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true)][string]$VersionTag
     )
 
     $parameters = @{
-        ModuleVersion = Get-PublishModuleVersion -VersionTag $VersionTag
-        Path = Get-PublishModuleManifestPath
-        Prerelease = Get-PublishModulePreRelease -VersionTag $VersionTag
+        ModuleVersion = Get-DeployModuleVersion -VersionTag $VersionTag
+        Path = Get-DeployModuleManifestPath
+        Prerelease = Get-DeployModulePreRelease -VersionTag $VersionTag
     }
 
     # if ($PSCmdlet.ShouldProcess($parameters.Path, "Update-ModuleManifest with ModuleVersion:{0} Prerelease:{1}" -f $parameters.ModuleVersion, $parameters.Prerelease)) {
@@ -81,7 +81,7 @@ function Update-PublishModuleManifest {
         Update-ModuleManifest  @parameters   
         
     } else {
-        Write-Warning -Message "Update-ModuleManifest skipped. Any PSD1 publish will not have the proper version."
+        Write-Warning -Message "Update-ModuleManifest skipped. Any PSD1 deploy will not have the proper version."
     }
 
     if($?){
@@ -93,7 +93,7 @@ function Update-PublishModuleManifest {
     }
 } 
 
-function Invoke-PublishModule {
+function Invoke-DeployModule {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)][string]$Name,
@@ -107,18 +107,18 @@ function Invoke-PublishModule {
         Force = $Force
     }
 
-    Publish-Module @parameters
+    Deploy-Module @parameters
 
     if($?){
-        Write-Information -MessageData "Published module [$Name] to PSGallery"
+        Write-Information -MessageData "Deployed module [$Name] to PSGallery"
     }
     else{
-        Write-Error -Message "Failed to publish module [$Name] to PSGallery"
+        Write-Error -Message "Failed to deploy module [$Name] to PSGallery"
         exit 1
     }
 } 
 
-function Get-PublishModuleVersion {
+function Get-DeployModuleVersion {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)][string]$VersionTag
@@ -130,7 +130,7 @@ function Get-PublishModuleVersion {
     $version
 }
 
-function Get-PublishModulePreRelease {
+function Get-DeployModulePreRelease {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)][string]$VersionTag
@@ -144,7 +144,7 @@ function Get-PublishModulePreRelease {
     $preRelease
 }
 
-function Get-PublishModuleManifestPath {
+function Get-DeployModuleManifestPath {
     [CmdletBinding()]
     param()
 

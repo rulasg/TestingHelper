@@ -6,7 +6,7 @@ This `module` contains `functions` to help create and run Unit Testing for Power
 
 [![PSScriptAnalyzer](https://github.com/rulasg/TestingHelper/actions/workflows/PSScriptAnalyzer.yml/badge.svg)](https://github.com/rulasg/TestingHelper/actions/workflows/PSScriptAnalyzer.yml)
 [![Test with TestingHelper](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml/badge.svg)](https://github.com/rulasg/TestingHelper/actions/workflows/test_with_TestingHelper.yml)
-[![Publish on Release Published](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml/badge.svg)](https://github.com/rulasg/TestingHelper/actions/workflows/publish_module_on_release.yml)
+[![Deploy on Release Deployed](https://github.com/rulasg/TestingHelper/actions/workflows/deploy_module_on_release.yml/badge.svg)](https://github.com/rulasg/TestingHelper/actions/workflows/deploy_module_on_release.yml)
 
 ## How to use it
 

@@ -7,7 +7,7 @@
     This script works very well with GitHub Actions workflow that run on release creation.
 
     Check the following workflow as an example: 
-    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/.github/workflows/publish_module_on_release.yml
+    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/.github/workflows/deploy_module_on_release.yml
 
 
 .PARAMETER VersionTag

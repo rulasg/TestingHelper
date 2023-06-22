@@ -18,7 +18,7 @@
 #             - .vscode
 #               - launch.json
 #
-# Publish     - publish.ps1
+# Deploy      - deploy.ps1
 #
 # About       - en-US
 #               - about_DemoPsModule.help.txt

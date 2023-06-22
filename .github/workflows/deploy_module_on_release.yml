@@ -1,4 +1,4 @@
-name: Publish on Release Published
+name: Deploy on Release Published
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  publish_Production:
+  deploy_to_powershellgallery:
     runs-on: ubuntu-latest
     environment: powershellgallery
     steps:
@@ -19,7 +19,7 @@ jobs:
         run: |
           echo $EVENT_CONTEXT
 
-      - name: publish_ps1
+      - name: deploy_ps1
         shell: pwsh
         run: | 
           $ref = "${{github.event.ref}}"
@@ -41,5 +41,5 @@ jobs:
             exit 1
           }
 
-          ./publish.ps1 -VersionTag $tag -NugetApiKey "${{secrets.NUGETAPIKEY}}"
+          ./deploy.ps1 -VersionTag $tag -NugetApiKey "${{secrets.NUGETAPIKEY}}"
 

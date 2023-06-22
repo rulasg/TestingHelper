@@ -44,8 +44,8 @@ function New-ModuleV3 {
             [Parameter()][switch]$AddReadme,
             # Add about topic
             [Parameter()][switch]$AddAbout,
-            # Add Publish script
-            [Parameter()][switch]$AddPublishScript,
+            # Add deploy script
+            [Parameter()][switch]$AdddeployScript,
             # Add release script
             [Parameter()][switch]$AddReleaseScript,
             # Add sync script
@@ -54,8 +54,8 @@ function New-ModuleV3 {
             [Parameter()][switch]$AddPSScriptAnalyzerWorkflow,
             # Add testing workflow
             [Parameter()][switch]$AddTestingWorkflow,
-            # Add publish workflow
-            [Parameter()][switch]$AddPublishWorkflow
+            # Add deploy workflow
+            [Parameter()][switch]$AdddeployWorkflow
         )
 
         $retModulePath = $null
@@ -120,10 +120,10 @@ function New-ModuleV3 {
             }
         }
 
-        # Add Publishing
-        if($AddPublishScript){
-            Import-Template -Path $modulePath -File "publish.ps1" -Template "template.v3.publish.ps1"
-            Import-Template -Path $modulePath -File "publish-helper.ps1" -Template "template.v3.publish-helper.ps1"
+        # Add deploying
+        if($AdddeployScript){
+            Import-Template -Path $modulePath -File "deploy.ps1" -Template "template.v3.deploy.ps1"
+            Import-Template -Path $modulePath -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
         }
 
         # Add Release
@@ -149,10 +149,10 @@ function New-ModuleV3 {
             Import-Template -Path $destination -File "test_with_TestingHelper.yml" -Template "template.v3.test_with_TestingHelper.yml"
         }
 
-        # Add Publish Workflow
-        if($AddPublishWorkflow){
+        # Add deploy Workflow
+        if($AdddeployWorkflow){
             $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-            Import-Template -Path $destination -File "publish_module_on_release.yml" -Template "template.v3.publish_module_on_release.yml"
+            Import-Template -Path $destination -File "deploy_module_on_release.yml" -Template "template.v3.deploy_module_on_release.yml"
         }
 
         return $retModulePath

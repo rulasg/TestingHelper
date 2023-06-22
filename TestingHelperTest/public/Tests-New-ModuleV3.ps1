@@ -140,16 +140,16 @@ function TestingHelperTest_NewModuleV3_AddAbout{
     Assert-IsTrue -Condition ($aboutContent.Contains("Powershell Testing UnitTest Module TestingHelper"))
 }
 
-function TestingHelperTest_NewModuleV33_AddPublishScript{
+function TestingHelperTest_NewModuleV33_AddDeployScript{
     
     $moduleName = "MyModule"
     $path = '.'
     $modulePath = $path | Join-Path -ChildPath $moduleName
 
-    $result = New-TT_ModuleV3 -Name $moduleName -AddPublishScript
+    $result = New-TT_ModuleV3 -Name $moduleName -AddDeployScript
 
     Assert-AreEqualPath -Expected $modulePath -Presented $result
-    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddPublishScript
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddDeployScript
 }
 
 function TestingHelperTest_NewModuleV3_AddReleaseScript{
@@ -197,13 +197,13 @@ function TestingHelperTest_NewModuleV3_AddTestingWorkflow {
     Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddTestingWorkflow
 }
 
-function TestingHelperTest_NewModuleV3_AddPublishWorkflow {
+function TestingHelperTest_NewModuleV3_AddDeployWorkflow {
     
     $moduleName = "MyModule"
     $modulePath = '.' | Join-Path -ChildPath $moduleName
 
-    $result = New-TT_ModuleV3 -Name $moduleName -AddPublishWorkflow
+    $result = New-TT_ModuleV3 -Name $moduleName -AddDeployWorkflow
 
     Assert-AreEqualPath -Expected $modulePath -Presented $result
-    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddPublishWorkflow
+    Assert-AddModuleV3 -Name $moduleName -Path $modulePath -AddDeployWorkflow
 }
