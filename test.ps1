@@ -13,9 +13,7 @@
 #>
 
 [CmdletBinding()]
-param (
-    [Parameter()][switch]$ShowTestErrors
-)
+param ()
 
 function Import-TestingHelper{
     [CmdletBinding()]
@@ -24,7 +22,8 @@ function Import-TestingHelper{
         [Parameter()][switch]$AllowPrerelease,
         [Parameter()][switch]$PassThru
     )
- 
+
+    
     if ($Version) {
         $V = $Version.Split('-')
         $semVer = $V[0]
@@ -46,6 +45,4 @@ function Import-TestingHelper{
 Import-TestingHelper -AllowPrerelease
 
 # Run test by PSD1 file
-# Test-ModulelocalPSD1 is Obsolete. 
-# Switch to Invoke-TestingHelper as soon as a deplyed version has this function
-Test-ModulelocalPSD1
+Invoke-TestingHelper

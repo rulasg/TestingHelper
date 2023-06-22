@@ -17,7 +17,7 @@ $SCRITPBLOCK_WITHNOEXCEPTION = {
         return 0
     }
 }
-$EXCEPTION_MESSAGE = 'Some throw exception comming from Deploy-Module Injection'
+$EXCEPTION_MESSAGE = 'Some exception message thown  on Invoke-DeployModule injected function'
 $SCRITPBLOCK_WITHEXCEPTION = {
         
     function Invoke-DeployModule {

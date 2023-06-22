@@ -31,8 +31,11 @@ function Out-ContentToFile {
         [Parameter(Mandatory=$true)][string]$filePath
     )
 
-    if ($PSCmdlet.ShouldProcess($filePath, "Save content [{0}] to file" -f $content.Length)) {
-        $content | Out-File -FilePath $filePath -Force
+    process{
+
+        if ($PSCmdlet.ShouldProcess($filePath, "Save content [{0}] to file" -f $content.Length)) {
+            $content | Out-File -FilePath $filePath -Force
+        }
     }
 }
 

@@ -94,7 +94,7 @@ function Assert-AddModuleV3 {
     # PSScriptAnalyzer
     if ($AddPSScriptAnalyzerWorkflow) {
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Assert-ItemExist -Path ($destination | Join-Path -ChildPath "PSScriptAnalyzer.yml") -Comment "PSScriptAnalyzer.yml"
+        Assert-ItemExist -Path ($destination | Join-Path -ChildPath "powershell.yml") -Comment "powershell.yml"
     }
 
     # TestingWorkflow
