@@ -1,14 +1,29 @@
-function Import-Template ($Path,$File,$Template,$Replaces){
+function Import-Template {
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][string]$File,
+        [Parameter(Mandatory)][string]$Template,
+        [Parameter()][hashtable]$Replaces
+    )
 
-    $null = New-Item -ItemType Directory -Force -Path $Path
-
-    $script = Get-Content -Path ($PSScriptRoot  | Join-Path -ChildPath templates -AdditionalChildPath $Template)
-
-    if ($Replaces) {
-        $Replaces.Keys | ForEach-Object {
-            $script = $script.Replace($_, $Replaces.$_)
+    # test if $path exists
+    if(!($Path | Test-Path)){
+        if ($PSCmdlet.ShouldProcess($Path, "New-Item -Directory -Force")) {
+            $null = New-Item -ItemType Directory -Force -Path $Path
         }
     }
 
-    $script |  Out-File -FilePath (Join-Path -Path $Path -ChildPath $File)
+    $content = Get-Content -Path ($PSScriptRoot  | Join-Path -ChildPath templates -AdditionalChildPath $Template)
+
+    if ($Replaces) {
+        $Replaces.Keys | ForEach-Object {
+            $content = $content.Replace($_, $Replaces.$_)
+        }
+    }
+
+    $destination = Join-Path -Path $Path -ChildPath $File
+    if ($PSCmdlet.ShouldProcess($destination, "Set-Content")) {
+        $content | Set-Content -Path $destination
+    }
 }

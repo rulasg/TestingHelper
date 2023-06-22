@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Publish module to PSGallery
+    Deploy module to PSGallery
 
 .DESCRIPTION
-    Publish module to PSGallery
+    Deploy module to PSGallery
 
 .PARAMETER VersionTag
     Update the module manifest with the version tag (Sample: v10.0.01-alpha)
@@ -15,17 +15,17 @@
     DependencyInjection SCRIPTBLOCK to dot source mainly for testing
 
 .EXAMPLE
-    .\publish.ps1 -VersionTag v10.0.01-alpha -NuGetApiKey $NUGETAPIKEY
+    .\deploy.ps1 -VersionTag v10.0.01-alpha -NuGetApiKey $NUGETAPIKEY
 
 .EXAMPLE
     $env:$NUGETAPIKEY = '****'
-    .\publish.ps1 -VersionTag v10.0.01-alpha 
+    .\deploy.ps1 -VersionTag v10.0.01-alpha 
 
 .EXAMPLE
-    .\publish.ps1 -VersionTag v10.0.01-alpha -NuGetApiKey $NUGETAPIKEY -DependencyInjection $SCRIPTBLOCK_FOR_TESTING
+    .\deploy.ps1 -VersionTag v10.0.01-alpha -NuGetApiKey $NUGETAPIKEY -DependencyInjection $SCRIPTBLOCK_FOR_TESTING
 
 .LINK
-    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/publish.ps1
+    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/deploy.ps1
 
 #>
 
@@ -43,7 +43,7 @@ param(
 # Load helper 
 # We dot souce the ps1 to allow all code to be in the same scope as the script
 # Easier to inject for testing with DependecyInjection parameter
-. ($PSScriptRoot | Join-Path -ChildPath "publish-Helper.ps1")
+. ($PSScriptRoot | Join-Path -ChildPath "deploy-helper.ps1")
 if ($DependencyInjection) { 
     . $DependencyInjection 
 }
@@ -53,7 +53,7 @@ if($VersionTag){
 
     try {
         # Force manifest update even with -whatif
-        Update-PublishModuleManifest  $VersionTag -whatif:$false
+        Update-DeployModuleManifest  $VersionTag -whatif:$false
     }
     catch {
         Write-Error -Message "Failed to update module manifest with version tag [$VersionTag]. Error: $_"
@@ -72,6 +72,6 @@ if ( [string]::IsNullOrWhiteSpace($NuGetApiKey) ) {
     $NuGetApiKey = $env:NUGETAPIKEY
 }
 
-# Publish module to PSGallery
-Invoke-PublishModuleToPSGallery -NuGetApiKey $NuGetApiKey -Force
+# Deploy module to PSGallery
+Invoke-DeployModuleToPSGallery -NuGetApiKey $NuGetApiKey -Force
 

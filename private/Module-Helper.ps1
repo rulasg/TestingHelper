@@ -16,5 +16,5 @@ function Get-TestingModuleName {
     )
     
     return ($TargetModule + "Test") 
-}
+} 
 

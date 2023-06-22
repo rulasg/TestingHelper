@@ -1,0 +1,20 @@
+TOPIC
+    about__MODULE_NAME_
+
+AUTHOR
+    _AUTHOR_
+
+COPYRIGHT
+    _COPYRIGHT_
+
+SHORT DESCRIPTION
+    _MODULE_DESCRIPTION_
+
+LONG DESCRIPTION
+    _MODULE_DESCRIPTION_
+
+KEYWORDS
+    Powershell Testing UnitTest Module TestingHelper
+
+SEE ALSO
+    https://github.com/rulasg/TestingHelper/

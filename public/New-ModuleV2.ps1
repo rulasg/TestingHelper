@@ -18,7 +18,7 @@
 #             - .vscode
 #               - launch.json
 #
-# Publish     - publish.ps1
+# Deploy      - deploy.ps1
 #
 # About       - en-US
 #               - about_DemoPsModule.help.txt
@@ -81,9 +81,6 @@ function New-ModuleV2 {
             Import-Template -Path ($modulePath | Join-Path -ChildPath "private") -File "sammplePrivateFunction.ps1" -Template "template.module.functions.private.ps1"
         }
 
-        # publish.ps1
-        # Import-Template -Path $modulePath -File "publich.ps1" -Template "template.publish.ps1"
-            
         # Testing module
         if (-Not $AvoidTestingModule)
         {   

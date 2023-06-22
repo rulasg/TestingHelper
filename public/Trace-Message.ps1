@@ -6,6 +6,9 @@ function Trace-Message {
         $Message
     )
 
-    Write-Verbose -Message $Message
+    process
+    {
+        Write-Verbose -Message $Message
+    }
 
 } Export-ModuleMember -Function Trace-Message

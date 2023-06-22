@@ -1,9 +1,11 @@
 Set-Variable -Name TestRunFolderName -Value "TestRunFolder" 
 
 function Test-Module {
+    [System.ObsoleteAttribute("This function is obsolete. Use Invoke-TestingHelper instead", $true)]
     [CmdletBinding()] 
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName,Position = 0)] [string] $Name,
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName,Position = 0)] 
+        [string] $Name,
         [Parameter( Position = 1)] [string] $TestName,
         [Parameter()] [switch] $ShowTestErrors
     )
@@ -76,7 +78,7 @@ function Test-Module {
     }
 } Export-ModuleMember -Function Test-Module
 
-function Test-ModulelocalPSD1 {
+function Invoke-TestingHelper {
     [CmdletBinding()] 
     param (
         [Parameter( Position = 1)] [string] $TestName,
@@ -91,7 +93,6 @@ function Test-ModulelocalPSD1 {
         $versionString = "{0} {1} {2}" -f $manifest.Name, $manifest.ModuleVersion, $manifest.PrivateData.PSData.Prerelease
 
         Get-ModuleHeader | Write-Host -ForegroundColor Green
-        write-host
         "[ {0} ] Running tests from functions [ {1} ] " -f $versionString,([string]::IsNullOrWhiteSpace($TestName) ? "*" : $TestName) | Write-Host -ForegroundColor Green
 
         $local = Push-TestingFolder
@@ -135,14 +136,7 @@ function Test-ModulelocalPSD1 {
             $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
 
             # Display single line result
-            Write-Host  -ForegroundColor DarkCyan 
-            $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
-            " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
-            Out-SingleResultData -Name "Pass"           -Value $result.Pass           -Color "Yellow"
-            Out-SingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
-            Out-SingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
-            Out-SingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
-            Write-Host  -ForegroundColor DarkCyan 
+            Show-ResultSingleLine -Result $result
 
             # Displayy all results strucutre
             $result
@@ -157,15 +151,42 @@ function Test-ModulelocalPSD1 {
             $local | Pop-TestingFolder
         }
     }
+} Export-ModuleMember -Function Invoke-TestingHelper
+
+function Test-ModulelocalPSD1 {
+    [System.ObsoleteAttribute("This function is obsolete. Use Invoke-TestingHelper instead", $true)]
+    [CmdletBinding()] 
+    param (
+        [Parameter( Position = 1)] [string] $TestName,
+        [Parameter( Position = 2)] [string] $Path = $MyInvocation.PSScriptRoot,
+        [Parameter()] [switch] $ShowTestErrors
+    )
+
+    process {
+        Invoke-TestingHelper -TestName:$TestName -Path:$Path -ShowTestErrors:$ShowTestErrors
+    }
 } Export-ModuleMember -Function Test-ModulelocalPSD1
+
+function Show-ResultSingleLine($Result) {
+
+    # Display single line result
+    Write-Host  -ForegroundColor DarkCyan 
+    $TestingModuleName | Write-Host  -ForegroundColor Green -NoNewline
+    " results - " | Write-Host  -ForegroundColor DarkCyan -NoNewline
+    Out-SingleResultData -Name "Pass"           -Value $result.Pass           -Color "Yellow"
+    Out-SingleResultData -Name "Failed"         -Value $result.Failed         -Color "Red"
+    Out-SingleResultData -Name "Skipped"        -Value $result.Skipped        -Color "Yellow"
+    Out-SingleResultData -Name "NotImplemented" -Value $result.NotImplemented -Color "Red"
+    Write-Host  -ForegroundColor DarkCyan 
+}
 
 function Out-SingleResultData($Name,$Value, $Color){
     $testColor = $Value -eq 0 ? "DarkCyan" : $Color
 
     "{0}" -f $Name | Write-Host  -ForegroundColor $testColor -NoNewline 
-    "["     -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
-    $Value            | Write-Host  -ForegroundColor $testColor -NoNewline 
-    "] "     -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
+    "["   -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
+    $Value         | Write-Host  -ForegroundColor $testColor -NoNewline 
+    "] "  -f $Name | Write-Host  -ForegroundColor DarkCyan -NoNewline 
 }
 
 function Get-TestingFunctionPrefix ([string] $TestingModuleName) { return ($TestingModuleName + "_*") }

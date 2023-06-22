@@ -5,7 +5,6 @@ function New-ModuleV1 {
    Created a Powershell module with BiT21 format.
 #>
     [CmdletBinding()]
-    [Alias("New-Module")] # Set default V2 on release v3.0
     [OutputType([System.IO.FileInfo])]
     Param
     (
@@ -130,7 +129,7 @@ Export-ModuleMember -Function _MODULE_TESTING__*
 
     $toAppend = $toAppend.Replace('_MODULE_TESTING_',$testingModuleName)
 
-    $null = New-Module -Path $Path -Name $testingModuleName -Description "Testing module for $ModuleName" -AvoidTestFile -AppendToModuleFile $toAppend
+    $null = New-ModuleV1 -Path $Path -Name $testingModuleName -Description "Testing module for $ModuleName" -AvoidTestFile -AppendToModuleFile $toAppend
 } Export-ModuleMember -Function New-TestingModule
 
 function New-TestingVsCodeLaunchJson($Path, $ModuleName){

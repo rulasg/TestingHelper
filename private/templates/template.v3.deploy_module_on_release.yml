@@ -1,0 +1,48 @@
+name: Deploy on Release Published
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy_to_powershellgallery:
+    runs-on: ubuntu-latest
+    environment: powershellgallery
+    steps:
+      - uses: actions/checkout@v3
+      - env:
+          EVENT_CONTEXT: ${{ toJSON(github.event) }}
+        run: |
+          echo $EVENT_CONTEXT
+
+      - name: deploy_ps1
+        shell: pwsh
+        env:
+          NUGETAPIKEY: ${{ secrets.NUGETAPIKEY }}
+          EVENT_REF: ${{ github.event.ref }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_NAME: ${{ github.event.release.name }}
+        run: | 
+          $env:EVENT_REF = $env:REF
+
+          If ([string]::IsNullOrEmpty($env:EVENT_REF)) {
+            # Release published trigger
+            $tag = $env:RELEASE_TAG
+            write-host -message "Release [$env:RELEASE_NAME] on tag [$tag]"
+          } else {
+            # Read Tag o Branch name
+            $tag = $env:EVENT_REF.Split('/')[2]
+            write-host "workflow_dispatch triggered on ref leaf [$tag]"
+          }
+
+          If([string]::IsNullorwhitespace($tag)) {
+            # Tag name is empty, exit
+            write-error "Tag name is empty"
+            exit 1
+          }
+
+          ./deploy.ps1 -VersionTag $tag -NugetApiKey $env:NUGETAPIKEY
