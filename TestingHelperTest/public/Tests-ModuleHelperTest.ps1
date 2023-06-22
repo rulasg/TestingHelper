@@ -31,7 +31,7 @@ function TestingHelperTest_AddModuleHeaderToTest{
     Assert-AreEqual -Expected (GetExpectedHeader) -Presented $infoVar[0]
 }
 
-function TestingHelperTest_TestModulelocalPSD1_ResultObject{
+function TestingHelperTest_InvokeTestingHelper_TestPS1{
 
     New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9"
 
@@ -42,6 +42,17 @@ function TestingHelperTest_TestModulelocalPSD1_ResultObject{
 
     # Run the test.ps1 
     $result = & $test @InfoParameters
+
+    Assert-AreEqual -Expected "ModuleName" -Presented $result.Name
+    Assert-AreEqual -Expected "ModuleNameTest" -Presented $result.TestModule
+    Assert-AreEqual -Expected "ModuleNameTest_*" -Presented $result.TestsName
+}
+
+function TestingHelperTest_InvokeTestingHelper_WithPath{
+
+    New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9"
+
+    $result = Invoke-TT_TestingHelper -Path "./ModuleName"
 
     Assert-AreEqual -Expected "ModuleName" -Presented $result.Name
     Assert-AreEqual -Expected "ModuleNameTest" -Presented $result.TestModule
@@ -65,5 +76,4 @@ function TestingHelperTest_GetModuleHandle {
     } else {
         Assert-IsNull -Object $h.PrivateData.PSData.Prerelease
     }
-    
  }
