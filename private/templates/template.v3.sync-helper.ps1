@@ -32,7 +32,6 @@ function Out-ContentToFile {
     )
 
     process{
-
         if ($PSCmdlet.ShouldProcess($filePath, "Save content [{0}] to file" -f $content.Length)) {
             $content | Out-File -FilePath $filePath -Force
         }
