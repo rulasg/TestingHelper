@@ -46,4 +46,6 @@ function Import-TestingHelper{
 Import-TestingHelper -AllowPrerelease
 
 # Run test by PSD1 file
-Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors
+# Test-ModulelocalPSD1 is Obsolete. 
+# Switch to Invoke-TestingHelper as soon as a deplyed version has this function
+Test-ModulelocalPSD1
