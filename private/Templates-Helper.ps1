@@ -1,11 +1,20 @@
+# Imports a template to a file and replace content if $Force
 function Import-Template {
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)][string]$Path,
         [Parameter(Mandatory)][string]$File,
         [Parameter(Mandatory)][string]$Template,
-        [Parameter()][hashtable]$Replaces
+        [Parameter()][hashtable]$Replaces,
+        [Parameter()][switch]$Force
     )
+
+    $destination = Join-Path -Path $Path -ChildPath $File
+
+    if (($destination | Test-Path) -and !$Force) {
+            Write-Warning -Message "File $destination already exists. Use -Force to overwrite"
+            return $false
+    } 
 
     # test if $path exists
     if(!($Path | Test-Path)){
@@ -27,3 +36,24 @@ function Import-Template {
         $content | Set-Content -Path $destination
     }
 }
+
+# function Add-FileFromTemplate {
+#     [CmdletBinding(SupportsShouldProcess)]
+#     param(
+#         [Parameter(Mandatory)][string]$Path,
+#         [Parameter(Mandatory)][string]$File,
+#         [Parameter(Mandatory)][string]$Template,
+#         [Parameter()][hashtable]$Replaces,
+#         [Parameter()][switch]$Force
+#     )
+
+#     $destination = Join-Path -Path $Path -ChildPath $File
+
+#     if (($destionation | Test-Path) -and !$Force) {
+#             Write-Warning -Message "File $destination already exists. Use -Force to overwrite"
+#             return $false
+#     } 
+    
+#     # Import will create File and folder and overwrite if exists
+#     Import-Template -Path $Path -File $File -Template $Template -Replaces $Replaces
+# }
