@@ -130,7 +130,8 @@ function New-ModuleV3 {
 
     # Add Release
     if($AddReleaseScript){
-        Import-Template -Path $modulePath -File "release.ps1" -Template "template.v3.release.ps1"
+        # Import-Template -Path $modulePath -File "release.ps1" -Template "template.v3.release.ps1"
+        Add-ModuleReleaseScript -Path $modulePath
     }
 
     # Add Sync
@@ -141,8 +142,9 @@ function New-ModuleV3 {
 
     # Add PSScriptAnalyzer
     if($AddPSScriptAnalyzerWorkflow){
-        $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Import-Template -Path $destination -File "powershell.yml" -Template "template.v3.powershell.yml"
+        # $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
+        # Import-Template -Path $destination -File "powershell.yml" -Template "template.v3.powershell.yml"
+        Add-ModulePSScriptAnalyzerWorkflow -Path $modulePath
     }
 
     # Add Testing
