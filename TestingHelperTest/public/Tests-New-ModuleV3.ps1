@@ -149,7 +149,7 @@ function TestingHelperTest_NewModuleV3_AddAbout{
     Assert-IsTrue -Condition ($aboutContent.Contains("Powershell Testing UnitTest Module TestingHelper"))
 }
 
-function TestingHelperTest_NewModuleV33_AddDeployScript{
+function TestingHelperTest_NewModuleV3_AddDeployScript{
     
     $moduleName = "MyModule"
     $path = '.'
