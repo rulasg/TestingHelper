@@ -97,7 +97,8 @@ function New-ModuleV3 {
 
     # Add License file
     if($AddLicense){
-        Import-Template -Path $modulePath -File "LICENSE" -Template "template.LICENSE.txt"
+        # Import-Template -Path $modulePath -File "LICENSE" -Template "template.LICENSE.txt"
+        Add-ModuleLicense -Path $modulePath
     }
 
     # Add Readme file
