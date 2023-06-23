@@ -56,7 +56,7 @@ function New-ModuleV3 {
         # Add testing workflow
         [Parameter()][switch]$AddTestingWorkflow,
         # Add deploy workflow
-        [Parameter()][switch]$AdddeployWorkflow
+        [Parameter()][switch]$AddDeployWorkflow
     )
 
     $retModulePath = $null
@@ -91,72 +91,52 @@ function New-ModuleV3 {
 
     # Add devcontainer.json file
     if($AddDevContainerJson){
-        $destination = $modulePath | Join-Path -ChildPath ".devcontainer"
-        Import-Template -Path $destination -File "devcontainer.json" -Template "template.devcontainer.json"
+        $null = Add-ModuleDevContainerJson -Path $modulePath
     }
 
     # Add License file
     if($AddLicense){
-        # Import-Template -Path $modulePath -File "LICENSE" -Template "template.LICENSE.txt"
-        Add-ModuleLicense -Path $modulePath
+        $null = Add-ModuleLicense -Path $modulePath
     }
 
     # Add Readme file
     if($AddReadme){
-        $moduleManifest = Get-ModuleManifest -Path $modulePath
-        Import-Template -Path $modulePath -File "README.md" -Template "template.README.md" -Replaces @{
-            "_MODULE_NAME_" = $moduleName
-            "_MODULE_DESCRIPTION_" = ($moduleManifest.Description ?? "A powershell module that will hold Powershell functionality.")
-        }
+        $null = Add-ModuleReadme -Path $modulePath
     }
 
     # Add about 
     if($AddAbout){
-        $moduleManifest = Get-ModuleManifest -Path $modulePath
-        $destination = $modulePath | Join-Path -ChildPath "en-US"
-        Import-Template -Path $destination -File "about_$moduleName.help.txt" -Template "template.about.help.txt" -Replaces @{
-            "_MODULE_NAME_"        = ($moduleName ?? "<ModuleName>")
-            "_MODULE_DESCRIPTION_" = ($moduleManifest.Description ?? "<Description>")
-            "_AUTHOR_"             = ($moduleManifest.Author ?? "<Author>")
-            "_COPYRIGHT_"          = ($moduleManifest.CopyRight ?? "<CopyRight>")
-        }
+        $null = Add-ModuleAbout -Path $modulePath 
     }
 
     # Add deploying
-    if($AdddeployScript){
-        Import-Template -Path $modulePath -File "deploy.ps1" -Template "template.v3.deploy.ps1"
-        Import-Template -Path $modulePath -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
+    if($AddDeployScript){
+        $null = Add-ModuleDeployScript -Path $modulePath
     }
 
     # Add Release
     if($AddReleaseScript){
-        # Import-Template -Path $modulePath -File "release.ps1" -Template "template.v3.release.ps1"
-        Add-ModuleReleaseScript -Path $modulePath
+        $null = Add-ModuleReleaseScript -Path $modulePath
     }
 
     # Add Sync
     if($AddSyncScript){
-        Import-Template -Path $modulePath -File "sync.ps1" -Template "template.v3.sync.ps1"
-        Import-Template -Path $modulePath -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
+        $null = Add-ModuleSyncScript -Path $modulePath
     }
 
     # Add PSScriptAnalyzer
     if($AddPSScriptAnalyzerWorkflow){
-        # $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        # Import-Template -Path $destination -File "powershell.yml" -Template "template.v3.powershell.yml"
-        Add-ModulePSScriptAnalyzerWorkflow -Path $modulePath
+        $null = Add-ModulePSScriptAnalyzerWorkflow -Path $modulePath
     }
 
     # Add Testing
     if($AddTestingWorkflow){
-        $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Import-Template -Path $destination -File "test_with_TestingHelper.yml" -Template "template.v3.test_with_TestingHelper.yml"
+        $null = Add-ModuleTestingWorkflow -Path $modulePath
     }
 
     # Add deploy Workflow
-    if($AdddeployWorkflow){
-        $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Import-Template -Path $destination -File "deploy_module_on_release.yml" -Template "template.v3.deploy_module_on_release.yml"
+    if($AddDeployWorkflow){
+        $null = Add-ModuledeployWorkflow -Path $modulePath
     }
 
     return $retModulePath
