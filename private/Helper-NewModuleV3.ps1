@@ -1,137 +1,70 @@
 
-# function Get-ModulePath{
-#     [CmdletBinding()]
-#     param(
-#         [Parameter()][string]$Name,
-#         [Parameter()][string]$Path
-#     )
-
-#     # Asumes current as the default path
-#     $path = [string]::IsNullOrWhiteSpace($Path) ? (Get-Location | Convert-Path) : $Path
-
-#     # Use dot local path
-#     $modulePath = [string]::IsNullOrWhiteSpace($Name) ? $path : ($path | Join-Path -ChildPath $Name)
-
-#     return $modulePath
-# }
-
-# function Get-ModulePath{
-#     [CmdletBinding()]
-#     param(
-#         [Parameter()][string]$Name,
-#         [Parameter()][string]$Path
-#     )
-
-#     # | path/name | null  | Name        |
-#     # | --------- | ----- | ----------- |
-#     # | null      | Error | Name        |
-#     # | Path      | Path  | Path + Name |
-
-#     if ([string]::IsNullOrWhiteSpace($Path) -and [string]::IsNullOrWhiteSpace($Name)) {
-#         write-Error "Path and Name cannot be null or empty at the same time."
-#         return $null
-#     } 
-
-#     $modulePath = [string]::IsNullOrWhiteSpace($Path) ? (Get-Location | Convert-Path) : $Path
-
-#     $ret =  ([string]::IsNullOrWhiteSpace($Name)) ? $modulePath : ($modulePath | Join-Path -ChildPath $Name)
-
-#     return $ret
-# }
-
-# function Get-ModulePath{
-#     [CmdletBinding()]
-#     param(
-#         [Parameter()][string]$Name,
-#         [Parameter()][string]$Path
-#     )
-
-#     # | path/name | null  | Name        |
-#     # | --------- | ----- | ----------- |
-#     # | null      | Error | Name        |
-#     # | Path      | Path  | Path        |
-
-#     if ([string]::IsNullOrWhiteSpace($Path) -and [string]::IsNullOrWhiteSpace($Name)) {
-#         write-Error "Path and Name cannot be null or empty at the same time."
-#         return $null
-#     } 
-
-#     $ret = [string]::IsNullOrWhiteSpace($Path) ? $Name : $Path
-
-#     return $ret
-# }
 
 function Get-ModulePath{
     [CmdletBinding()]
     param(
         [Parameter()][string]$Name,
-        [Parameter()][string]$Path,
-        [Parameter()][switch]$AppendName
+        [Parameter()][string]$RootPath
     )
 
     # | path/name | null  | Name        |
     # | --------- | ----- | ----------- |
-    # | null      | Error | Name        |
-    # | Path      | Path  | Path        |
+    # | null      | Error | ./Name      |
+    # | Path      | '.'   | Path/Name   |
 
     if ([string]::IsNullOrWhiteSpace($Path) -and [string]::IsNullOrWhiteSpace($Name)) {
         write-Error "Path and Name cannot be null or empty at the same time."
         return $null
     } 
 
-    $ret =  ([string]::IsNullOrWhiteSpace($Path) ? $Name : `
-            ([string]::IsNullOrWhiteSpace($Name) ? $Path : `
-            ( !$AppendName                       ? $Path :  `
-            ($Path | Join-Path -ChildPath $Name))))
-
-
-    return $ret
-}
-
-function Get-TestModulePath{
-    [CmdletBinding()]
-    param(
-        [Parameter()][string]$Name,
-        [Parameter()][string]$Path
-    )
-
-    $modulepath = Get-ModulePath -Name $Name -Path $Path
-    $moduleName = Get-ModuleName -Name $Name -ModulePath $Path
-
-    $testModuleName = Get-TestModuleName -Name $moduleName
-    $tesModulePath = $modulepath | Join-Path -ChildPath $testModuleName
-
-    return $tesModulePath
+    #check if path is null
+    $path = [string]::IsNullOrWhiteSpace($Path) ? (Get-Location | Convert-Path) : $Path
+    $ret = $path | Join-Path -ChildPath $Name
+    return $ret 
 }
 
 function Get-ModuleName{
     [CmdletBinding()]
     param(
-        [Parameter()][string]$Name,
-        [Parameter()][string]$ModulePath
+        [Parameter()][string]$Path
     )
 
-    #Return Name if provided
-    if(![string]::IsNullOrWhiteSpace($Name)){
-        return $Name
+    # null if path is null
+    if([string]::IsNullOrWhiteSpace($Path)){
+        return $null
     }
 
-    # extract name from path
-    $retName = Get-ModulePath -Name $Name -Path $ModulePath | Split-Path -Leaf
+    $name = $Path | Split-Path -LeafBase
 
-    return $retName
+    return $name
+}
+
+function Get-TestModulePath{
+    [CmdletBinding()]
+    param(
+        [Parameter()][string]$Path
+    )
+
+    $moduleName = Get-ModuleName -Path $Path
+
+    $testModulePath = $path | Join-Path -ChildPath ($moduleName + "Test")
+
+    return $testModulePath
 }
 
 function Get-TestModuleName {
     [CmdletBinding()]
     param (
-        [parameter(Mandatory)] [string] $Name
+        [parameter(Mandatory)] [string] $Path
     )
     
-    return ($Name + "Test") 
+    $testPath = Get-TestModulePath -Path $Path
+    $name = Get-ModuleName -Path $testPath
+
+    return $name
 } 
 
-function Add-Folder{
+function New-Folder{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,ValueFromPipeline)][string]$Path
@@ -143,18 +76,19 @@ function Add-Folder{
             #test if path exists
             if($Path | Test-Path){
                 Write-Error "Path already exists."
-                return $false
+                return $null
             } else {
                 if ($PSCmdlet.ShouldProcess($Path, "New-Item -ItemType Directory")) {
                     $null = New-Item -ItemType Directory -Path $Path
                 }
                 
-                return $true
+                # Converting to Provider path
+                return $Path | Convert-Path
             }
         } 
         catch {
             Write-Error -Message "Failed to add path."
-            return $false
+            return $null
         }
     }
 

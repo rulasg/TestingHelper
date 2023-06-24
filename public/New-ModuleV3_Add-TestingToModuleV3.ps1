@@ -3,14 +3,13 @@ function Add-TestModuleV3 {
     Param
     (
         [Parameter()][string]$Path,
-        [Parameter(Mandatory)][string]$Name,
         [Parameter()][hashtable]$Metadata
     ) 
 
-    $testingModuleName = Get-TestModuleName -Name $Name
-    $testingModulePath = Get-TestModulePath -Name $Name -Path $Path
+    $testingModuleName = Get-TestModuleName -Path $Path
+    $testingModulePath = Get-TestModulePath -Path $Path
 
-    $result = Add-ModuleV3 -Name $testingModuleName -Path $testingModulePath -Metadata $Metadata
+    $result = Add-ModuleV3 -Name $testingModuleName -RootPath $testingModulePath -Metadata $Metadata
 
     if(!$result){
         Write-Error -Message ("Error creating the module [$testingModuleName].")
@@ -33,7 +32,7 @@ function Add-TestingToModuleV3{
         [Parameter()][switch]$AddSampleCode
     ) 
 
-    $testModulePath = Add-TestModuleV3 -Path $Path -Name $Name -Metadata $Metadata
+    $testModulePath = Add-TestModuleV3 -Path $Path -Metadata $Metadata
 
     if (!$testModulePath) {
         Write-Error -Message ("Error creating Testing for Module [$Name].")
@@ -42,16 +41,11 @@ function Add-TestingToModuleV3{
 
     # Sample test
     if ($AddSampleCode) {
-        $destination = $testModulePath | Join-Path -ChildPath "public"
-
-        Import-Template -Path $destination -File "SampleFunctionTests.ps1" -Template "template.testmodule.functions.public.ps1" -Replaces @{
-            '_MODULE_TESTING_' = $testingModuleName
-            '_MODULE_TESTED_' = $ModuleName
-        }
+        Add-TestSampleCode -Path $testModulePath
     }
 
     # Get root folder
-    $modulePath = Get-ModulePath -Path $Path
+    $modulePath = Get-ModulePath -RootPath $Path
 
     # test.ps1 script
     $testScriptPath = $modulePath | Join-Path -ChildPath "test.ps1"

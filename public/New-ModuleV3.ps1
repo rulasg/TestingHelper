@@ -61,8 +61,8 @@ function New-ModuleV3 {
 
     $retModulePath = $null
 
-    $modulePath = Get-ModulePath -Name $Name -Path $Path -AppendName
-    $moduleName = Get-ModuleName -Name $Name -ModulePath $modulePath
+    $modulePath = Get-ModulePath -Name $Name -RootPath $Path
+    $moduleName = Get-ModuleName -Path $modulePath
 
     # Create the module
     if ($moduleName) {
@@ -71,21 +71,31 @@ function New-ModuleV3 {
         $metadata = @{}
         if($Description){ $metadata.Description = $Description}
         if($Author){ $metadata.Author = $Author}
-        if($ModuleVersion){ $metadata.ModuleVersion = $Version}
+        if($ModuleVersion){ $metadata.ModuleVersion = $ModuleVersion}
 
-        $retModulePath = Add-ModuleV3 -Name $moduleName -Path $modulePath -Metadata $metadata -AddSampleCode:$AddSampleCode
-
+        $retModulePath = Add-ModuleV3 -Name $moduleName -RootPath $modulePath -Metadata $metadata
+        
         if(!$retModulePath){
             return $null
+        }
+
+        # Add Sample Code
+        if($AddSampleCode){
+            $null = Add-ModuleSampleCode -Path $modulePath
         }
     }
 
     if ($AddTesting) {
-        $result = Add-TestingToModuleV3 -Name $Name -Path $modulePath -AddSampleCode:$AddSampleCode
+        $result = Add-TestingToModuleV3 -Name $Name -Path $modulePath
         
         # Check if the module was created
         if(! $result){
             return $null
+        }
+
+        # Add Sample Code
+        if($AddSampleCode){
+            $null = Add-TestSampleCode -Path $modulePath
         }
     }
 

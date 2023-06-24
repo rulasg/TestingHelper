@@ -7,7 +7,7 @@ function TestingHelperTest_NewModuleV3_AddTestingToModule_AddTestingModuleV3_Sim
     $modulePath = $folderName
 
     $param = @{
-        RootModule        = "MyModuleTest.psm1"
+        # RootModule        = "MyModuleTest.psm1"
         Author            = "Me"
         CompanyName       = "MyCompany"
         ModuleVersion     = "6.6.6"

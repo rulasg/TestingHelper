@@ -41,7 +41,7 @@ function TestingHelperTest_NewModuleV3_AddModule_DefaultManifest {
 
     Assert-AreEqualPath -Expected $moduleName -Presented $result
 
-    Assert-AddModuleV3 -Name $moduleName -Path $moduleName -Expected $defaultsManifest
+    Assert-AddModuleV3  -Path $moduleName -Expected $defaultsManifest
 }
 
 function TestingHelperTest_NewModuleV3_AddModule_MyManifest {
@@ -60,7 +60,7 @@ function TestingHelperTest_NewModuleV3_AddModule_MyManifest {
     
     $result = Add-TT_ModuleV3 -Name $moduleName -Metadata $param
 
-    Assert-AddModuleV3 -Name $moduleName -Path $result -Expected $param
+    Assert-AddModuleV3  -Path $result -Expected $param
 
 }
 

@@ -35,7 +35,7 @@ function Invoke-DeployModuleToPSGallery{
     )
 
     # look for psd1 file on the same folder as this script
-    $moduleName  = $PSScriptRoot | Split-Path -leaf
+    $moduleName  = $PSScriptRoot | Split-Path -LeafBase 
     $psdPath = $PSScriptRoot | Join-Path -ChildPath "$moduleName.psd1"
 
     # check if $psd is set
@@ -149,7 +149,7 @@ function Get-DeployModuleManifestPath {
     param()
 
     # look for psd1 file on the same folder as this script
-    $moduleName  = $PSScriptRoot | Split-Path -leaf
+    $moduleName  = $PSScriptRoot | Split-Path -LeafBase
     $psdPath = $PSScriptRoot | Join-Path -ChildPath "$moduleName.psd1"
 
     # check if $psd is set
