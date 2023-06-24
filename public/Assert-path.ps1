@@ -10,6 +10,10 @@ function Assert-AreEqualPath {
     $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
     $pr = &{ if ($Presented | Test-Path) { $Presented | Convert-Path} else {$Presented}}
 
+    # trim last '/' if exists
+    if($ex.EndsWith('/')){ $ex = $ex.Substring(0, $ex.Length - 1) }
+    if($pr.EndsWith('/')){ $pr = $pr.Substring(0, $pr.Length - 1) }
+
     Assert-AreEqual -Expected $ex -Presented $pr -Comment ("Path not equal - " + $Comment)
 }
 
@@ -24,6 +28,10 @@ function Assert-AreNotEqualPath {
 
     $ex = &{ if ($Expected  | Test-Path) { $Expected  | Convert-Path} else {$Expected} }
     $pr = &{ if ($Presented | Test-Path) { $Presented | Convert-Path} else {$Presented}}
+
+    # trim last '/' if exists
+    if($ex.EndsWith('/')){ $ex = $ex.Substring(0, $ex.Length - 1) }
+    if($pr.EndsWith('/')){ $pr = $pr.Substring(0, $pr.Length - 1) }
 
     Assert-AreNotEqual -Expected $ex -Presented $pr -Comment ("Path equal - " + $Comment)
 }
