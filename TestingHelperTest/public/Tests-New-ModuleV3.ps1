@@ -18,7 +18,7 @@ function TestingHelperTest_NewModuleV3_WithName {
     $result | Assert-AddModuleV3   
 }
 
-function TestingHelperTest_NewModuleV3_WithNameRemotePath {
+function TestingHelperTest_NewModuleV3_WithName_RemotePath {
 
     $moduleName = "MyModule"
     $folderName = "FolderName"
@@ -42,7 +42,7 @@ function TestingHelperTest_NewModuleV3_WithOutName {
     Assert-Contains -Expected "Path and Name cannot be null or empty at the same time." -Presented $errorVar.Exception.Message
 }
 
-function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_Simple{
+function TestingHelperTest_NewModuleV3_AddTesting{
 
     $moduleName = "MyModule"
     $path = '.'
@@ -52,23 +52,10 @@ function TestingHelperTest_NewModuleV3_AddTestingToModuleV3_Simple{
 
     Assert-AreEqualPath -Expected $modulePath -Presented $result
 
-    Assert-TestingV3 -Name $moduleName -Path $modulePath
-}
-
-function TestingHelperTest_NewModuleV3_AddModuleV3_AddTestingToModuleV3_AddSampleCode{
-
-    $moduleName = "MyModule"
-    $path = '.'
-    $modulePath = $path | Join-Path -ChildPath $moduleName
-
-    $result = New-TT_ModuleV3 -Name $moduleName -AddTesting -AddSampleCode
-
-    Assert-AreEqualPath -Expected $modulePath -Presented $result
-
     Assert-AddModuleV3  -Path $modulePath 
     Assert-AddSampleCodes -Path $modulePath
     
-    Assert-TestingV3 -Name $moduleName -Path $modulePath 
-    Assert-AddTestingSampleCodes -Path $modulePath
+    Assert-TestModuleV3 -Path $modulePath 
+    Assert-AddTestSampleCodes -Path $modulePath
 }
 

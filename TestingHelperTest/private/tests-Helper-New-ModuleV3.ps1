@@ -6,14 +6,13 @@ function Get-DefaultsManifest {
 
 
 
-function Assert-TestingV3 {
+function Assert-TestModuleV3 {
     param(
-        [Parameter()][string]$Name,
         [Parameter()][string]$Path,
         [Parameter()][hashtable]$Expected
     )
 
-    Assert-AddTestingV3 -Path $Path -Expected $Expected
+    Assert-AddTestV3 -Path $Path -Expected $Expected
 
 }
 

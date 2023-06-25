@@ -23,7 +23,8 @@ function Import-Template {
         }
     }
 
-    $content = Get-Content -Path ($PSScriptRoot  | Join-Path -ChildPath templates -AdditionalChildPath $Template)
+    $templatePath = $PSScriptRoot  | Join-Path -ChildPath templates -AdditionalChildPath $Template
+    $content = Get-Content -Path $templatePath
 
     if ($Replaces) {
         $Replaces.Keys | ForEach-Object {

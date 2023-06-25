@@ -52,6 +52,6 @@ function Add-ModuleV3 {
         return $null
     }
 
-    return $modulePath
+    return $modulePath | Convert-Path
 
 } Export-ModuleMember -Function Add-ModuleV3

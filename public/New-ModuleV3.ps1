@@ -64,6 +64,9 @@ function New-ModuleV3 {
     $modulePath = Get-ModulePath -Name $Name -RootPath $Path
     $moduleName = Get-ModuleName -Path $modulePath
 
+    # If asked for testing add sample code on both modules
+    $AddSampleCode = $AddSampleCode -or $AddTesting
+
     # Create the module
     if ($moduleName) {
 
@@ -86,7 +89,7 @@ function New-ModuleV3 {
     }
 
     if ($AddTesting) {
-        $result = Add-TestingToModuleV3 -Name $Name -Path $modulePath
+        $result = Add-TestToModuleAll -Path $modulePath
         
         # Check if the module was created
         if(! $result){

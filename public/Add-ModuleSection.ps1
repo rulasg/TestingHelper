@@ -320,3 +320,44 @@ function Add-ToModuleAll{
     }
 
 } Export-ModuleMember -Function Add-ToModuleAll
+
+# Add test.ps1 script
+function Add-ToModuleTestScript{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path,
+        [Parameter()][switch]$Force
+    )
+
+    process{
+        $Path = GetPath -Path:$Path ?? return $null
+
+        Import-Template -Force:$Force -Path $Path -File "test.ps1" -Template "template.v3.test.ps1"
+    
+        return ReturnValue -Path $Path -Force:$Force
+    }
+} Export-ModuleMember -Function Add-ToModuleTestScript
+
+# Add launch.json to module
+function Add-ToModuleLaunchJson{
+    [CmdletBinding(SupportsShouldProcess)]
+    Param
+    (
+        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path,
+        [Parameter()][switch]$Force
+    )
+
+    process{
+        $Path = GetPath -Path:$Path ?? return $null
+        $destination = $Path | Join-Path -ChildPath ".vscode"
+
+        Import-Template -Force:$Force -Path $destination -File "launch.json" -Template "template.launch.json"
+    
+        return ReturnValue -Path $Path -Force:$Force
+    }
+} Export-ModuleMember -Function Add-ToModuleLaunchJson

@@ -182,7 +182,7 @@ function Assert-AddPSScriptAnalyzerWorkflow{
 
 
 # TestingWorkflow
-function Assert-AddTestingWorkflow{
+function Assert-AddTestWorkflow{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
@@ -231,7 +231,7 @@ function Assert-AddSampleCodes{
 }
 
 #Testing SampleCode
-function Assert-AddTestingSampleCodes{
+function Assert-AddTestSampleCodes{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
@@ -251,12 +251,11 @@ function Assert-AddTestingSampleCodes{
 }
 
 # Testing launch.json
-function Assert-AddTestingLaunchJson{
+function Assert-AddTestLaunchJson{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [ValidateSet("Pester","PesterWithTestingHelper")]
-        [string] $TestingFramework,
+        [string] $Path,
         [Parameter()][switch]$Passthru
     )
     process{
@@ -281,12 +280,11 @@ function Assert-AddTestingLaunchJson{
 }
 
 # Testing TestScript
-function Assert-AddTestingTestScript{
+function Assert-AddTestTestScript{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [ValidateSet("Pester","PesterWithTestingHelper")]
-        [string] $TestingFramework,
+        [string] $Path,
         [Parameter()][switch]$Passthru
     )
     process{
@@ -373,7 +371,7 @@ function Assert-AddModuleV3{
     }
 }
 
-function Assert-AddTestingV3 {
+function Assert-AddTestV3 {
     param(
         [Parameter()][string]$Path,
         [Parameter()][hashtable]$Expected
@@ -387,6 +385,9 @@ function Assert-AddTestingV3 {
         $testingModulePath = $path | Join-Path -ChildPath $testingModuleName
         
         Assert-AddModuleV3 -Path $testingModulePath -Expected $Expected
+
+        Assert-AddTestTestScript -Path $Path
+        Assert-AddTestLaunchJson -Path $Path
     }
 
 }
@@ -408,7 +409,7 @@ function Assert-AddFull{
         $Path | Assert-AddReleaseScript
         $Path | Assert-AddSyncScript
         $Path | Assert-AddPSScriptAnalyzerWorkflow
-        $Path | Assert-AddTestingWorkflow
+        $Path | Assert-AddTestWorkflow
         $Path | Assert-AddDeployWorkflow
     
         return $Passthru ? $Path : $null

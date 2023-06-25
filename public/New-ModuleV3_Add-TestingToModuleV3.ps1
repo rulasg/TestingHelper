@@ -3,17 +3,32 @@ function Add-TestModuleV3 {
     Param
     (
         [Parameter()][string]$Path,
-        [Parameter()][hashtable]$Metadata
+        [Parameter()][switch]$AddSampleCode
     ) 
 
     $testingModuleName = Get-TestModuleName -Path $Path
     $testingModulePath = Get-TestModulePath -Path $Path
 
-    $result = Add-ModuleV3 -Name $testingModuleName -RootPath $testingModulePath -Metadata $Metadata
+    # Generate metadata from the module
+    $manifest = Get-ModuleManifest -Path $Path
+    # Probably we need to tune the metadata fo the testing module
+    $manifest.Remove('Path')
+    $manifest.Remove('PsdPath')
+    $manifest.Remove('Name')
+    $manifest.Remove('RootModule')
+    $manifest.Remove('GUID')
+
+
+    $result = Add-ModuleV3 -Name $testingModuleName -RootPath $testingModulePath -Metadata $manifest
 
     if(!$result){
         Write-Error -Message ("Error creating the module [$testingModuleName].")
         return $null
+    }
+
+    # AddSampleCode
+    if ($AddSampleCode) {
+        $null = Add-TestSampleCode -Path $result
     }
 
     return $result
@@ -22,50 +37,34 @@ function Add-TestModuleV3 {
 
 
 
-function Add-TestingToModuleV3{
+function Add-TestToModuleAll{
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory)][string]$Path,
-        [Parameter(Mandatory)][string]$Name,
-        [Parameter()][hashtable]$Metadata,
-        [Parameter()][switch]$AddSampleCode
+        [Parameter()][string]$Path
     ) 
 
-    $testModulePath = Add-TestModuleV3 -Path $Path -Metadata $Metadata
+    $Path = [string]::IsNullOrWhiteSpace($Path) ? '.' : $Path
 
+    #if Path is null return
+    $modulePath = Get-ModulePath -RootPath $Path
+    if(!$modulePath){return $null}
+    
+    # Test Module
+    $testModulePath = Add-TestModuleV3 -Path $Path -AddSampleCode
+    
     if (!$testModulePath) {
+        $name = Get-ModuleName -Path $Path
         Write-Error -Message ("Error creating Testing for Module [$Name].")
         return $null
     }
 
-    # Sample test
-    if ($AddSampleCode) {
-        Add-TestSampleCode -Path $testModulePath
-    }
+    # Add test.ps1
+    $null = Add-ToModuleTestScript -Path $modulePath
 
-    # Get root folder
-    $modulePath = Get-ModulePath -RootPath $Path
+    # Add launch.json
+    $null = Add-ToModuleLaunchJson -Path $modulePath
 
-    # test.ps1 script
-    $testScriptPath = $modulePath | Join-Path -ChildPath "test.ps1"
-    if($testScriptPath | Test-Path){
-        Write-Warning "test.ps1 already exists."
-    }
-    else{
-        Import-Template -Path $modulePath -File "test.ps1" -Template "template.test.ps1"
-    }
+    return $modulePath | Convert-Path
 
-    # launch.json
-    $launchJsonPath = $modulePath | Join-Path -ChildPath '.vscode' -AdditionalChildPath 'launch.json'
-    if($launchJsonPath | Test-Path){
-        Write-Warning "launch.json already exists."
-    }
-    else{
-        $destination = $modulePath | Join-Path -ChildPath '.vscode'
-        Import-Template -Path $destination -File "launch.json" -Template "template.launch.json"
-    }
-
-    return $modulePath
-
-} Export-ModuleMember -Function Add-TestingToModuleV3
+} Export-ModuleMember -Function Add-TestToModuleAll
