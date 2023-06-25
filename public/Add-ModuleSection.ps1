@@ -292,7 +292,7 @@ function Add-ModuleDeployWorkflow{
     }
 } Export-ModuleMember -Function Add-ModuleDeployWorkflow
 
-function Add-ModuleFull{
+function Add-ModuleAll{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -319,4 +319,4 @@ function Add-ModuleFull{
 
     }
 
-} Export-ModuleMember -Function Add-ModuleFull
+} Export-ModuleMember -Function Add-ModuleAll

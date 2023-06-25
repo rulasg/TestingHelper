@@ -42,7 +42,7 @@ function TestingHelperTest_AddModuleSection_FULL_PipeCalls_Folder{
 
     New-TestingFolder -Path "folderName"
 
-    $result = Add-TT_ModuleFull -Path "./folderName"
+    $result = Add-TT_ModuleAll -Path "./folderName"
     $result | Assert-AddFull
 }
 
@@ -50,7 +50,7 @@ function TestingHelperTest_AddModuleSection_FULL_PipeCalls_GetItem{
 
     New-TestingFolder -Path "folderName"
 
-    $result = Get-Item -path "folderName" | Add-TT_ModuleFull 
+    $result = Get-Item -path "folderName" | Add-TT_ModuleAll 
     $result | Assert-AddFull
 }
 
@@ -61,7 +61,7 @@ function TestingHelperTest_AddModuleSection_FULL_PipeCalls_Module{
     Import-Module -Name $modulePath
 
     $module = Get-Module -Name "MyModule"
-    $result = $module | Add-TT_ModuleFull
+    $result = $module | Add-TT_ModuleAll
     $result | Assert-AddFull
 
     Remove-Module -Name "MyModule"
