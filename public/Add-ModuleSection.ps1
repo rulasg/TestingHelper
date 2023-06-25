@@ -3,7 +3,7 @@
 # The Ad-Module* functions will take 2 parametst
 # -Path: The path of the module PS1 or PSM1 as Get-Module returns, But we will allow also the root of a module
 # -Force: If the file already exists, it will be overwritten withe the default values
-# The output will be the Path of the module updated. This way we may pipe with next Add-Module* function
+# The output will be the Path of the module updated. This way we may pipe with next Add-ToModule* function
 
 
 
@@ -30,7 +30,7 @@ function GetPath($Path){
     return  $ret | Convert-Path
 }
 
-function Add-ModuleSampleCode{
+function Add-ToModuleSampleCode{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -50,7 +50,7 @@ function Add-ModuleSampleCode{
         
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleSampleCode
+} Export-ModuleMember -Function Add-ToModuleSampleCode
 
 function Add-TestSampleCode{
     [CmdletBinding(SupportsShouldProcess)]
@@ -76,11 +76,11 @@ function Add-TestSampleCode{
         
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleSampleCode
+} Export-ModuleMember -Function Add-ToModuleSampleCode
 
 
 # Add devcontainer.json file
-function Add-ModuleDevContainerJson{
+function Add-ToModuleDevContainerJson{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -97,10 +97,10 @@ function Add-ModuleDevContainerJson{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleDevContainerJson
+} Export-ModuleMember -Function Add-ToModuleDevContainerJson
 
 # Add License file
-function Add-ModuleLicense{
+function Add-ToModuleLicense{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
@@ -117,10 +117,10 @@ function Add-ModuleLicense{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleLicense
+} Export-ModuleMember -Function Add-ToModuleLicense
 
 # Add Readme file
-function Add-ModuleReadme{
+function Add-ToModuleReadme{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -141,10 +141,10 @@ function Add-ModuleReadme{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleReadme
+} Export-ModuleMember -Function Add-ToModuleReadme
 
 # Add about 
-function Add-ModuleAbout{
+function Add-ToModuleAbout{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -169,10 +169,10 @@ function Add-ModuleAbout{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleAbout
+} Export-ModuleMember -Function Add-ToModuleAbout
 
 # Add deploying
-function Add-ModuleDeployScript{
+function Add-ToModuleDeployScript{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -189,10 +189,10 @@ function Add-ModuleDeployScript{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleDeployScript
+} Export-ModuleMember -Function Add-ToModuleDeployScript
 
 # Add Release
-function Add-ModuleReleaseScript{
+function Add-ToModuleReleaseScript{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
@@ -209,10 +209,10 @@ function Add-ModuleReleaseScript{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleReleaseScript
+} Export-ModuleMember -Function Add-ToModuleReleaseScript
 
 # Add Sync
-function Add-ModuleSyncScript{
+function Add-ToModuleSyncScript{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -229,10 +229,10 @@ function Add-ModuleSyncScript{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleSyncScript
+} Export-ModuleMember -Function Add-ToModuleSyncScript
 
 # Add PSScriptAnalyzer
-function Add-ModulePSScriptAnalyzerWorkflow{
+function Add-ToModulePSScriptAnalyzerWorkflow{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
@@ -250,10 +250,10 @@ function Add-ModulePSScriptAnalyzerWorkflow{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModulePSScriptAnalyzerWorkflow
+} Export-ModuleMember -Function Add-ToModulePSScriptAnalyzerWorkflow
 
 # Add Testing
-function Add-ModuleTestingWorkflow{
+function Add-ToModuleTestingWorkflow{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -270,10 +270,10 @@ function Add-ModuleTestingWorkflow{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleTestingWorkflow
+} Export-ModuleMember -Function Add-ToModuleTestingWorkflow
 
 # Add deploy Workflow
-function Add-ModuleDeployWorkflow{
+function Add-ToModuleDeployWorkflow{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -290,9 +290,9 @@ function Add-ModuleDeployWorkflow{
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ModuleDeployWorkflow
+} Export-ModuleMember -Function Add-ToModuleDeployWorkflow
 
-function Add-ModuleAll{
+function Add-ToModuleAll{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
@@ -304,19 +304,19 @@ function Add-ModuleAll{
     process{
         $Path = GetPath -Path:$Path ?? return $null
 
-        $null = $Path | Add-ModuleDevContainerJson         -Force:$Force
-        $null = $Path | Add-ModuleLicense                  -Force:$Force
-        $null = $Path | Add-ModuleReadme                   -Force:$Force
-        $null = $Path | Add-ModuleAbout                    -Force:$Force
-        $null = $Path | Add-ModuleDeployScript             -Force:$Force
-        $null = $Path | Add-ModuleReleaseScript            -Force:$Force
-        $null = $Path | Add-ModuleSyncScript               -Force:$Force
-        $null = $Path | Add-ModulePSScriptAnalyzerWorkflow -Force:$Force
-        $null = $Path | Add-ModuleTestingWorkflow          -Force:$Force
-        $null = $Path | Add-ModuleDeployWorkflow           -Force:$Force 
+        $null = $Path | Add-ToModuleDevContainerJson         -Force:$Force
+        $null = $Path | Add-ToModuleLicense                  -Force:$Force
+        $null = $Path | Add-ToModuleReadme                   -Force:$Force
+        $null = $Path | Add-ToModuleAbout                    -Force:$Force
+        $null = $Path | Add-ToModuleDeployScript             -Force:$Force
+        $null = $Path | Add-ToModuleReleaseScript            -Force:$Force
+        $null = $Path | Add-ToModuleSyncScript               -Force:$Force
+        $null = $Path | Add-ToModulePSScriptAnalyzerWorkflow -Force:$Force
+        $null = $Path | Add-ToModuleTestingWorkflow          -Force:$Force
+        $null = $Path | Add-ToModuleDeployWorkflow           -Force:$Force 
         
         return ReturnValue -Path $Path -Force:$Force
 
     }
 
-} Export-ModuleMember -Function Add-ModuleAll
+} Export-ModuleMember -Function Add-ToModuleAll

@@ -81,7 +81,7 @@ function New-ModuleV3 {
 
         # Add Sample Code
         if($AddSampleCode){
-            $null = Add-ModuleSampleCode -Path $modulePath
+            $null = Add-ToModuleSampleCode -Path $modulePath
         }
     }
 
@@ -101,52 +101,52 @@ function New-ModuleV3 {
 
     # Add devcontainer.json file
     if($AddDevContainerJson){
-        $null = Add-ModuleDevContainerJson -Path $modulePath
+        $null = Add-ToModuleDevContainerJson -Path $modulePath
     }
 
     # Add License file
     if($AddLicense){
-        $null = Add-ModuleLicense -Path $modulePath
+        $null = Add-ToModuleLicense -Path $modulePath
     }
 
     # Add Readme file
     if($AddReadme){
-        $null = Add-ModuleReadme -Path $modulePath
+        $null = Add-ToModuleReadme -Path $modulePath
     }
 
     # Add about 
     if($AddAbout){
-        $null = Add-ModuleAbout -Path $modulePath 
+        $null = Add-ToModuleAbout -Path $modulePath 
     }
 
     # Add deploying
     if($AddDeployScript){
-        $null = Add-ModuleDeployScript -Path $modulePath
+        $null = Add-ToModuleDeployScript -Path $modulePath
     }
 
     # Add Release
     if($AddReleaseScript){
-        $null = Add-ModuleReleaseScript -Path $modulePath
+        $null = Add-ToModuleReleaseScript -Path $modulePath
     }
 
     # Add Sync
     if($AddSyncScript){
-        $null = Add-ModuleSyncScript -Path $modulePath
+        $null = Add-ToModuleSyncScript -Path $modulePath
     }
 
     # Add PSScriptAnalyzer
     if($AddPSScriptAnalyzerWorkflow){
-        $null = Add-ModulePSScriptAnalyzerWorkflow -Path $modulePath
+        $null = Add-ToModulePSScriptAnalyzerWorkflow -Path $modulePath
     }
 
     # Add Testing
     if($AddTestingWorkflow){
-        $null = Add-ModuleTestingWorkflow -Path $modulePath
+        $null = Add-ToModuleTestingWorkflow -Path $modulePath
     }
 
     # Add deploy Workflow
     if($AddDeployWorkflow){
-        $null = Add-ModuledeployWorkflow -Path $modulePath
+        $null = Add-ToModuledeployWorkflow -Path $modulePath
     }
 
     return $retModulePath
