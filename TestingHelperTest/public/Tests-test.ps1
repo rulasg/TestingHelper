@@ -13,6 +13,8 @@ function TestingHelperTest_TestPS1{
     Assert-AreEqual -Expected "ModuleName" -Presented $result.Name
     Assert-AreEqual -Expected "ModuleNameTest" -Presented $result.TestModule
     Assert-AreEqual -Expected "ModuleNameTest_*" -Presented $result.TestsName
+
+    Remove-Module -Name "ModuleName" -Force
 }
 
 function TestingHelperTest_TestPS1_WithPath{
@@ -24,4 +26,6 @@ function TestingHelperTest_TestPS1_WithPath{
     Assert-AreEqual -Expected "ModuleName" -Presented $result.Name
     Assert-AreEqual -Expected "ModuleNameTest" -Presented $result.TestModule
     Assert-AreEqual -Expected "ModuleNameTest_*" -Presented $result.TestsName
+
+    Remove-Module -Name "ModuleName" -Force
 }
