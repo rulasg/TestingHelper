@@ -1,7 +1,7 @@
 
 function TestingHelperTest_RemoveTestingFile_Root {
 
-    $tested = Get-TestedModuleHandle
+    $tested = Get-TestingHelperTestedModuleHandle
 
     $filename = "Filename.txt"
 
@@ -92,7 +92,7 @@ function TestingHelperTest_RemoveTestingFolder_FolderNotExist{
 
 function TestingHelperTest_RemoveTestingFolder_Not_TestRunFolder{
 
-    $tested = Get-TestedModuleHandle
+    $tested = Get-TestingHelperTestedModuleHandle
 
     $t = New-Item -Name "NotStandardName" -ItemType Directory
 

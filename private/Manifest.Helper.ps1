@@ -19,6 +19,15 @@ function Get-ModuleManifest($Path){
     return $manifest
 }
 
+function Import-ModuleManifest ($Path){
+
+    $manifestPath = Get-ModuleManifestPath -Path $Path
+
+    $ret = $manifestPath ? (Import-PowerShellDataFile -Path $manifestPath) : $null
+
+    return $ret
+}
+
 function Get-ModuleManifestPath ($Path){
     $localPath = $Path | Convert-Path
 

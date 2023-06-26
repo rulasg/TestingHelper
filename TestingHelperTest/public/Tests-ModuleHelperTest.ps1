@@ -1,13 +1,13 @@
 
 function GetExpectedHeader{
-    $tedmanifest = Get-TestedModuleManifest
+    $tedmanifest = Get-TestingHelperTestedModuleManifest
     $expected = "{0} v{1} {2}" -f $tedmanifest.Name, $tedmanifest.ModuleVersion, $tedmanifest.PrivateData.PSData.Prerelease
 
     return $expected
 }
 
 function TestingHelperTest_GetModuleHeader {
-    $module = Get-TestedModuleHandle
+    $module = Get-TestingHelperTestedModuleHandle
         
     $result = & $module {
         Get-ModuleHeader
@@ -16,7 +16,7 @@ function TestingHelperTest_GetModuleHeader {
     Assert-AreEqual -Expected (GetExpectedHeader) -Presented $result
 }
 
-# Testing TestingHelperTest private function Get-TestedModuleHandle
+# Testing TestingHelperTest private function Get-TestingHelperTestedModuleHandle
 function TestingHelperTest_GetModuleHandle {
     
     $localPath = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent
@@ -24,7 +24,7 @@ function TestingHelperTest_GetModuleHandle {
     $manifest = Import-PowerShellDataFile -Path $psdpath
 
     # Internal TestingHelperTest function
-    $result = Get-TestedModuleHandle
+    $result = Get-TestingHelperTestedModuleHandle
 
     Assert-IsNotNull -Object $result
     Assert-AreEqual -Expected ($manifest.RootModule | Split-Path -LeafBase) -Presented $result.Name

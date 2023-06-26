@@ -112,7 +112,8 @@ function Add-ToModuleReadme{
     process{
         $Path = NormalizePath -Path:$Path ?? return $null
 
-        try{$moduleManifest = Get-ModuleManifest -Path $Path }catch{$moduleManifest = $null}
+        $moduleManifest = Import-ModuleManifest -Path $Path
+        # try{$moduleManifest = Get-ModuleManifest -Path $Path }catch{$moduleManifest = $null}
         $moduleName = $Path | Split-Path -LeafBase
         Import-Template -Force:$Force -Path $Path -File "README.md" -Template "template.README.md" -Replaces @{
             "_MODULE_NAME_" = $moduleName
@@ -136,7 +137,8 @@ function Add-ToModuleAbout{
     process{
         $Path = NormalizePath -Path:$Path ?? return $null
 
-        try{$moduleManifest = Get-ModuleManifest -Path $Path} catch{$moduleManifest = $null}
+        $moduleManifest = Import-ModuleManifest -Path $Path
+        # try{$moduleManifest = Get-ModuleManifest -Path $Path} catch{$moduleManifest = $null}
         $moduleName = $Path | Split-Path -LeafBase
         $destination = $Path | Join-Path -ChildPath "en-US"
         Import-Template -Force:$Force -Path $destination -File "about_$moduleName.help.txt" -Template "template.about.help.txt" -Replaces @{

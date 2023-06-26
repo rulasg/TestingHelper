@@ -2,7 +2,7 @@ function TestingHelperTest_Assert{
     [CmdletBinding()]
     param ()
 
-    $tested = Get-TestedModuleHandle
+    $tested = Get-TestingHelperTestedModuleHandle
 
     & $tested {
 

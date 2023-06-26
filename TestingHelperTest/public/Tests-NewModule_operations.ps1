@@ -1,8 +1,6 @@
 
 function TestingHelperTest_Manual_Work_StepsToFull{
 
-    open .
-
     $path = '.' | Join-Path -ChildPath "ModuleName"
     
     # Create module
