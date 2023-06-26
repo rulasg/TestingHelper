@@ -49,5 +49,5 @@ Import-TestingHelper -AllowPrerelease
 # Run test by PSD1 file
 # Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_AddTestToModuleAll_Simple
 # Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_NewModuleV3_AddModule_DefaultManifest
-# Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_AddTest*
-Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors
+# Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_Manual*
+Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors 

@@ -13,22 +13,6 @@ function TestingHelperTest_AssertAddSection_throwOnNull{
     Assert-IsTrue -Condition $hasthrown
 }
 
-function Import-ModuleManifest ($Path){
-
-    $localPath = $Path | Convert-Path
-
-    $psdpath = Get-ChildItem -Path $localPath -Filter "*.psd1" -ErrorAction SilentlyContinue
-
-    if($psdpath.count -ne 1){
-        return $null
-    }
-    
-    $manifest = Import-PowerShellDataFile -Path $psdpath.FullName
-
-    return $manifest
-}
-
-
 # Devcontainer.json
 function Assert-AddDevContainerJson{
     param(
