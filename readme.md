@@ -34,7 +34,7 @@ This library will allow you to create a PowerShell Module with all the gearing f
 - Add Helper scripts to create releases and deploy
 - Add GitHub Worflows for Code Analysis, Testing and Deploy
 
-[Information on how to use it on the Docs](docs/How-to-Use-TestingHelper.md)
+[Information on how to use it on the Docs](docs/index.md)
 
 ## API V3
 
