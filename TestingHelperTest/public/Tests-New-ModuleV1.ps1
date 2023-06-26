@@ -57,18 +57,3 @@ function TestingHelperTest_NewTestingModule{
     Assert-FileContains -Path $psmPathTest -Pattern "function ModuleNameTest_Sample()" -Comment "Function header"
     Assert-FileContains -Path $psmPathTest -Pattern "Export-ModuleMember -Function ModuleNameTest_*" -Comment "Export"
 }
-
-function TestingHelperTest_NewTestingVsCodeLaunchJson{
-    New-TT_TestingVsCodeLaunchJson -Path . -ModuleName "ModuleName"
-
-    $launchFile = Join-Path -Path . -ChildPath ".vscode" -AdditionalChildPath "launch.json"
-
-    Assert-ItemExist -Path $launchFile -Comment "launch.json exists"
-    $json = Get-Content -Path $launchFile | ConvertFrom-Json
-
-    Assert-IsTrue -Condition ($json.configurations.Request -eq "launch")
-    Assert-IsTrue -Condition ($json.configurations.Script -eq '${workspaceFolder}/ModuleNameTest.ps1')
-    Assert-IsTrue -Condition ($json.configurations.cwd -eq '${workspaceFolder}')
-    Assert-IsTrue -Condition ($json.configurations.type -eq 'PowerShell')
-    Assert-IsTrue -Condition ($json.configurations.name -like '*ModuleName.ps1')
-}

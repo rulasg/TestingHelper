@@ -56,7 +56,7 @@ function New-ModuleV1 {
     if (-Not $AvoidTestFile)
     {
         New-TestingModule -Path $modulePath -ModuleName $ModuleName
-        New-TestingVsCodeLaunchJson -Path $modulePath -ModuleName $ModuleName
+        New-TestingVsCodeLaunchJsonV1 -Path $modulePath -ModuleName $ModuleName
     }
 
     return $modulePath
@@ -132,7 +132,7 @@ Export-ModuleMember -Function _MODULE_TESTING__*
     $null = New-ModuleV1 -Path $Path -Name $testingModuleName -Description "Testing module for $ModuleName" -AvoidTestFile -AppendToModuleFile $toAppend
 } Export-ModuleMember -Function New-TestingModule
 
-function New-TestingVsCodeLaunchJson($Path, $ModuleName){
+function New-TestingVsCodeLaunchJsonV1($Path, $ModuleName){
     $testScript = 
 @'
     {
@@ -160,4 +160,4 @@ function New-TestingVsCodeLaunchJson($Path, $ModuleName){
         -Value $testScript `
         -Force `
         | Out-Null
-} Export-ModuleMember -Function New-TestingVsCodeLaunchJson
+} 
