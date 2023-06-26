@@ -154,7 +154,7 @@ function TestingHelperTest_ItemExists_Fail{
 
     $hasThrow = $false
     try {
-        Asset-TT_ItemExist -Path "Thispathdoesnotexist"
+        Assert-TT_ItemExist -Path "Thispathdoesnotexist"
     }
     catch {
         $hasThrow = $true

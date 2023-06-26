@@ -8,7 +8,7 @@ function TestingHelperTest_IsGuid_Fail {
 
     $hasThrow = $false
     try {
-        Asset-TT_IsGuid -Presented "NotAValidGuid"
+        Assert-TT_IsGuid -Presented "NotAValidGuid"
     }
     catch {
         $hasThrow = $true
