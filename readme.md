@@ -26,55 +26,105 @@ This `module` contains `functions` to help create and run Unit Testing for Power
 
 ## How to use it
 
-This library will allow you to create quick unit testing for a given module. It will provide Asset statements too for the assertion section of your tests.
+This library will allow you to create a PowerShell Module with all the gearing for a full SDLC on GitHub platform.
 
-Use `New-Module`  to create the full set with testing and `.vscode/launth.json`
+- Create a Module with sample code
+- Add Testing for sample tests
+- Add Module gearing
+- Add Helper scripts to create releases and deploy
+- Add GitHub Worflows for Code Analysis, Testing and Deploy
 
-If you have a module you want to add testing too use `New-TestingModule`
+[Information on how to use it on the Docs](docs/How-to-Use-TestingHelper.md)
 
-Follow naming convention for easier use. Function names `ModuleNameTest_*` will be consideres test to PASS.
+## API V3
 
-## Version 2.0
+### Testing
 
-> Moving to `2.0`as I am not sure if this version will break compatibility with the previous one.
+- Invoke-TestingHelper
+- Import-TestingModule
+- Test-Module (*ObsoleteAttribute*)
+- Test-ModulelocalPSD1 (*ObsoleteAttribute*)
 
-- Make development compatible with Codespaces
-- Remove unecesary dependencies
-- First version of about help
-- Improve testing output
-- Assert Functions
-  - Assert-AreEqual
-  - Assert-AreEqualContent
-  - Assert-AreEqualPath
-  - Assert-AreEqualSecureString
-  - Assert-AreNotEqual
-  - Assert-AreNotEqualContent
-  - Assert-AreNotEqualPath
-  - Assert-CollectionIsNotNullOrEmpty
-  - Assert-CollectionIsNullOrEmpty
-  - Assert-ContainedXOR
-  - Assert-Contains
-  - Assert-ContainsPath
-  - Assert-Count
-  - Assert-CountTimes
-  - Assert-FileContains
-  - Assert-FilesAreEqual
-  - Assert-FilesAreNotEqual
-  - Assert-IsFalse
-  - Assert-IsGuid
-  - Assert-IsNotNull
-  - Assert-IsNull
-  - Assert-IsTrue
-  - Assert-ItemExist
-  - Assert-ItemNotExist
-  - Assert-NotContains
-  - Assert-NotContainsPath
-  - Assert-NotImplemented
-  - Assert-SkipTest
-  - Assert-StringIsNotNullOrEmpty
-  - Assert-StringIsNullOrEmpty
-- Functions to help on the arrangement
-  - New-TestingFile
-  - Remove-TestingFile
-  - New-TestingFolder
+### Tracing
 
+- Trace-Message
+- Write-AssertionSectionEnd
+
+### Files and Folders
+
+- New-TestingFile
+- New-TestingFolder
+- Remove-TestingFile
+- Remove-TestingFolder
+
+### New Module
+
+- New-Module (Alias New-ModuleV3)
+- New-ModuleV1
+- New-ModuleV2
+- New-ModuleV3
+
+- Add-ModuleV3
+
+### Add Testing
+
+- New-TestingModule
+- Add-TestModuleV3
+
+### AddToModule*
+
+- Add-ToModuleAll
+- Add-ToModuleSampleCode
+  
+- Add-ToModuleAbout
+- Add-ToModuleReadme
+- Add-ToModuleLicense
+- Add-ToModuleDevContainerJson
+
+- Add-ToModuleDeployScript
+- Add-ToModuleReleaseScript
+- Add-ToModuleSyncScript
+
+- Add-ToModuleTestAll
+
+- Add-ToModuleLaunchJson
+- Add-ToModuleTestScript
+- Add-ToModuleTestModule
+- Add-ToModuleTestSampleCode
+
+- Add-ToModuleDeployWorkflow
+- Add-ToModulePSScriptAnalyzerWorkflow
+- Add-ToModuleTestWorkflow
+
+### Asserts
+
+- Assert-AreEqual
+- Assert-AreEqualContent
+- Assert-AreEqualPath
+- Assert-AreEqualSecureString
+- Assert-AreNotEqual
+- Assert-AreNotEqualContent
+- Assert-AreNotEqualPath
+- Assert-CollectionIsNotNullOrEmpty
+- Assert-CollectionIsNullOrEmpty
+- Assert-ContainedXOR
+- Assert-Contains
+- Assert-ContainsPath
+- Assert-Count
+- Assert-CountTimes
+- Assert-FileContains
+- Assert-FilesAreEqual
+- Assert-FilesAreNotEqual
+- Assert-IsFalse
+- Assert-IsGuid
+- Assert-IsNotNull
+- Assert-IsNull
+- Assert-IsTrue
+- Assert-ItemExist
+- Assert-ItemNotExist
+- Assert-NotContains
+- Assert-NotContainsPath
+- Assert-NotImplemented
+- Assert-SkipTest
+- Assert-StringIsNotNullOrEmpty
+- Assert-StringIsNullOrEmpty
