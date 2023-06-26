@@ -4,6 +4,7 @@ function New-ModuleV1 {
 .Synopsis
    Created a Powershell module with BiT21 format.
 #>
+    [System.ObsoleteAttribute("Use New-ModuleV3 instead", $true)]
     [CmdletBinding()]
     [OutputType([System.IO.FileInfo])]
     Param
