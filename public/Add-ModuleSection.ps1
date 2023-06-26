@@ -16,11 +16,14 @@ function ReturnValue($Path,$Force){
 }
 
 # Normalize $Path and returns $null if not valid
-function GetPath($Path){
+function NormalizePath($Path){
     # Path returned should be the folder where the module is located.
+    
+    # Aceot local folder as default
+    $Path = [string]::isnullorwhitespace($Path) ? '.' : $Path
+    
     # We may input the RootModule as if we pipe Get-Module command.
     # check if $Path is a file and get the parent of it
-
     if(Test-Path -Path $Path -PathType Leaf){
         $ret = $Path | Split-Path -Parent
     } else {
@@ -33,14 +36,16 @@ function GetPath($Path){
 function Add-ToModuleSampleCode{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+
+        # Function works based on modulePath
+        $modulePath = NormalizePath -Path:$Path ?? return $null
 
         $destination = $modulePath | Join-Path -ChildPath "public"
         Import-Template -Path $destination -File "samplePublicFunction.ps1" -Template "template.module.functions.public.ps1"
@@ -52,45 +57,20 @@ function Add-ToModuleSampleCode{
     }
 } Export-ModuleMember -Function Add-ToModuleSampleCode
 
-function Add-TestSampleCode{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Force
-    )
-
-    process{
-        $Path = GetPath -Path:$Path ?? return $null
-
-        $moduleName = Get-ModuleName -Path $Path
-        $testModulePath = Get-TestModulePath -Path $Path 
-        $testModulename = Get-TestModuleName -Path $Path
-        $destination = $testModulePath | Join-Path -ChildPath "public"
-
-        Import-Template -Path $destination -File "SampleFunctionTests.ps1" -Template "template.testmodule.functions.public.ps1" -Replaces @{
-            '_MODULE_TESTING_' = $testModulename
-            '_MODULE_TESTED_' = $ModuleName
-        }
-        
-        return ReturnValue -Path $Path -Force:$Force
-    }
-} Export-ModuleMember -Function Add-ToModuleSampleCode
 
 
 # Add devcontainer.json file
 function Add-ToModuleDevContainerJson{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         $destination = $Path | Join-Path -ChildPath ".devcontainer"
         Import-Template -Force:$Force -Path $destination -File "devcontainer.json" -Template "template.devcontainer.json"
@@ -104,14 +84,14 @@ function Add-ToModuleLicense{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         Import-Template -Force:$Force -Path $Path -File "LICENSE" -Template "template.LICENSE.txt"
     
@@ -123,14 +103,14 @@ function Add-ToModuleLicense{
 function Add-ToModuleReadme{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         try{$moduleManifest = Get-ModuleManifest -Path $Path }catch{$moduleManifest = $null}
         $moduleName = $Path | Split-Path -LeafBase
@@ -147,14 +127,14 @@ function Add-ToModuleReadme{
 function Add-ToModuleAbout{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         try{$moduleManifest = Get-ModuleManifest -Path $Path} catch{$moduleManifest = $null}
         $moduleName = $Path | Split-Path -LeafBase
@@ -175,14 +155,14 @@ function Add-ToModuleAbout{
 function Add-ToModuleDeployScript{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         Import-Template -Force:$Force -Path $Path -File "deploy.ps1" -Template "template.v3.deploy.ps1"
         Import-Template -Force:$Force -Path $Path -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
@@ -196,14 +176,14 @@ function Add-ToModuleReleaseScript{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         Import-Template -Force:$Force -Path $Path -File "release.ps1" -Template "template.v3.release.ps1"
     
@@ -215,14 +195,14 @@ function Add-ToModuleReleaseScript{
 function Add-ToModuleSyncScript{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         Import-Template -Force:$Force -Path $Path -File "sync.ps1" -Template "template.v3.sync.ps1"
         Import-Template -Force:$Force -Path $Path -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
@@ -236,14 +216,14 @@ function Add-ToModulePSScriptAnalyzerWorkflow{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Import-Template -Force:$Force -Path $destination -File "powershell.yml" -Template "template.v3.powershell.yml"
@@ -253,37 +233,37 @@ function Add-ToModulePSScriptAnalyzerWorkflow{
 } Export-ModuleMember -Function Add-ToModulePSScriptAnalyzerWorkflow
 
 # Add Testing
-function Add-ToModuleTestingWorkflow{
+function Add-ToModuleTestWorkflow{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Import-Template -Force:$Force -Path $destination -File "test_with_TestingHelper.yml" -Template "template.v3.test_with_TestingHelper.yml"
     
         return ReturnValue -Path $Path -Force:$Force
     }
-} Export-ModuleMember -Function Add-ToModuleTestingWorkflow
+} Export-ModuleMember -Function Add-ToModuleTestWorkflow
 
 # Add deploy Workflow
 function Add-ToModuleDeployWorkflow{
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Import-Template -Force:$Force -Path $destination -File "deploy_module_on_release.yml" -Template "template.v3.deploy_module_on_release.yml"
@@ -292,48 +272,22 @@ function Add-ToModuleDeployWorkflow{
     }
 } Export-ModuleMember -Function Add-ToModuleDeployWorkflow
 
-function Add-ToModuleAll{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Force
-    )
 
-    process{
-        $Path = GetPath -Path:$Path ?? return $null
-
-        $null = $Path | Add-ToModuleDevContainerJson         -Force:$Force
-        $null = $Path | Add-ToModuleLicense                  -Force:$Force
-        $null = $Path | Add-ToModuleReadme                   -Force:$Force
-        $null = $Path | Add-ToModuleAbout                    -Force:$Force
-        $null = $Path | Add-ToModuleDeployScript             -Force:$Force
-        $null = $Path | Add-ToModuleReleaseScript            -Force:$Force
-        $null = $Path | Add-ToModuleSyncScript               -Force:$Force
-        $null = $Path | Add-ToModulePSScriptAnalyzerWorkflow -Force:$Force
-        $null = $Path | Add-ToModuleTestingWorkflow          -Force:$Force
-        $null = $Path | Add-ToModuleDeployWorkflow           -Force:$Force 
-        
-        return ReturnValue -Path $Path -Force:$Force
-
-    }
-
-} Export-ModuleMember -Function Add-ToModuleAll
+###### TEST ######
 
 # Add test.ps1 script
 function Add-ToModuleTestScript{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
 
         Import-Template -Force:$Force -Path $Path -File "test.ps1" -Template "template.v3.test.ps1"
     
@@ -346,14 +300,14 @@ function Add-ToModuleLaunchJson{
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         [Parameter()][switch]$Force
     )
 
     process{
-        $Path = GetPath -Path:$Path ?? return $null
+        $Path = NormalizePath -Path:$Path ?? return $null
         $destination = $Path | Join-Path -ChildPath ".vscode"
 
         Import-Template -Force:$Force -Path $destination -File "launch.json" -Template "template.launch.json"
@@ -361,3 +315,140 @@ function Add-ToModuleLaunchJson{
         return ReturnValue -Path $Path -Force:$Force
     }
 } Export-ModuleMember -Function Add-ToModuleLaunchJson
+
+
+function Add-ToModuleTestSampleCode{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path,
+        [Parameter()][switch]$Force
+    )
+
+    process{
+        $Path = NormalizePath -Path:$Path ?? return $null
+
+        $moduleName = Get-ModuleName -Path $Path
+        $testModulePath = Get-TestModulePath -Path $Path 
+        $testModulename = Get-TestModuleName -Path $Path
+        $destination = $testModulePath | Join-Path -ChildPath "public"
+
+        Import-Template -Path $destination -Force:$Force -File "SampleFunctionTests.ps1" -Template "template.testmodule.functions.public.ps1" -Replaces @{
+            '_MODULE_TESTING_' = $testModulename
+            '_MODULE_TESTED_' = $ModuleName
+        }
+        
+        return ReturnValue -Path $Path -Force:$Force
+    }
+} Export-ModuleMember -Function Add-ToModuleTestSampleCode
+
+
+###### Add All ######
+
+function Add-ToModuleTestModule{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path,
+        [Parameter()][switch]$Force
+    ) 
+    process {
+
+        $Path = NormalizePath -Path:$Path ?? return $null
+        
+        #if Path is null return
+        $modulePath = Get-ModulePath -RootPath $Path
+        if(!$modulePath){return $null}
+        
+        # Test Module
+        # TODO : Not sure how to implemente the Forice flag with Add full modules
+        $testModulePath = Add-TestModuleV3 -Path $Path -AddSampleCode
+        
+        if (!$testModulePath) {
+            $name = Get-ModuleName -Path $Path
+            Write-Error -Message ("Error creating Testing for Module [$Name].")
+            return $null
+        }
+
+        return ReturnValue -Path $Path -Force:$Force
+    }
+} Export-ModuleMember -Function Add-ToModuleTestModule
+
+
+# Add TestModuleV3 and the rest of the dressing
+function Add-ToModuleTestAll{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path,
+        [Parameter()][switch]$Force
+    ) 
+
+    process{
+
+        $Path = NormalizePath -Path:$Path ?? return $null
+        
+        #if Path is null return
+        $modulePath = Get-ModulePath -RootPath $Path
+        if(!$modulePath){return $null}
+        
+        # Test Module
+        # TODO : Not sure how to implemente the Forice flag with Add full modules
+        $testModulePath = Add-TestModuleV3 -Path $Path -AddSampleCode
+        
+        if (!$testModulePath) {
+            $name = Get-ModuleName -Path $Path
+            Write-Error -Message ("Error creating Testing for Module [$Name].")
+            return $null
+        }
+        
+        # Add test.ps1
+        $null = Add-ToModuleTestScript -Path $modulePath -Force:$Force
+        
+        # Add launch.json
+        $null = Add-ToModuleLaunchJson -Path $modulePath -Force:$Force
+        
+        return ReturnValue -Path $modulePath -Force:$Force
+    }
+
+} Export-ModuleMember -Function Add-ToModuleTestAll
+
+function Add-ToModuleAll{
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path,
+        [Parameter()][switch]$Force
+    )
+
+    process{
+        $Path = NormalizePath -Path:$Path ?? return $null
+
+        $null = $Path | Add-ToModuleTestAll                  -Force:$Force
+
+        $null = $Path | Add-ToModuleDevContainerJson         -Force:$Force
+        $null = $Path | Add-ToModuleLicense                  -Force:$Force
+        $null = $Path | Add-ToModuleReadme                   -Force:$Force
+        $null = $Path | Add-ToModuleAbout                    -Force:$Force
+
+        # scripts
+        $null = $Path | Add-ToModuleDeployScript             -Force:$Force
+        $null = $Path | Add-ToModuleReleaseScript            -Force:$Force
+        $null = $Path | Add-ToModuleSyncScript               -Force:$Force
+        
+        # workflows
+        $null = $Path | Add-ToModulePSScriptAnalyzerWorkflow -Force:$Force
+        $null = $Path | Add-ToModuleTestWorkflow             -Force:$Force
+        $null = $Path | Add-ToModuleDeployWorkflow           -Force:$Force 
+        
+        return ReturnValue -Path $Path -Force:$Force
+
+    }
+
+} Export-ModuleMember -Function Add-ToModuleAll

@@ -29,7 +29,7 @@ function Add-ModuleV3 {
 
     # PSM1
     $rootModule = "$moduleName.psm1"
-    Import-Template -Path $modulePath -File $rootModule -Template "template.module.psm1"
+    Import-Template -Path $modulePath -File $rootModule -Template "template.module.psm1" -Force:$Force
 
     # public private
     $null = New-Item -ItemType Directory -Force -Path ($modulePath | Join-Path -ChildPath "public")

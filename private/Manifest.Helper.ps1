@@ -19,6 +19,18 @@ function Get-ModuleManifest($Path){
     return $manifest
 }
 
+function Get-ModuleManifestPath ($Path){
+    $localPath = $Path | Convert-Path
+
+    $Name = $localPath | Split-Path -leafbase
+
+    $manifestPath = $Path | Join-Path -ChildPath "$Name.psd1"
+
+    $ret =  ($manifestPath | Test-Path) ? $manifestPath : $null
+
+    return $ret
+}
+
 # returns the manifest of the testing module of the module on Path
 function Get-TestingModuleManifest($ModulePath){
 

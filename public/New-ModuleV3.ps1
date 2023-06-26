@@ -89,7 +89,7 @@ function New-ModuleV3 {
     }
 
     if ($AddTesting) {
-        $result = Add-TestToModuleAll -Path $modulePath
+        $result = Add-ToModuleTestAll -Path $modulePath
         
         # Check if the module was created
         if(! $result){
@@ -98,7 +98,7 @@ function New-ModuleV3 {
 
         # Add Sample Code
         if($AddSampleCode){
-            $null = Add-TestSampleCode -Path $modulePath
+            $null = Add-ToModuleTestSampleCode -Path $modulePath
         }
     }
 
@@ -144,7 +144,7 @@ function New-ModuleV3 {
 
     # Add Testing
     if($AddTestingWorkflow){
-        $null = Add-ToModuleTestingWorkflow -Path $modulePath
+        $null = Add-ToModuleTestWorkflow -Path $modulePath
     }
 
     # Add deploy Workflow

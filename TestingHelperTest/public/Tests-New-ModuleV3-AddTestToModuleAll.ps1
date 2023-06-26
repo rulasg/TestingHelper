@@ -7,7 +7,7 @@ function TestingHelperTest_AddTestToModuleAll_NoParam{
     $modulePath | Set-Location
 
     # Should find module on current location and add test to it
-    $result = Add-TT_TestToModuleAll
+    $result = Add-TT_ToModuleTestAll
 
     Assert-AreEqualPath -Expected $modulePath -Presented $result
     Assert-TestModuleV3 -Path $modulePath -Expected $param
@@ -19,7 +19,7 @@ function TestingHelperTest_AddTestToModuleAll_Simple{
     $moduleName = "MyModule"
     $modulePath = New-ModuleV3 -Name $moduleName
 
-    $result = Add-TT_TestToModuleAll -Path $modulePath
+    $result = Add-TT_ToModuleTestAll -Path $modulePath
 
     Assert-AreEqualPath -Expected $modulePath -Presented $result
     Assert-TestModuleV3 -Path $modulePath -Expected $param
