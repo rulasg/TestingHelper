@@ -3,7 +3,6 @@ function Add-TestModuleV3 {
     Param
     (
         [Parameter(Mandatory)][string]$Path,
-        [Parameter()][switch]$AddSampleCode,
         [Parameter()][switch]$Force
     ) 
 
@@ -30,11 +29,6 @@ function Add-TestModuleV3 {
     if(!$result){
         Write-Error -Message ("Error creating the module [$testingModuleName].")
         return $null
-    }
-    
-    # AddSampleCode
-    if ($AddSampleCode) {
-        $null = Add-ToModuleTestSampleCode -Path $Path -Force:$Force
     }
 
     return $result

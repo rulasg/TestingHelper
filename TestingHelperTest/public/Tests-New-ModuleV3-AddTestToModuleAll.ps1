@@ -10,7 +10,7 @@ function TestingHelperTest_AddTestToModuleAll_NoParam{
     $result = Add-TT_ToModuleTestAll
 
     Assert-AreEqualPath -Expected $modulePath -Presented $result
-    Assert-TestModuleV3 -Path $modulePath -Expected $param
+    Assert-TestModuleV3 -Path $modulePath
 }
 
 
@@ -22,7 +22,7 @@ function TestingHelperTest_AddTestToModuleAll_Simple{
     $result = Add-TT_ToModuleTestAll -Path $modulePath
 
     Assert-AreEqualPath -Expected $modulePath -Presented $result
-    Assert-TestModuleV3 -Path $modulePath -Expected $param
+    Assert-TestModuleV3 -Path $modulePath
 
 }
 

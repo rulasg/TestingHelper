@@ -366,8 +366,7 @@ function Add-ToModuleTestModule{
         if(!$modulePath){return $null}
         
         # Test Module
-        # TODO : Not sure how to implemente the Forice flag with Add full modules
-        $testModulePath = Add-TestModuleV3 -Path $Path -AddSampleCode
+        $testModulePath = Add-TestModuleV3 -Path $Path -Force:$Force
         
         if (!$testModulePath) {
             $name = Get-ModuleName -Path $Path
@@ -400,15 +399,17 @@ function Add-ToModuleTestAll{
         if(!$modulePath){return $null}
         
         # Test Module
-        # TODO : Not sure how to implemente the Forice flag with Add full modules
-        $testModulePath = Add-TestModuleV3 -Path $Path -AddSampleCode
-        
-        if (!$testModulePath) {
+        $result = Add-ToModuleTestModule -Path $modulePath -Force:$Force
+
+        if (!$result) {
             $name = Get-ModuleName -Path $Path
             Write-Error -Message ("Error creating Testing for Module [$Name].")
             return $null
         }
         
+        # Sample Code
+        $null = Add-ToModuleTestSampleCode -Path $modulePath -Force:$Force
+
         # Add test.ps1
         $null = Add-ToModuleTestScript -Path $modulePath -Force:$Force
         
@@ -433,6 +434,8 @@ function Add-ToModuleAll{
         $Path = NormalizePath -Path:$Path ?? return $null
 
         $null = $Path | Add-ToModuleTestAll                  -Force:$Force
+
+        $null = $Path | Add-ToModuleSampleCode               -Force:$Force
 
         $null = $Path | Add-ToModuleDevContainerJson         -Force:$Force
         $null = $Path | Add-ToModuleLicense                  -Force:$Force

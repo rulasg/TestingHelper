@@ -357,8 +357,7 @@ function Assert-AddModuleV3{
 
 function Assert-AddTestAll {
     param(
-        [Parameter()][string]$Path,
-        [Parameter()][hashtable]$Expected
+        [Parameter()][string]$Path
     )
 
     process{
@@ -368,7 +367,8 @@ function Assert-AddTestAll {
         $testingModuleName = $name + "Test"
         $testingModulePath = $path | Join-Path -ChildPath $testingModuleName
         
-        Assert-AddModuleV3 -Path $testingModulePath -Expected $Expected
+        Assert-AddModuleV3 -Path $testingModulePath
+        Assert-AddTestSampleCodes -Path $Path
 
         Assert-AddTestTestScript -Path $Path
         Assert-AddTestLaunchJson -Path $Path
@@ -395,6 +395,10 @@ function Assert-AddAll{
         $Path | Assert-AddPSScriptAnalyzerWorkflow
         $Path | Assert-AddTestWorkflow
         $Path | Assert-AddDeployWorkflow
+        $Path | Assert-AddSampleCodes
+
+        $Path | Assert-AddTestAll
+        $Path | Assert-AddTestSampleCodes
     
         return $Passthru ? $Path : $null
     }
