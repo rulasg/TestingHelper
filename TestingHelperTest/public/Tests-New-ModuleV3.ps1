@@ -55,7 +55,7 @@ function TestingHelperTest_NewModuleV3_AddTesting{
     Assert-AddModuleV3  -Path $modulePath 
     Assert-AddSampleCodes -Path $modulePath
     
-    Assert-TestModuleV3 -Path $modulePath 
+    Assert-AddTestModuleV3 -Path $modulePath 
     Assert-AddTestSampleCodes -Path $modulePath
 }
 

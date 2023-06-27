@@ -6,13 +6,3 @@ function Get-DefaultsManifest {
 }
 
 
-
-function Assert-TestModuleV3 {
-    param(
-        [Parameter()][string]$Path
-    )
-
-    Assert-AddTestAll -Path $Path
-
-}
-

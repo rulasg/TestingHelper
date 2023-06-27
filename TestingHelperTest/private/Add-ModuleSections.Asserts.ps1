@@ -355,9 +355,31 @@ function Assert-AddModuleV3{
     }
 }
 
+
+function Assert-AddTestModuleV3{
+    param(
+        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path
+    )
+
+    process{
+        $name = $Path | Split-Path -LeafBase
+
+        # $modulePath = $Path | Join-Path -ChildPath $Name
+        $testingModuleName = $name + "Test"
+        $testingModulePath = $path | Join-Path -ChildPath $testingModuleName
+        
+        Assert-AddModuleV3 -Path $testingModulePath
+    }
+
+}
+
 function Assert-AddTestAll {
     param(
-        [Parameter()][string]$Path
+        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path
     )
 
     process{

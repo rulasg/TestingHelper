@@ -17,7 +17,7 @@ function TestingHelperTest_Manual_Work_StepsToFull{
     
     # Add Testing to module
     Add-TT_ToModuleTestModule
-    Assert-TestModuleV3 -Path $modulePath 
+    Assert-AddTestModuleV3 -Path $modulePath 
 
     # Add Test Sample code
     Add-TT_ToModuleTestSampleCode
@@ -53,6 +53,6 @@ function TestingHelperTest_Manual_Work_Testing{
     
     $result = Invoke-TT_TestingHelper -Path $modulePath
 
-    Assert-AreEqual -Expected 2 -Presented $result.Test
+    Assert-AreEqual -Expected 2 -Presented $result.Tests
     Assert-AreEqual -Expected 2 -Presented $result.Pass
 }

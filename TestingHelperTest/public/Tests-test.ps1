@@ -14,18 +14,21 @@ function TestingHelperTest_TestPS1{
     Assert-AreEqual -Expected "ModuleNameTest" -Presented $result.TestModule
     Assert-AreEqual -Expected "ModuleNameTest_*" -Presented $result.TestsName
 
-    Remove-Module -Name "ModuleName" -Force
+    Remove-ImportedModule -Module "ModuleName"
 }
 
 function TestingHelperTest_TestPS1_WithPath{
 
-    New-TT_Module -Name "ModuleName" -Description "description of the Module" -AddTesting
+    $moduleName = "ModuleName_{0}" -f (New-Guid).ToString().Substring(0,8)
 
-    $result = Invoke-TT_TestingHelper -Path "./ModuleName"
+    New-TT_Module -Name $moduleName -Description "description of the Module" -AddTesting
 
-    Assert-AreEqual -Expected "ModuleName" -Presented $result.Name
-    Assert-AreEqual -Expected "ModuleNameTest" -Presented $result.TestModule
-    Assert-AreEqual -Expected "ModuleNameTest_*" -Presented $result.TestsName
+    $result = Invoke-TT_TestingHelper -Path "./$moduleName"
 
-    Remove-Module -Name "ModuleName" -Force
+    Assert-AreEqual -Expected $moduleName -Presented $result.Name
+    Assert-AreEqual -Expected ("{0}Test" -f $moduleName) -Presented $result.TestModule
+    Assert-AreEqual -Expected ("{0}Test_*" -f $moduleName) -Presented $result.TestsName
+    Assert-AreEqual -Expected 2 -Presented $result.Tests
+    Assert-AreEqual -Expected 2 -Presented $result.Pass
+
 }
