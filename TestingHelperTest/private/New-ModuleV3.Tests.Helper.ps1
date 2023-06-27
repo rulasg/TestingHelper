@@ -13,7 +13,7 @@ function Assert-TestModuleV3 {
         [Parameter()][hashtable]$Expected
     )
 
-    Assert-AddTestV3 -Path $Path -Expected $Expected
+    Assert-AddTestAll -Path $Path -Expected $Expected
 
 }
 

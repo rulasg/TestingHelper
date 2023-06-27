@@ -71,7 +71,7 @@ function Assert-AddReadMe{
 }
 
 # AddAbout
-function Assert-AddAbout{
+function Assert-AddToModuleAbout{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
@@ -355,7 +355,7 @@ function Assert-AddModuleV3{
     }
 }
 
-function Assert-AddTestV3 {
+function Assert-AddTestAll {
     param(
         [Parameter()][string]$Path,
         [Parameter()][hashtable]$Expected
@@ -377,7 +377,7 @@ function Assert-AddTestV3 {
 }
 
 # Full
-function Assert-AddFull{
+function Assert-AddAll{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
@@ -388,7 +388,7 @@ function Assert-AddFull{
         $Path | Assert-AddDevContainerJson
         $Path | Assert-AddLicense
         $Path | Assert-AddReadMe
-        $Path | Assert-AddAbout
+        $Path | Assert-AddToModuleAbout
         $Path | Assert-AddDeployScript
         $Path | Assert-AddReleaseScript
         $Path | Assert-AddSyncScript

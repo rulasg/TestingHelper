@@ -54,7 +54,7 @@ function New-ModuleV3 {
         # Add PSScriptAnalyzer workflow
         [Parameter()][switch]$AddPSScriptAnalyzerWorkflow,
         # Add testing workflow
-        [Parameter()][switch]$AddTestingWorkflow,
+        [Parameter()][switch]$AddTestWorkflow,
         # Add deploy workflow
         [Parameter()][switch]$AddDeployWorkflow
     )
@@ -143,7 +143,7 @@ function New-ModuleV3 {
     }
 
     # Add Testing
-    if($AddTestingWorkflow){
+    if($AddTestWorkflow){
         $null = Add-ToModuleTestWorkflow -Path $modulePath
     }
 

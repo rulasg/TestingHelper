@@ -35,7 +35,7 @@ function TestingHelperTest_AddModuleSection_PipeCalls_Chain{
 
     $result1 = $modulePath | Add-TT_ToModuleLicense | Add-TT_ToModuleAbout 
                 
-    $result1 | Assert-Addlicense -PassThru | Assert-AddAbout
+    $result1 | Assert-Addlicense -PassThru | Assert-AddToModuleAbout
 }
 
 function TestingHelperTest_AddModuleSection_FULL_PipeCalls_Folder{
@@ -43,7 +43,7 @@ function TestingHelperTest_AddModuleSection_FULL_PipeCalls_Folder{
     New-TestingFolder -Path "folderName"
 
     $result = Add-TT_ToModuleAll -Path "./folderName"
-    $result | Assert-AddFull
+    $result | Assert-AddAll
 }
 
 function TestingHelperTest_AddModuleSection_FULL_PipeCalls_GetItem{
@@ -51,7 +51,7 @@ function TestingHelperTest_AddModuleSection_FULL_PipeCalls_GetItem{
     New-TestingFolder -Path "folderName"
 
     $result = Get-Item -path "folderName" | Add-TT_ToModuleAll 
-    $result | Assert-AddFull
+    $result | Assert-AddAll
 }
 
 function TestingHelperTest_AddModuleSection_FULL_PipeCalls_Module{
@@ -62,7 +62,7 @@ function TestingHelperTest_AddModuleSection_FULL_PipeCalls_Module{
 
     $module = Get-Module -Name "MyModule"
     $result = $module | Add-TT_ToModuleAll
-    $result | Assert-AddFull
+    $result | Assert-AddAll
 
     Remove-Module -Name "MyModule"
 }

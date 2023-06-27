@@ -1,0 +1,27 @@
+# Asserts
+
+| tag              | Add-ToModule* (Add-)                       | New-ModuleV3                | Add-ToModuleAll (11) | Assert-AddToModule* (Assert-)      | Assert-AddAll(10) | Add-ToModuleTestAll | Assert-AddTestAll |
+| ---------------- | ------------------------------------------ | --------------------------- | -------------------- | ---------------------------------- | ----------------- | ------------------- | ----------------- |
+| DeployScript     | Add-ToModuleDeployScript                   | AddDeployScript             | x                    | Assert-AddDeployScript             | x                 |                     |                   |
+| About            | Add-ToModuleAbout                          | AddAbout                    | x                    | Assert-AddToModuleAbout            | x                 |                     |                   |
+| DevContainer     | Add-ToModuleDevContainerJson               | AddDevContainerJson         | x                    | Assert-AddDevContainerJson         | x                 |                     |                   |
+| License          | Add-ToModuleLicense                        | AddLicense                  | x                    | Assert-AddLicense                  | x                 |                     |                   |
+| Readme           | Add-ToModuleReadme                         | AddReadme                   | x                    | Assert-AddReadMe                   | x                 |                     |                   |
+| Release          | Add-ToModuleReleaseScript                  | AddReleaseScript            | x                    | Assert-AddReleaseScript            | x                 |                     |                   |
+| Sync             | Add-ToModuleSyncScript                     | AddSyncScript               | x                    | Assert-AddSyncScript               | x                 |                     |                   |
+| PSScriptAnalyzer | Add-ToModulePSScriptAnalyzerWorkflow       | AddPSScriptAnalyzerWorkflow | x                    | Assert-AddPSScriptAnalyzerWorkflow | x                 |                     |                   |
+| TestWorkflow     | Add-ToModuleTestWorkflow                   | AddTestWorkflow             | x                    | Assert-AddTestWorkflow             | x                 |                     |                   |
+| DeployWorkflow   | Add-ToModuleDeployWorkflow                 | AddDeployWorkfloW           | x                    | Assert-AddDeployWorkflow           | x                 |                     |                   |
+| LaunchJson       | Add-ToModuleLaunchJson                     |                             |                      | Assert-AddTestLaunchJson           |                   | x                   | x                 |
+| TestScript       | Add-ToModuleTestScript                     |                             |                      | Assert-AddTestTestScript           |                   | x                   |                   |
+| SampleCode       | Add-ToModuleSampleCode                     | AddSampleCode               | x                    | Assert-AddSampleCodes              |                   |                     | x                 |
+| TestSampleCode   | Add-ToModuleTestSampleCode                 |                             |                      | Assert-AddTestSampleCodes          |                   | x                   | x                 |
+| ---------------- | ------------------------------------       | --------------------------- |                      | ---------------------------------- |                   |                     |                   |
+| AddModule        | Add-ModuleV3                               |                             | x                    | Assert-AddModuleV3                 |                   |                     |                   |
+| AddTestModule    | Add-ToModuleTestModule -> Add-TestModuleV3 |                             |                      | Assert-AddTestAll                  |                   | x                   |                   |
+| ---------------- | ------------------------------------       | --------------------------- |                      | ---------------------------------- |                   |                     |                   |
+| All              | Add-ToModuleAll                            |                             |                      | Assert-AddAll                      |                   |                     |                   |
+| TestAll          | Add-ToModuleTestAll                        | AddTesting                  | x                    |                                    |                   |                     |                   |
+|                  |                                            |                             |                      |                                    |                   |                     |                   |
+|                  |                                            |                             |                      |                                    |                   |                     |                   |
+|                  |                                            |                             |                      |                                    |                   |                     |                   |

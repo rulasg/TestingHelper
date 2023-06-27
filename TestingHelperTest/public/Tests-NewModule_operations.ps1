@@ -45,7 +45,7 @@ function TestingHelperTest_Manual_Work_Testing{
     Push-Location $modulePath
 
     Add-TT_ToModuleAll
-    Assert-AddFull -Path $modulePath
+    Assert-AddAll -Path $modulePath
 
     Pop-Location
 
