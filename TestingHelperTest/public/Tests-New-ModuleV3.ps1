@@ -34,7 +34,8 @@ function TestingHelperTest_NewModuleV3_WithOutName {
 
     # Error as the name is mandatory
 
-    New-TestingFolder -Name "folderName" -PassThru | Set-Location
+    $folder = New-TestingFolder -Name "ModulefolderName" -PassThru
+    Set-Location -Path $folder
 
     $result = New-TT_ModuleV3 @ErrorParameters
 

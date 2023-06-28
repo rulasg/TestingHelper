@@ -24,15 +24,17 @@ function New-ModuleV3 {
     Param
     (
         # Name of the module
-        [Parameter()][string]$Name,
+        [Parameter(Mandatory,ParameterSetName="Named")][string]$Name,
         # Description of the module
-        [Parameter()][string]$Description,
+        [Parameter(ParameterSetName="Named")][string]$Description,
         # Author of the module
-        [Parameter()][string]$Author,
+        [Parameter(ParameterSetName="Named")][string]$Author,
         # Version of the module
-        [Parameter()][string]$ModuleVersion,
+        [Parameter(ParameterSetName="Named")][string]$ModuleVersion,
+        [Parameter(ParameterSetName="Named")]
         # Path where the module will be created. Default is current folder 
-        [Parameter()][string]$Path,
+        [Parameter(ParameterSetName="WithPath")]
+        [string]$Path,
         # Add all the sections of the module
         [Parameter()][switch]$AddAll,
         # Add Testing module
@@ -65,6 +67,11 @@ function New-ModuleV3 {
 
     $modulePath = Get-ModulePath -Name $Name -RootPath $Path
     $moduleName = Get-ModuleName -Path $modulePath
+
+    # check $modulePath and return if null
+    if(!$modulePath -or !$moduleName){
+        return $null
+    }
 
     # If asked for testing add sample code on both modules
     $AddSampleCode = $AddSampleCode -or $AddTesting

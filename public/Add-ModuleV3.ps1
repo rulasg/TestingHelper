@@ -36,7 +36,7 @@ function Add-ModuleV3 {
     $null = New-Item -ItemType Directory -Force -Path ($modulePath | Join-Path -ChildPath "private")
 
     # PSD1
-    $psd1Path = ($modulePath | Join-Path -ChildPath "$Name.psd1") 
+    $psd1Path = ($modulePath | Join-Path -ChildPath "$moduleName.psd1") 
 
     try {
         # Create the PSD1 file
