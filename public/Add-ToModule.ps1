@@ -396,13 +396,13 @@ function Add-ToModuleTestAll{
         }
         
         # Sample Code
-        $null = Add-ToModuleTestSampleCode -Path $modulePath -Force:$Force
+        Add-ToModuleTestSampleCode -Path $modulePath -Force:$Force
 
         # Add test.ps1
-        $null = Add-ToModuleTestScript -Path $modulePath -Force:$Force
+        Add-ToModuleTestScript -Path $modulePath -Force:$Force
         
         # Add launch.json
-        $null = Add-ToModuleLaunchJson -Path $modulePath -Force:$Force
+        Add-ToModuleLaunchJson -Path $modulePath -Force:$Force
         
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
@@ -422,24 +422,24 @@ function Add-ToModuleAll{
     process{
         $Path = NormalizePath -Path:$Path ?? return $null
 
-        $null = $Path | Add-ToModuleTestAll                  -Force:$Force
+        $Path | Add-ToModuleTestAll                  -Force:$Force
 
-        $null = $Path | Add-ToModuleSampleCode               -Force:$Force
+        $Path | Add-ToModuleSampleCode               -Force:$Force
 
-        $null = $Path | Add-ToModuleDevContainerJson         -Force:$Force
-        $null = $Path | Add-ToModuleLicense                  -Force:$Force
-        $null = $Path | Add-ToModuleReadme                   -Force:$Force
-        $null = $Path | Add-ToModuleAbout                    -Force:$Force
+        $Path | Add-ToModuleDevContainerJson         -Force:$Force
+        $Path | Add-ToModuleLicense                  -Force:$Force
+        $Path | Add-ToModuleReadme                   -Force:$Force
+        $Path | Add-ToModuleAbout                    -Force:$Force
 
         # scripts
-        $null = $Path | Add-ToModuleDeployScript             -Force:$Force
-        $null = $Path | Add-ToModuleReleaseScript            -Force:$Force
-        $null = $Path | Add-ToModuleSyncScript               -Force:$Force
+        $Path | Add-ToModuleDeployScript             -Force:$Force
+        $Path | Add-ToModuleReleaseScript            -Force:$Force
+        $Path | Add-ToModuleSyncScript               -Force:$Force
         
         # workflows
-        $null = $Path | Add-ToModulePSScriptAnalyzerWorkflow -Force:$Force
-        $null = $Path | Add-ToModuleTestWorkflow             -Force:$Force
-        $null = $Path | Add-ToModuleDeployWorkflow           -Force:$Force 
+        $Path | Add-ToModulePSScriptAnalyzerWorkflow -Force:$Force
+        $Path | Add-ToModuleTestWorkflow             -Force:$Force
+        $Path | Add-ToModuleDeployWorkflow           -Force:$Force 
         
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
