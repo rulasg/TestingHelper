@@ -51,8 +51,19 @@ function TestingHelperTest_Manual_Work_Testing{
 
     # Run tests
     
-    $result = Invoke-TT_TestingHelper -Path $modulePath
+    $result = Invoke-TestingHelper -Path $modulePath
 
+    Assert-AreEqual -Expected 2 -Presented $result.Tests
+    Assert-AreEqual -Expected 2 -Presented $result.Pass
+}
+
+function TestingHelperTest_Manual_Work_Testing{
+
+    $moduleName = "modulename_{0}" -f (New-Guid).ToString().Substring(0,8)
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddTesting
+
+    $result = Invoke-TestingHelper -Path $result
     Assert-AreEqual -Expected 2 -Presented $result.Tests
     Assert-AreEqual -Expected 2 -Presented $result.Pass
 }
