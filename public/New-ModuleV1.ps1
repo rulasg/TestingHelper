@@ -56,7 +56,7 @@ function New-ModuleV1 {
     # Testing module
     if (-Not $AvoidTestFile)
     {
-        New-TestingModule -Path $modulePath -ModuleName $ModuleName
+        New-TestingModule -Path $modulePath -ModuleName $ModuleName -warningAction SilentlyContinue # Supress Obsolete Warning
         New-TestingVsCodeLaunchJsonV1 -Path $modulePath -ModuleName $ModuleName
     }
 
@@ -130,7 +130,7 @@ Export-ModuleMember -Function _MODULE_TESTING__*
 
     $toAppend = $toAppend.Replace('_MODULE_TESTING_',$testingModuleName)
 
-    $null = New-ModuleV1 -Path $Path -Name $testingModuleName -Description "Testing module for $ModuleName" -AvoidTestFile -AppendToModuleFile $toAppend
+    $null = New-ModuleV1 -Path $Path -Name $testingModuleName -Description "Testing module for $ModuleName" -AvoidTestFile -AppendToModuleFile $toAppend -WarningAction SilentlyContinue # Supress Obsolete Warning 
 } Export-ModuleMember -Function New-TestingModule
 
 function New-TestingVsCodeLaunchJsonV1($Path, $ModuleName){

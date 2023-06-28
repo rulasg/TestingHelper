@@ -1,6 +1,5 @@
 function TestingHelperTest_NewModuleV1{
-    New-TT_ModuleV1 -Name "ModuleName" -Description "description of the Module"
-
+    New-TT_ModuleV1 -Name "ModuleName" -Description "description of the Module" -warningAction SilentlyContinue
     $psdPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psd1
     $psmPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psm1
 
