@@ -442,7 +442,6 @@ function Add-ToModuleAll{
         $null = $Path | Add-ToModuleDeployWorkflow           -Force:$Force 
         
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
-
     }
 
 } Export-ModuleMember -Function Add-ToModuleAll

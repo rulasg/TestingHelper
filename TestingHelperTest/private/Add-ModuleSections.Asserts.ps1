@@ -358,6 +358,7 @@ function Assert-AddAll{
         [string] $Path
     )
     process{
+        
         $Path | Assert-AddDevContainerJson
         $Path | Assert-AddLicense
         $Path | Assert-AddReadMe

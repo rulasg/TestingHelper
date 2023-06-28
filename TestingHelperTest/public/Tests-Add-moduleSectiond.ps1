@@ -43,6 +43,7 @@ function TestingHelperTest_AddModuleSection_FULL_PipeCalls_Folder{
 
     New-TestingFolder -Path "folderName"
 
+
     $result = Add-TT_ToModuleAll -PassThru -Path "./folderName" 
     $result | Assert-AddAll
 }

@@ -83,66 +83,41 @@ function New-ModuleV3 {
         }
 
         # Add Sample Code
-        if($AddSampleCode){
-            $null = Add-ToModuleSampleCode -Path $modulePath
-        }
+        if($AddSampleCode){ $modulePath | Add-ToModuleSampleCode }
     }
 
     # Add Testing
-    if ($AddTesting) {
-        $null = Add-ToModuleTestAll -Path $modulePath -Passthru
-
-    }
+    if ($AddTesting){ $modulePath | Add-ToModuleTestAll  }
 
     # Add devcontainer.json file
-    if($AddDevContainerJson){
-        $null = Add-ToModuleDevContainerJson -Path $modulePath
-    }
+    if($AddDevContainerJson){ $modulePath | Add-ToModuleDevContainerJson }
 
     # Add License file
-    if($AddLicense){
-        $null = Add-ToModuleLicense -Path $modulePath
-    }
+    if($AddLicense){ $modulePath | Add-ToModuleLicense }
 
     # Add Readme file
-    if($AddReadme){
-        $null = Add-ToModuleReadme -Path $modulePath
-    }
+    if($AddReadme){ $modulePath | Add-ToModuleReadme }
 
     # Add about 
-    if($AddAbout){
-        $null = Add-ToModuleAbout -Path $modulePath 
-    }
+    if($AddAbout){ $modulePath  | Add-ToModuleAbout }
 
     # Add deploying
-    if($AddDeployScript){
-        $null = Add-ToModuleDeployScript -Path $modulePath
-    }
+    if($AddDeployScript){ $modulePath | Add-ToModuleDeployScript }
 
     # Add Release
-    if($AddReleaseScript){
-        $null = Add-ToModuleReleaseScript -Path $modulePath
-    }
+    if($AddReleaseScript){ $modulePath | Add-ToModuleReleaseScript }
 
     # Add Sync
-    if($AddSyncScript){
-        $null = Add-ToModuleSyncScript -Path $modulePath
-    }
+    if($AddSyncScript){ $modulePath | Add-ToModuleSyncScript }
 
     # Add PSScriptAnalyzer
-    if($AddPSScriptAnalyzerWorkflow){
-        $null = Add-ToModulePSScriptAnalyzerWorkflow -Path $modulePath
-    }
+    if($AddPSScriptAnalyzerWorkflow){ $modulePath | Add-ToModulePSScriptAnalyzerWorkflow }
 
     # Add Testing
-    if($AddTestWorkflow){
-        $null = Add-ToModuleTestWorkflow -Path $modulePath
-    }
+    if($AddTestWorkflow){ $modulePath | Add-ToModuleTestWorkflow }
 
     # Add deploy Workflow
-    if($AddDeployWorkflow){
-        $null = Add-ToModuledeployWorkflow -Path $modulePath
-    }
+    if($AddDeployWorkflow){ $modulePath | Add-ToModuledeployWorkflow }
 
     return $retModulePath
     

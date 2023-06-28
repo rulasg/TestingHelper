@@ -8,11 +8,8 @@ function ReturnValue($Path,$Force, $Passthru){
             Path = $Path
             Force = $Force
             Passthru = $Passthru
-
          }
-    } else {
-        return $null
-    }
+    } 
 }
 
 # Normalize $Path and returns $null if not valid
