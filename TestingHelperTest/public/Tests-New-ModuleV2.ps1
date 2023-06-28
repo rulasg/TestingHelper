@@ -1,6 +1,6 @@
 function TestingHelperTest_NewModuleV2{
     #
-    New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9" -waraningAction SilentlyContinue # Supress Obsolete Warning
+    New-TT_Modulev2 -Name "ModuleName" -Description "description of the Module" -Version "9.9.9" -WarningAction SilentlyContinue # Supress Obsolete Warning
 
     #PSD1
     $psdPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psd1
@@ -56,7 +56,7 @@ function TestingHelperTest_NewModuleV2_RunModuleTest_RunFromAnyLocation_AnyName{
 
     $ModuleName = "ModuleName_{0}" -f (New-Guid).ToString().Substring(0,8)
     
-    New-TT_Modulev2 -Name $ModuleName -Description "description of the Module" -Version "9.9.9" -waraningAction SilentlyContinue # Supress Obsolete Warning 
+    New-TT_Modulev2 -Name $ModuleName -Description "description of the Module" -Version "9.9.9" -WarningAction SilentlyContinue # Supress Obsolete Warning 
 
     $test = $ModuleName | Join-Path -ChildPath "test.ps1" | Resolve-Path
 
