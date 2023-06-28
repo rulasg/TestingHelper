@@ -33,6 +33,8 @@ function New-ModuleV3 {
         [Parameter()][string]$ModuleVersion,
         # Path where the module will be created. Default is current folder 
         [Parameter()][string]$Path,
+        # Add all the sections of the module
+        [Parameter()][switch]$AddAll,
         # Add Testing module
         [Parameter()][switch]$AddTesting,
         # Add Sample Code to the module and test
@@ -84,6 +86,13 @@ function New-ModuleV3 {
 
         # Add Sample Code
         if($AddSampleCode){ $modulePath | Add-ToModuleSampleCode }
+    }
+
+    # Add All
+    if($AddAll){ 
+        $modulePath  | Add-ToModuleAll 
+
+        return $retModulePath
     }
 
     # Add Testing

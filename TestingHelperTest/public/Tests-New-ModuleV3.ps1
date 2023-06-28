@@ -59,3 +59,17 @@ function TestingHelperTest_NewModuleV3_AddTesting{
     Assert-AddTestSampleCodes -Path $modulePath
 }
 
+function TestingHelperTest_NewModuleV3_AddAll{
+
+    $moduleName = "MyModule"
+    $path = '.'
+    $modulePath = $path | Join-Path -ChildPath $moduleName
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddAll
+
+    Assert-AreEqualPath -Expected $modulePath -Presented $result
+
+    Assert-AddAll -Path $modulePath
+
+}
+
