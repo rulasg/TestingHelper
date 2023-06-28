@@ -18,13 +18,10 @@ function Assert-AddDevContainerJson{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath ".devcontainer" | Join-Path -ChildPath "devcontainer.json") -Comment "devcontainer.json"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -34,13 +31,10 @@ function Assert-AddLicense{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "LICENSE") -Comment "LICENSE"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -49,8 +43,7 @@ function Assert-AddReadMe{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         $name = $Path | Split-Path -LeafBase
@@ -65,8 +58,6 @@ function Assert-AddReadMe{
             $expectedDescription = $manifest.Description ?? "A powershell module that will hold Powershell functionality."
             Assert-Contains -Expected $expectedDescription -Presented $content -Comment "README.md contains module description"
         }
-        
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -75,8 +66,7 @@ function Assert-AddToModuleAbout{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
 
@@ -95,8 +85,6 @@ function Assert-AddToModuleAbout{
             Assert-IsTrue -Condition ($aboutContent.Contains("SHORT DESCRIPTION`n    {0}" -f $moduleMonifest.Description)) -Comment "Description"
             Assert-IsTrue -Condition ($aboutContent.Contains("COPYRIGHT`n    {0}"         -f $moduleMonifest.CopyRight)) -Comment "CopyRight"
         }
-
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -105,14 +93,11 @@ function Assert-AddDeployScript{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy.ps1") -Comment "deploy.ps1"
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy-helper.ps1") -Comment "deploy-helper.ps1"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -121,13 +106,10 @@ function Assert-AddReleaseScript{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "release.ps1") -Comment "release.ps1"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -136,14 +118,11 @@ function Assert-AddSyncScript{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync.ps1") -Comment "sync.ps1"
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync-helper.ps1") -Comment "sync-helper.ps1"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -153,14 +132,11 @@ function Assert-AddPSScriptAnalyzerWorkflow{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Assert-ItemExist -Path ($destination | Join-Path -ChildPath "powershell.yml") -Comment "powershell.yml"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -170,14 +146,11 @@ function Assert-AddTestWorkflow{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Assert-ItemExist -Path ($destination | Join-Path -ChildPath "test_with_TestingHelper.yml") -Comment "test_with_TestingHelper.yml"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -187,14 +160,11 @@ function Assert-AddDeployWorkflow{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Assert-ItemExist -Path ($destination | Join-Path -ChildPath "deploy_module_on_release.yml") -Comment "deploy_module_on_release.yml"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -203,14 +173,11 @@ function Assert-AddSampleCodes{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "public" | Join-Path -ChildPath "samplePublicFunction.ps1") -Comment "public function"
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "private" | Join-Path -ChildPath "samplePrivateFunction.ps1") -Comment "private function"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -219,8 +186,7 @@ function Assert-AddTestSampleCodes{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         $name = $Path | Split-Path -LeafBase
@@ -229,8 +195,6 @@ function Assert-AddTestSampleCodes{
 
         $samplePublicPath = $testingModulePath | Join-Path -ChildPath "public" -AdditionalChildPath SampleFunctionTests.ps1
         Assert-ItemExist -Path $samplePublicPath
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -239,8 +203,7 @@ function Assert-AddTestLaunchJson{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         $launchFile = $Path | Join-Path -ChildPath ".vscode" -AdditionalChildPath "launch.json"
@@ -258,8 +221,6 @@ function Assert-AddTestLaunchJson{
         Assert-IsTrue -Condition ($json.configurations[1].type -eq 'PowerShell')
         Assert-IsTrue -Condition ($json.configurations[1].Request -eq "launch")
         Assert-IsTrue -Condition ($json.configurations[1].cwd -eq '')
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -268,16 +229,13 @@ function Assert-AddTestTestScript{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
 
         $testps1Path = $Path | Join-Path -ChildPath "test.ps1"
 
         Assert-ItemExist -Path $testps1Path -Comment "test.ps1 exists"
-    
-        return $Passthru ? $Path : $null
     }
 }
 
@@ -288,8 +246,7 @@ function Assert-AddModuleV3{
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
         # Manifest data to check
-        [Parameter()][hashtable]$Expected,
-        [Parameter()][switch]$Passthru
+        [Parameter()][hashtable]$Expected
     )
     process{
         $name = $Path | Split-Path -LeafBase
@@ -350,11 +307,8 @@ function Assert-AddModuleV3{
         }
     
         Write-AssertionSectionEnd
-    
-        return $Passthru ? $Path : $null
     }
 }
-
 
 function Assert-AddTestModuleV3{
     param(
@@ -372,7 +326,6 @@ function Assert-AddTestModuleV3{
         
         Assert-AddModuleV3 -Path $testingModulePath
     }
-
 }
 
 function Assert-AddTestAll {
@@ -395,7 +348,6 @@ function Assert-AddTestAll {
         Assert-AddTestTestScript -Path $Path
         Assert-AddTestLaunchJson -Path $Path
     }
-
 }
 
 # Full
@@ -403,8 +355,7 @@ function Assert-AddAll{
     param(
         [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter()][switch]$Passthru
+        [string] $Path
     )
     process{
         $Path | Assert-AddDevContainerJson
@@ -421,8 +372,6 @@ function Assert-AddAll{
 
         $Path | Assert-AddTestAll
         $Path | Assert-AddTestSampleCodes
-    
-        return $Passthru ? $Path : $null
     }
 }
 
