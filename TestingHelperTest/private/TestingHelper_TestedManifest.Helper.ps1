@@ -1,6 +1,6 @@
 
 # return the manifest of the tested module
-function Get-TestedModuleManifestPath{
+function Get-TestingHelperTestedModuleManifestPath{
 
     $localPath = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent | Convert-Path
 
@@ -13,8 +13,8 @@ function Get-TestedModuleManifestPath{
     return $psdpath.FullName
 }
 
-function Get-TestedModuleManifest{
-    $manifestPath = Get-TestedModuleManifestPath
+function Get-TestingHelperTestedModuleManifest{
+    $manifestPath = Get-TestingHelperTestedModuleManifestPath
     $manifest = Import-PowerShellDataFile -Path $manifestPath
 
     $manifest.PsdPath = $manifestPath
@@ -24,6 +24,7 @@ function Get-TestedModuleManifest{
 }
 
 # return handle of the tested module
-function Get-TestedModuleHandle{
-    Get-TestedModuleManifestPath |  Import-Module -PassThru
-} Export-ModuleMember -Function Get-TestedModuleHandle
+function Get-TestingHelperTestedModuleHandle{
+    Get-TestingHelperTestedModuleManifestPath |  Import-Module -PassThru
+} 
+# Export-ModuleMember -Function Get-TestingHelperTestedModuleHandle

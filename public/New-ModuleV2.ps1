@@ -31,6 +31,7 @@ function New-ModuleV2 {
     .Synopsis
        Created a Powershell module with V2 format.
     #>
+        [System.ObsoleteAttribute("Use New-ModuleV3 instead", $true)]
         [CmdletBinding()]
         Param
         (

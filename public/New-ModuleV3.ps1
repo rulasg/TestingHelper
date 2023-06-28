@@ -24,15 +24,19 @@ function New-ModuleV3 {
     Param
     (
         # Name of the module
-        [Parameter()][string]$Name,
+        [Parameter(Mandatory,ParameterSetName="Named")][string]$Name,
         # Description of the module
-        [Parameter()][string]$Description,
+        [Parameter(ParameterSetName="Named")][string]$Description,
         # Author of the module
-        [Parameter()][string]$Author,
+        [Parameter(ParameterSetName="Named")][string]$Author,
         # Version of the module
-        [Parameter()][string]$ModuleVersion,
+        [Parameter(ParameterSetName="Named")][string]$ModuleVersion,
+        [Parameter(ParameterSetName="Named")]
         # Path where the module will be created. Default is current folder 
-        [Parameter()][string]$Path,
+        [Parameter(ParameterSetName="WithPath")]
+        [string]$Path,
+        # Add all the sections of the module
+        [Parameter()][switch]$AddAll,
         # Add Testing module
         [Parameter()][switch]$AddTesting,
         # Add Sample Code to the module and test
@@ -54,15 +58,23 @@ function New-ModuleV3 {
         # Add PSScriptAnalyzer workflow
         [Parameter()][switch]$AddPSScriptAnalyzerWorkflow,
         # Add testing workflow
-        [Parameter()][switch]$AddTestingWorkflow,
+        [Parameter()][switch]$AddTestWorkflow,
         # Add deploy workflow
-        [Parameter()][switch]$AdddeployWorkflow
+        [Parameter()][switch]$AddDeployWorkflow
     )
 
     $retModulePath = $null
 
-    $modulePath = Get-ModulePath -Name $Name -Path $Path -AppendName
-    $moduleName = Get-ModuleName -Name $Name -ModulePath $modulePath
+    $modulePath = Get-ModulePath -Name $Name -RootPath $Path
+    $moduleName = Get-ModuleName -Path $modulePath
+
+    # check $modulePath and return if null
+    if(!$modulePath -or !$moduleName){
+        return $null
+    }
+
+    # If asked for testing add sample code on both modules
+    $AddSampleCode = $AddSampleCode -or $AddTesting
 
     # Create the module
     if ($moduleName) {
@@ -71,90 +83,57 @@ function New-ModuleV3 {
         $metadata = @{}
         if($Description){ $metadata.Description = $Description}
         if($Author){ $metadata.Author = $Author}
-        if($ModuleVersion){ $metadata.ModuleVersion = $Version}
+        if($ModuleVersion){ $metadata.ModuleVersion = $ModuleVersion}
 
-        $retModulePath = Add-ModuleV3 -Name $moduleName -Path $modulePath -Metadata $metadata -AddSampleCode:$AddSampleCode
-
+        $retModulePath = Add-ModuleV3 -Name $moduleName -RootPath $modulePath -Metadata $metadata
+        
         if(!$retModulePath){
             return $null
         }
+
+        # Add Sample Code
+        if($AddSampleCode){ $modulePath | Add-ToModuleSampleCode }
     }
 
-    if ($AddTesting) {
-        $result = Add-TestingToModuleV3 -Name $Name -Path $modulePath -AddSampleCode:$AddSampleCode
-        
-        # Check if the module was created
-        if(! $result){
-            return $null
-        }
-    }
+    # Add All
+    if($AddAll){ 
+        $modulePath  | Add-ToModuleAll 
 
-    # Add devcontainer.json file
-    if($AddDevContainerJson){
-        $destination = $modulePath | Join-Path -ChildPath ".devcontainer"
-        Import-Template -Path $destination -File "devcontainer.json" -Template "template.devcontainer.json"
-    }
-
-    # Add License file
-    if($AddLicense){
-        Import-Template -Path $modulePath -File "LICENSE" -Template "template.LICENSE.txt"
-    }
-
-    # Add Readme file
-    if($AddReadme){
-        $moduleManifest = Get-ModuleManifest -Path $modulePath
-        Import-Template -Path $modulePath -File "README.md" -Template "template.README.md" -Replaces @{
-            "_MODULE_NAME_" = $moduleName
-            "_MODULE_DESCRIPTION_" = ($moduleManifest.Description ?? "A powershell module that will hold Powershell functionality.")
-        }
-    }
-
-    # Add about 
-    if($AddAbout){
-        $moduleManifest = Get-ModuleManifest -Path $modulePath
-        $destination = $modulePath | Join-Path -ChildPath "en-US"
-        Import-Template -Path $destination -File "about_$moduleName.help.txt" -Template "template.about.help.txt" -Replaces @{
-            "_MODULE_NAME_"        = ($moduleName ?? "<ModuleName>")
-            "_MODULE_DESCRIPTION_" = ($moduleManifest.Description ?? "<Description>")
-            "_AUTHOR_"             = ($moduleManifest.Author ?? "<Author>")
-            "_COPYRIGHT_"          = ($moduleManifest.CopyRight ?? "<CopyRight>")
-        }
-    }
-
-    # Add deploying
-    if($AdddeployScript){
-        Import-Template -Path $modulePath -File "deploy.ps1" -Template "template.v3.deploy.ps1"
-        Import-Template -Path $modulePath -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
-    }
-
-    # Add Release
-    if($AddReleaseScript){
-        Import-Template -Path $modulePath -File "release.ps1" -Template "template.v3.release.ps1"
-    }
-
-    # Add Sync
-    if($AddSyncScript){
-        Import-Template -Path $modulePath -File "sync.ps1" -Template "template.v3.sync.ps1"
-        Import-Template -Path $modulePath -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
-    }
-
-    # Add PSScriptAnalyzer
-    if($AddPSScriptAnalyzerWorkflow){
-        $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Import-Template -Path $destination -File "powershell.yml" -Template "template.v3.powershell.yml"
+        return $retModulePath
     }
 
     # Add Testing
-    if($AddTestingWorkflow){
-        $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Import-Template -Path $destination -File "test_with_TestingHelper.yml" -Template "template.v3.test_with_TestingHelper.yml"
-    }
+    if ($AddTesting){ $modulePath | Add-ToModuleTestAll  }
+
+    # Add devcontainer.json file
+    if($AddDevContainerJson){ $modulePath | Add-ToModuleDevContainerJson }
+
+    # Add License file
+    if($AddLicense){ $modulePath | Add-ToModuleLicense }
+
+    # Add Readme file
+    if($AddReadme){ $modulePath | Add-ToModuleReadme }
+
+    # Add about 
+    if($AddAbout){ $modulePath  | Add-ToModuleAbout }
+
+    # Add deploying
+    if($AddDeployScript){ $modulePath | Add-ToModuleDeployScript }
+
+    # Add Release
+    if($AddReleaseScript){ $modulePath | Add-ToModuleReleaseScript }
+
+    # Add Sync
+    if($AddSyncScript){ $modulePath | Add-ToModuleSyncScript }
+
+    # Add PSScriptAnalyzer
+    if($AddPSScriptAnalyzerWorkflow){ $modulePath | Add-ToModulePSScriptAnalyzerWorkflow }
+
+    # Add Testing
+    if($AddTestWorkflow){ $modulePath | Add-ToModuleTestWorkflow }
 
     # Add deploy Workflow
-    if($AdddeployWorkflow){
-        $destination = $modulePath | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
-        Import-Template -Path $destination -File "deploy_module_on_release.yml" -Template "template.v3.deploy_module_on_release.yml"
-    }
+    if($AddDeployWorkflow){ $modulePath | Add-ToModuledeployWorkflow }
 
     return $retModulePath
     

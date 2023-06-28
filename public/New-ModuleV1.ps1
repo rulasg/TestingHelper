@@ -4,6 +4,7 @@ function New-ModuleV1 {
 .Synopsis
    Created a Powershell module with BiT21 format.
 #>
+    [System.ObsoleteAttribute("Use New-ModuleV3 instead", $true)]
     [CmdletBinding()]
     [OutputType([System.IO.FileInfo])]
     Param
@@ -55,8 +56,8 @@ function New-ModuleV1 {
     # Testing module
     if (-Not $AvoidTestFile)
     {
-        New-TestingModule -Path $modulePath -ModuleName $ModuleName
-        New-TestingVsCodeLaunchJson -Path $modulePath -ModuleName $ModuleName
+        New-TestingModule -Path $modulePath -ModuleName $ModuleName -warningAction SilentlyContinue # Supress Obsolete Warning
+        New-TestingVsCodeLaunchJsonV1 -Path $modulePath -ModuleName $ModuleName
     }
 
     return $modulePath
@@ -129,10 +130,10 @@ Export-ModuleMember -Function _MODULE_TESTING__*
 
     $toAppend = $toAppend.Replace('_MODULE_TESTING_',$testingModuleName)
 
-    $null = New-ModuleV1 -Path $Path -Name $testingModuleName -Description "Testing module for $ModuleName" -AvoidTestFile -AppendToModuleFile $toAppend
+    $null = New-ModuleV1 -Path $Path -Name $testingModuleName -Description "Testing module for $ModuleName" -AvoidTestFile -AppendToModuleFile $toAppend -WarningAction SilentlyContinue # Supress Obsolete Warning 
 } Export-ModuleMember -Function New-TestingModule
 
-function New-TestingVsCodeLaunchJson($Path, $ModuleName){
+function New-TestingVsCodeLaunchJsonV1($Path, $ModuleName){
     $testScript = 
 @'
     {
@@ -160,4 +161,4 @@ function New-TestingVsCodeLaunchJson($Path, $ModuleName){
         -Value $testScript `
         -Force `
         | Out-Null
-} Export-ModuleMember -Function New-TestingVsCodeLaunchJson
+} 

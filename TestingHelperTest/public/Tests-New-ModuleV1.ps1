@@ -1,6 +1,5 @@
 function TestingHelperTest_NewModuleV1{
-    New-TT_ModuleV1 -Name "ModuleName" -Description "description of the Module"
-
+    New-TT_ModuleV1 -Name "ModuleName" -Description "description of the Module" -warningAction SilentlyContinue
     $psdPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psd1
     $psmPath = Join-Path -Path . -ChildPath ModuleName -AdditionalChildPath  ModuleName.psm1
 
@@ -56,19 +55,4 @@ function TestingHelperTest_NewTestingModule{
     
     Assert-FileContains -Path $psmPathTest -Pattern "function ModuleNameTest_Sample()" -Comment "Function header"
     Assert-FileContains -Path $psmPathTest -Pattern "Export-ModuleMember -Function ModuleNameTest_*" -Comment "Export"
-}
-
-function TestingHelperTest_NewTestingVsCodeLaunchJson{
-    New-TT_TestingVsCodeLaunchJson -Path . -ModuleName "ModuleName"
-
-    $launchFile = Join-Path -Path . -ChildPath ".vscode" -AdditionalChildPath "launch.json"
-
-    Assert-ItemExist -Path $launchFile -Comment "launch.json exists"
-    $json = Get-Content -Path $launchFile | ConvertFrom-Json
-
-    Assert-IsTrue -Condition ($json.configurations.Request -eq "launch")
-    Assert-IsTrue -Condition ($json.configurations.Script -eq '${workspaceFolder}/ModuleNameTest.ps1')
-    Assert-IsTrue -Condition ($json.configurations.cwd -eq '${workspaceFolder}')
-    Assert-IsTrue -Condition ($json.configurations.type -eq 'PowerShell')
-    Assert-IsTrue -Condition ($json.configurations.name -like '*ModuleName.ps1')
 }

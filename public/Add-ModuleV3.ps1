@@ -10,39 +10,33 @@ function Add-ModuleV3 {
     [CmdletBinding()]
     Param
     (
-        [Parameter()][string]$Path,
         [Parameter(Mandatory)][string]$Name,
+        [Parameter()][string]$RootPath,
         [Parameter()][hashtable]$Metadata,
         [Parameter()][switch]$AddSampleCode
     ) 
 
-    # Resolve Path. Check if fails
-    $modulePath = Get-ModulePath -Path $Path -Name $Name
-    if(!$modulePath){return $null}
+    # Resolve Path. Check if fails. 
+    $modulePathString = Get-ModulePath -RootPath $Path -Name $Name
+    if(!$modulePathString){return $null}
 
     # Create the module folder. Fail if exists
-    if(!($modulePath | Add-Folder)){
-        return $null
-    }
+    # This will filter if Path already exist to avoid overwriting an existing module
+    $modulePath = $modulePathString | New-Folder
+    if( !$modulePath ){ return $null }
+
+    $moduleName = Get-ModuleName -Path $modulePath
 
     # PSM1
-    $rootModule = "$Name.psm1"
-    Import-Template -Path $modulePath -File $rootModule -Template "template.module.psm1"
+    $rootModule = "$moduleName.psm1"
+    Import-Template -Path $modulePath -File $rootModule -Template "template.module.psm1" -Force:$Force
 
     # public private
     $null = New-Item -ItemType Directory -Force -Path ($modulePath | Join-Path -ChildPath "public")
     $null = New-Item -ItemType Directory -Force -Path ($modulePath | Join-Path -ChildPath "private")
 
-    # Sample code
-    if ($AddSampleCode) {
-        $destination = $modulePath | Join-Path -ChildPath "public"
-        Import-Template -Path $destination -File "samplePublicFunction.ps1" -Template "template.module.functions.public.ps1"
-        $destination = $modulePath | Join-Path -ChildPath "private"
-        Import-Template -Path $destination -File "samplePrivateFunction.ps1" -Template "template.module.functions.private.ps1"
-    }
-
     # PSD1
-    $psd1Path = ($modulePath | Join-Path -ChildPath "$Name.psd1") 
+    $psd1Path = ($modulePath | Join-Path -ChildPath "$moduleName.psd1") 
 
     try {
         # Create the PSD1 file
@@ -58,6 +52,6 @@ function Add-ModuleV3 {
         return $null
     }
 
-    return $modulePath
+    return $modulePath | Convert-Path
 
 } Export-ModuleMember -Function Add-ModuleV3
