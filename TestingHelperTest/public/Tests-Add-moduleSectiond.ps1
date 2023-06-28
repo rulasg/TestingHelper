@@ -1,7 +1,7 @@
 
 function TestingHelperTest_AddModuleSection_PipeCalls_NewModuleV3{
 
-    $result = New-TT_ModuleV3 -Name "MyModule" | Add-TT_ToModuleLicense 
+    $result = New-TT_ModuleV3 -Name "MyModule" | Add-TT_ToModuleLicense -PassThru 
 
     $result | Assert-Addlicense
 }
@@ -10,7 +10,7 @@ function TestingHelperTest_AddModuleSection_PipeCalls_Folder{
 
     New-TestingFolder -Path "folderName"
 
-    $result = Get-Item -path "folderName" | Add-TT_ToModuleLicense 
+    $result = Get-Item -path "folderName" | Add-TT_ToModuleLicense -PassThru 
     $result | Assert-Addlicense
 }
 
@@ -22,7 +22,7 @@ function TestingHelperTest_AddModuleSection_PipeCalls_Module{
     Import-Module -Name $modulePath
     $module = Get-Module -Name $moduleName
 
-    $result = $module | Add-TT_ToModuleLicense 
+    $result = $module | Add-TT_ToModuleLicense -PassThru 
     
     $result | Assert-Addlicense
 
@@ -33,16 +33,17 @@ function TestingHelperTest_AddModuleSection_PipeCalls_Chain{
     
     $modulePath = New-TT_ModuleV3 -Name "MyModule" 
 
-    $result1 = $modulePath | Add-TT_ToModuleLicense | Add-TT_ToModuleAbout 
+    $result = $modulePath | Add-TT_ToModuleLicense -PassThru | Add-TT_ToModuleAbout
                 
-    $result1 | Assert-Addlicense -PassThru | Assert-AddToModuleAbout
+    $result | Assert-Addlicense 
+    $result | Assert-AddToModuleAbout
 }
 
 function TestingHelperTest_AddModuleSection_FULL_PipeCalls_Folder{
 
     New-TestingFolder -Path "folderName"
 
-    $result = Add-TT_ToModuleAll -Path "./folderName"
+    $result = Add-TT_ToModuleAll -PassThru -Path "./folderName" 
     $result | Assert-AddAll
 }
 
@@ -50,7 +51,7 @@ function TestingHelperTest_AddModuleSection_FULL_PipeCalls_GetItem{
 
     New-TestingFolder -Path "folderName"
 
-    $result = Get-Item -path "folderName" | Add-TT_ToModuleAll 
+    $result = Get-Item -path "folderName" | Add-TT_ToModuleAll -PassThru 
     $result | Assert-AddAll
 }
 
@@ -61,7 +62,7 @@ function TestingHelperTest_AddModuleSection_FULL_PipeCalls_Module{
     Import-Module -Name $modulePath
 
     $module = Get-Module -Name "MyModule"
-    $result = $module | Add-TT_ToModuleAll
+    $result = $module | Add-TT_ToModuleAll -PassThru
     $result | Assert-AddAll
 
     Remove-Module -Name "MyModule"

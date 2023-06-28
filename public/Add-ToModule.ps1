@@ -7,39 +7,14 @@
 
 
 
-function ReturnValue($Path,$Force){
-    # create object with the two parameters as properties
-    return [pscustomobject]@{
-        Path = $Path
-        Force = $Force
-    }
-}
-
-# Normalize $Path and returns $null if not valid
-function NormalizePath($Path){
-    # Path returned should be the folder where the module is located.
-    
-    # Aceot local folder as default
-    $Path = [string]::isnullorwhitespace($Path) ? '.' : $Path
-    
-    # We may input the RootModule as if we pipe Get-Module command.
-    # check if $Path is a file and get the parent of it
-    if(Test-Path -Path $Path -PathType Leaf){
-        $ret = $Path | Split-Path -Parent
-    } else {
-        $ret = $Path
-    }
-
-    return  $ret | Convert-Path
-}
-
 function Add-ToModuleSampleCode{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -53,11 +28,9 @@ function Add-ToModuleSampleCode{
         $destination = $modulePath | Join-Path -ChildPath "private"
         Import-Template -Path $destination -File "samplePrivateFunction.ps1" -Template "template.module.functions.private.ps1"
         
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleSampleCode
-
-
 
 # Add devcontainer.json file
 function Add-ToModuleDevContainerJson{
@@ -66,7 +39,8 @@ function Add-ToModuleDevContainerJson{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -75,7 +49,7 @@ function Add-ToModuleDevContainerJson{
         $destination = $Path | Join-Path -ChildPath ".devcontainer"
         Import-Template -Force:$Force -Path $destination -File "devcontainer.json" -Template "template.devcontainer.json"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleDevContainerJson
 
@@ -87,7 +61,8 @@ function Add-ToModuleLicense{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -95,7 +70,7 @@ function Add-ToModuleLicense{
 
         Import-Template -Force:$Force -Path $Path -File "LICENSE" -Template "template.LICENSE.txt"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleLicense
 
@@ -106,7 +81,8 @@ function Add-ToModuleReadme{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -120,7 +96,7 @@ function Add-ToModuleReadme{
             "_MODULE_DESCRIPTION_" = ($moduleManifest.Description ?? "A powershell module that will hold Powershell functionality.")
         }
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleReadme
 
@@ -131,7 +107,8 @@ function Add-ToModuleAbout{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -149,7 +126,7 @@ function Add-ToModuleAbout{
 
         }
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleAbout
 
@@ -160,7 +137,8 @@ function Add-ToModuleDeployScript{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -169,7 +147,7 @@ function Add-ToModuleDeployScript{
         Import-Template -Force:$Force -Path $Path -File "deploy.ps1" -Template "template.v3.deploy.ps1"
         Import-Template -Force:$Force -Path $Path -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleDeployScript
 
@@ -181,7 +159,8 @@ function Add-ToModuleReleaseScript{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -189,7 +168,7 @@ function Add-ToModuleReleaseScript{
 
         Import-Template -Force:$Force -Path $Path -File "release.ps1" -Template "template.v3.release.ps1"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleReleaseScript
 
@@ -200,7 +179,8 @@ function Add-ToModuleSyncScript{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -209,7 +189,7 @@ function Add-ToModuleSyncScript{
         Import-Template -Force:$Force -Path $Path -File "sync.ps1" -Template "template.v3.sync.ps1"
         Import-Template -Force:$Force -Path $Path -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleSyncScript
 
@@ -221,7 +201,8 @@ function Add-ToModulePSScriptAnalyzerWorkflow{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -230,7 +211,7 @@ function Add-ToModulePSScriptAnalyzerWorkflow{
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Import-Template -Force:$Force -Path $destination -File "powershell.yml" -Template "template.v3.powershell.yml"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModulePSScriptAnalyzerWorkflow
 
@@ -241,7 +222,8 @@ function Add-ToModuleTestWorkflow{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -250,7 +232,7 @@ function Add-ToModuleTestWorkflow{
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Import-Template -Force:$Force -Path $destination -File "test_with_TestingHelper.yml" -Template "template.v3.test_with_TestingHelper.yml"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleTestWorkflow
 
@@ -261,7 +243,8 @@ function Add-ToModuleDeployWorkflow{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -270,7 +253,7 @@ function Add-ToModuleDeployWorkflow{
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Import-Template -Force:$Force -Path $destination -File "deploy_module_on_release.yml" -Template "template.v3.deploy_module_on_release.yml"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleDeployWorkflow
 
@@ -285,7 +268,8 @@ function Add-ToModuleTestScript{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -293,7 +277,7 @@ function Add-ToModuleTestScript{
 
         Import-Template -Force:$Force -Path $Path -File "test.ps1" -Template "template.v3.test.ps1"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleTestScript
 
@@ -305,7 +289,8 @@ function Add-ToModuleLaunchJson{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -314,7 +299,7 @@ function Add-ToModuleLaunchJson{
 
         Import-Template -Force:$Force -Path $destination -File "launch.json" -Template "template.launch.json"
     
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleLaunchJson
 
@@ -325,7 +310,8 @@ function Add-ToModuleTestSampleCode{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -341,7 +327,7 @@ function Add-ToModuleTestSampleCode{
             '_MODULE_TESTED_' = $ModuleName
         }
         
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleTestSampleCode
 
@@ -355,7 +341,8 @@ function Add-ToModuleTestModule{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     ) 
     process {
 
@@ -374,7 +361,7 @@ function Add-ToModuleTestModule{
             return $null
         }
 
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 } Export-ModuleMember -Function Add-ToModuleTestModule
 
@@ -387,7 +374,8 @@ function Add-ToModuleTestAll{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     ) 
 
     process{
@@ -399,7 +387,7 @@ function Add-ToModuleTestAll{
         if(!$modulePath){return $null}
         
         # Test Module
-        $result = Add-ToModuleTestModule -Path $modulePath -Force:$Force
+        $result = Add-ToModuleTestModule -Path $modulePath -Force:$Force -Passthru
 
         if (!$result) {
             $name = Get-ModuleName -Path $Path
@@ -416,7 +404,7 @@ function Add-ToModuleTestAll{
         # Add launch.json
         $null = Add-ToModuleLaunchJson -Path $modulePath -Force:$Force
         
-        return ReturnValue -Path $modulePath -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
 
 } Export-ModuleMember -Function Add-ToModuleTestAll
@@ -427,7 +415,8 @@ function Add-ToModuleAll{
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
         [string] $Path,
-        [Parameter()][switch]$Force
+        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
+        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
     )
 
     process{
@@ -452,7 +441,7 @@ function Add-ToModuleAll{
         $null = $Path | Add-ToModuleTestWorkflow             -Force:$Force
         $null = $Path | Add-ToModuleDeployWorkflow           -Force:$Force 
         
-        return ReturnValue -Path $Path -Force:$Force
+        return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
 
     }
 

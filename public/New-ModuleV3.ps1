@@ -88,18 +88,10 @@ function New-ModuleV3 {
         }
     }
 
+    # Add Testing
     if ($AddTesting) {
-        $result = Add-ToModuleTestAll -Path $modulePath
-        
-        # Check if the module was created
-        if(! $result){
-            return $null
-        }
+        $null = Add-ToModuleTestAll -Path $modulePath -Passthru
 
-        # Add Sample Code
-        if($AddSampleCode){
-            $null = Add-ToModuleTestSampleCode -Path $modulePath
-        }
     }
 
     # Add devcontainer.json file
