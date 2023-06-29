@@ -225,6 +225,7 @@ function Assert-Manifest{
     }
 }
 
+# Reset manifest to original state from git repo
 function Reset-Manifest{
     [CmdletBinding(SupportsShouldProcess)]
     param()
