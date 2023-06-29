@@ -25,6 +25,18 @@ function Assert-AddDevContainerJson{
     }
 }
 
+# Git Repository
+function Assert-AddGitRepository{
+    param(
+        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path
+    )
+    process{
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath ".git") -Comment ".git"
+    }
+}
+
 
 # License
 function Assert-AddLicense{
@@ -360,6 +372,7 @@ function Assert-AddAll{
     process{
         
         $Path | Assert-AddDevContainerJson
+        $Path | Assert-AddGitRepository
         $Path | Assert-AddLicense
         $Path | Assert-AddReadMe
         $Path | Assert-AddToModuleAbout
