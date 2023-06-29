@@ -31,6 +31,7 @@ Apis to create a module with the sections that you need
 - Add-ToModuleReadme
 - Add-ToModuleLicense
 - Add-ToModuleDevContainerJson
+- Add-ToModuleGitRepository
 
 ## Add Helper scripts to create releases and deploy
 

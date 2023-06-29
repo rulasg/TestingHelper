@@ -43,6 +43,8 @@ function New-ModuleV3 {
         [Parameter()][switch]$AddSampleCode,
         # Add devcontainer Json file
         [Parameter()][switch]$AddDevContainerJson,
+        # Add Git repository
+        [Parameter()][switch]$AddGitRepository,
         # Add a MIT Licenses file
         [Parameter()][switch]$AddLicense,
         # Add Readme file
@@ -107,6 +109,9 @@ function New-ModuleV3 {
 
     # Add devcontainer.json file
     if($AddDevContainerJson){ $modulePath | Add-ToModuleDevContainerJson }
+
+    # Add Git repository
+    if($AddGitRepository){ $modulePath | Add-ToModuleGitRepository }
 
     # Add License file
     if($AddLicense){ $modulePath | Add-ToModuleLicense }

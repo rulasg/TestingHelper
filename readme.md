@@ -80,6 +80,7 @@ This library will allow you to create a PowerShell Module with all the gearing f
 - Add-ToModuleReadme
 - Add-ToModuleLicense
 - Add-ToModuleDevContainerJson
+- Add-ToModuleGitRepository
 
 - Add-ToModuleDeployScript
 - Add-ToModuleReleaseScript

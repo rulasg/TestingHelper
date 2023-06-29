@@ -21,7 +21,23 @@ function Assert-AddDevContainerJson{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath ".devcontainer" | Join-Path -ChildPath "devcontainer.json") -Comment "devcontainer.json"
+    }
+}
+
+# Git Repository
+function Assert-AddGitRepository{
+    param(
+        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path
+    )
+    process{
+        $Path = $Path | Convert-Path
+
+        Assert-ItemExist -Path ($Path | Join-Path -ChildPath ".git") -Comment ".git"
     }
 }
 
@@ -34,6 +50,8 @@ function Assert-AddLicense{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "LICENSE") -Comment "LICENSE"
     }
 }
@@ -46,6 +64,8 @@ function Assert-AddReadMe{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         $name = $Path | Split-Path -LeafBase
         $readMePath = $Path | Join-Path -ChildPath "README.md"
         Assert-ItemExist -Path $readMePath -Comment "README.md"
@@ -69,6 +89,7 @@ function Assert-AddToModuleAbout{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
 
         $name = $Path | Split-Path -LeafBase
         $aboutFilePath = $Path | Join-Path -ChildPath "en-US" -AdditionalChildPath "about_$name.help.txt"
@@ -96,6 +117,8 @@ function Assert-AddDeployScript{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy.ps1") -Comment "deploy.ps1"
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "deploy-helper.ps1") -Comment "deploy-helper.ps1"
     }
@@ -109,6 +132,8 @@ function Assert-AddReleaseScript{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "release.ps1") -Comment "release.ps1"
     }
 }
@@ -121,6 +146,8 @@ function Assert-AddSyncScript{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync.ps1") -Comment "sync.ps1"
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync-helper.ps1") -Comment "sync-helper.ps1"
     }
@@ -135,6 +162,8 @@ function Assert-AddPSScriptAnalyzerWorkflow{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Assert-ItemExist -Path ($destination | Join-Path -ChildPath "powershell.yml") -Comment "powershell.yml"
     }
@@ -149,6 +178,8 @@ function Assert-AddTestWorkflow{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Assert-ItemExist -Path ($destination | Join-Path -ChildPath "test_with_TestingHelper.yml") -Comment "test_with_TestingHelper.yml"
     }
@@ -163,6 +194,8 @@ function Assert-AddDeployWorkflow{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         $destination = $Path | Join-Path -ChildPath ".github" -AdditionalChildPath "workflows"
         Assert-ItemExist -Path ($destination | Join-Path -ChildPath "deploy_module_on_release.yml") -Comment "deploy_module_on_release.yml"
     }
@@ -176,6 +209,8 @@ function Assert-AddSampleCodes{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "public" | Join-Path -ChildPath "samplePublicFunction.ps1") -Comment "public function"
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "private" | Join-Path -ChildPath "samplePrivateFunction.ps1") -Comment "private function"
     }
@@ -189,6 +224,8 @@ function Assert-AddTestSampleCodes{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         $name = $Path | Split-Path -LeafBase
         $testingModuleName = $Name + "Test"
         $testingModulePath = $path | Join-Path -ChildPath $testingModuleName
@@ -206,6 +243,8 @@ function Assert-AddTestLaunchJson{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
         $launchFile = $Path | Join-Path -ChildPath ".vscode" -AdditionalChildPath "launch.json"
 
         Assert-ItemExist -Path $launchFile -Comment "launch.json exists"
@@ -232,6 +271,8 @@ function Assert-AddTestTestScript{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
+
 
         $testps1Path = $Path | Join-Path -ChildPath "test.ps1"
 
@@ -249,6 +290,8 @@ function Assert-AddModuleV3{
         [Parameter()][hashtable]$Expected
     )
     process{
+        $Path = $Path | Convert-Path
+
         $name = $Path | Split-Path -LeafBase
 
         $psdname = $name + ".psd1"
@@ -318,6 +361,8 @@ function Assert-AddTestModuleV3{
     )
 
     process{
+        $Path = $Path | Convert-Path
+
         $name = $Path | Split-Path -LeafBase
 
         # $modulePath = $Path | Join-Path -ChildPath $Name
@@ -336,6 +381,8 @@ function Assert-AddTestAll {
     )
 
     process{
+        $Path = $Path | Convert-Path
+
         $name = $Path | Split-Path -LeafBase
 
         # $modulePath = $Path | Join-Path -ChildPath $Name
@@ -358,8 +405,10 @@ function Assert-AddAll{
         [string] $Path
     )
     process{
+        $Path = $Path | Convert-Path
         
         $Path | Assert-AddDevContainerJson
+        $Path | Assert-AddGitRepository
         $Path | Assert-AddLicense
         $Path | Assert-AddReadMe
         $Path | Assert-AddToModuleAbout

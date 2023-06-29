@@ -7,6 +7,7 @@
 | DeployScript     | Add-ToModuleDeployScript                   | AddDeployScript             | x                    | Assert-AddDeployScript                   | x                 |                     |                   |
 | About            | Add-ToModuleAbout                          | AddAbout                    | x                    | Assert-AddToModuleAbout                  | x                 |                     |                   |
 | DevContainer     | Add-ToModuleDevContainerJson               | AddDevContainerJson         | x                    | Assert-AddDevContainerJson               | x                 |                     |                   |
+| GitRepository    | Add-ToModuleGitRepository                  | AddGitRepository            | x                    | Assert-AddGitRepository                  | x                 |                     |                   |
 | License          | Add-ToModuleLicense                        | AddLicense                  | x                    | Assert-AddLicense                        | x                 |                     |                   |
 | Readme           | Add-ToModuleReadme                         | AddReadme                   | x                    | Assert-AddReadMe                         | x                 |                     |                   |
 | Release          | Add-ToModuleReleaseScript                  | AddReleaseScript            | x                    | Assert-AddReleaseScript                  | x                 |                     |                   |

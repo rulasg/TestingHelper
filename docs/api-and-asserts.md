@@ -36,6 +36,7 @@
 - Add-ToModuleDeployScript
 - Add-ToModuleDeployWorkflow
 - Add-ToModuleDevContainerJson
+- Add-ToModuleGitRepository
 - Add-ToModuleLaunchJson
 - Add-ToModuleLicense
 - Add-ToModulePSScriptAnalyzerWorkflow
