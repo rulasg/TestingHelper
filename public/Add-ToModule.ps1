@@ -5,8 +5,6 @@
 # -Force: If the file already exists, it will be overwritten withe the default values
 # The output will be the Path of the module updated. This way we may pipe with next Add-ToModule* function
 
-
-
 function Add-ToModuleSampleCode{
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -69,15 +67,18 @@ function Add-ToModuleGitRepository{
         $ret = ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
 
         # check if git was initialized before on this folder
-        
+
         if((Test-GitRepository -Path $Path) -and (!$Force)){
             Write-Warning "Git repository already exists."
             return $ret
         }
-        
+
         if ($PSCmdlet.ShouldProcess($Path, "Git init")) {
-            
+
             $result = Invoke-GitRepositoryInit -Path $Path
+        } else {
+            # Fake a success run
+            $result = "Initialized empty Git repository in"
         }
 
         if(!$result){
@@ -92,6 +93,7 @@ function Add-ToModuleGitRepository{
 
             if($result.StartsWith("Reinitialized existing Git repository in") -and $Force){
                 Write-Warning "Reinitialized existing Git repository."
+
             } else {
                 Write-Warning "Git init may have failed. Please check the output"
             }

@@ -38,7 +38,7 @@ function script:Test-GitRepository{
     )
 
     $gitPath = $Path | Join-Path -ChildPath ".git"
-    
+
     $ret = Test-Path -Path $gitPath
 
     return $ret

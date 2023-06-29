@@ -16,7 +16,7 @@ function TestingHelperTest_AddToModule_PipeCalls_Folder{
 
 function TestingHelperTest_AddToModule_PipeCalls_Module{
     
-    $moduleName = "AddToModule_PipeCalls_Module_" + (New-Guid).ToString().Substring(0,8) 
+    $moduleName = "AddToModule_PipeCalls_Module_" + (New-Guid).ToString().Substring(0,8)
 
     $modulePath = New-TT_ModuleV3 -Name $moduleName
     Import-Module -Name $modulePath
@@ -68,8 +68,6 @@ function TestingHelperTest_AddToModule_FULL_PipeCalls_Module{
     Remove-Module -Name "MyModule"
 }
 
-
-
 function TestingHelperTest_AddToModuleGitRepository_PipeCalls_Folder{
     
     New-TestingFolder -Path "folderName"
@@ -83,13 +81,48 @@ function TestingHelperTest_AddToModuleGitRepository_PipeCalls_Folder{
 }
 
 function TestingHelperTest_AddToModuleGitRepository_PipeCalls_Folder_Force{
-    
+
     New-TestingFolder -Path "folderName"
 
-    $result = Get-Item -path "folderName" | Add-TT_ToModuleGitRepository -PassThru 
+    $result = Get-Item -path "folderName" | Add-TT_ToModuleGitRepository -PassThru
     $result | Assert-AddGitRepository
 
     $result = Get-Item -path "folderName" | Add-TT_ToModuleGitRepository -Force -PassThru @WarningParameters
+    Assert-Contains -Expected "Reinitialized existing Git repository." -Presented $warningVar
+}
+
+function TestingHelperTest_AddToModuleGitRepository_PipeCalls_Folder_WhatIf_DoubleCall{
+
+    $folder = New-TestingFolder -Path "folderName" -PassThru
+
+    # WhatIf
+    $result = $folder | Add-TT_ToModuleGitRepository  -Whatif @WarningParameters
+    Assert-IsNull -Object $result
+    Assert-Count -Expected 0 -Presented $warningVar
+    
+    # First call
+    $result = $folder | Add-TT_ToModuleGitRepository  @WarningParameters
+    Assert-IsNull -Object $result
+    Assert-Count -Expected 0 -Presented $warningVar
+    
+    # Second call
+    $result = $folder | Assert-AddGitRepository
+    Assert-IsNull -Object $result
+    Assert-Count -Expected 0 -Presented $warningVar
+    
+    # Second call Whatif
+    $result = $folder | Add-TT_ToModuleGitRepository -whatif @WarningParameters
+    Assert-IsNull -Object $result
+    Assert-Contains -Expected "Git repository already exists." -Presented $warningVar
+    
+    # Second call -force -whatif
+    $result = $folder | Add-TT_ToModuleGitRepository -whatif -force @WarningParameters
+    Assert-IsNull -Object $result
+    Assert-Count -Expected 0 -Presented $warningVar
+    
+    # Second call -force 
+    $result = Get-Item -path "folderName" | Add-TT_ToModuleGitRepository -Force @WarningParameters
+    Assert-IsNull -Object $result
     Assert-Contains -Expected "Reinitialized existing Git repository." -Presented $warningVar
 }
 
