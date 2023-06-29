@@ -53,6 +53,7 @@ function Add-ToModuleDevContainerJson{
     }
 } Export-ModuleMember -Function Add-ToModuleDevContainerJson
 
+# Adds git repository to the module
 function Add-ToModuleGitRepository{
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -68,29 +69,23 @@ function Add-ToModuleGitRepository{
         $ret = ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
 
         # check if git was initialized before on this folder
-        $gitPath = $Path | Join-Path -ChildPath ".git"
-        if((Test-Path -Path $gitPath) -and (!$Force)){
+        
+        if((Test-GitRepository -Path $Path) -and (!$Force)){
             Write-Warning "Git repository already exists."
             return $ret
         }
+        
+        if ($PSCmdlet.ShouldProcess($Path, "Git init")) {
+            
+            $result = Invoke-GitRepositoryInit -Path $Path
+        }
 
-        # check if git is installed
-        $gitPath = Get-Command -Name git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
-
-        if(!$gitPath){
-            Write-Error "Git is not installed"
+        if(!$result){
+            Write-Error "Git init failed. $GITLASTERROR"
             return $ret
         }
-        
-        $result = git init $Path
 
-        # check the result of git call
-        if($LASTEXITCODE -ne 0){
-            Write-Error "Git init failed"
-            return $null
-        }
-
-        # Double check output just in case
+        # Write warning of the execution if needed
         # SUCCESS "Initialized empty Git repository in $Path/.git/"
         # ALREADY "Reinitialized existing Git repository in $Path/.git/"
         if (!($result.StartsWith("Initialized empty Git repository in"))) {
