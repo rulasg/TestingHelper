@@ -40,10 +40,11 @@ function Out-ContentToFile {
 }
 
 function Save-UrlContentToFile {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory=$true)][string]$Url,
-        [Parameter(Mandatory=$true)][string]$FilePath
+        [Parameter(Mandatory=$true)][string]$File,
+        [Parameter()][string]$Folder
     )
 
     $fileContent = Get-UrlContent -Url $url
@@ -51,8 +52,10 @@ function Save-UrlContentToFile {
     if ([string]::IsNullOrWhiteSpace($fileContent)) {
         Write-Error -Message "Content from [$url] is empty"
         return
-    } else {
-        $fileContent | Out-ContentToFile -FilePath $filePath
-        Write-Information -MessageData "Saved content to [$filePath] from [$url]"
     }
+
+    $filePath = $Folder ? (Join-Path -Path $Folder -ChildPath $File) : $File
+
+    Set-Content -Path $filePath -Value $fileContent
+    Write-Information -MessageData "Saved content to [$filePath] from [$url]"
 }

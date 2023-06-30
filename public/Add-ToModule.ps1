@@ -195,8 +195,10 @@ function Add-ToModuleDeployScript{
     process{
         $Path = NormalizePath -Path:$Path ?? return $null
 
+        $toolsPath = $Path | Join-Path -ChildPath "tools"
+
         Import-Template -Force:$Force -Path $Path -File "deploy.ps1" -Template "template.v3.deploy.ps1"
-        Import-Template -Force:$Force -Path $Path -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
+        Import-Template -Force:$Force -Path $toolsPath -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
     
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
@@ -237,8 +239,10 @@ function Add-ToModuleSyncScript{
     process{
         $Path = NormalizePath -Path:$Path ?? return $null
 
+        $toolsPath = $Path | Join-Path -ChildPath "tools"
+
         Import-Template -Force:$Force -Path $Path -File "sync.ps1" -Template "template.v3.sync.ps1"
-        Import-Template -Force:$Force -Path $Path -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
+        Import-Template -Force:$Force -Path $toolsPath -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
     
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }

@@ -11,7 +11,8 @@
     It is not intended to be used directly.
 
 .LINK
-    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/deploy-helper.ps1
+    https://github.com/rulasg/TestingHelper/blob/main/private/templates/template.v3.deploy-helper.ps1
+    https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy-helper.ps1
 
 #>
 
