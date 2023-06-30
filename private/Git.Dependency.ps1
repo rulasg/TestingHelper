@@ -19,7 +19,7 @@ function script:Invoke-GitRepositoryInit{
         return $null
     }
 
-    $result = git init $Path
+    $result = git -C $Path init
 
     # check the result of git call
     if($LASTEXITCODE -ne 0){
@@ -30,6 +30,45 @@ function script:Invoke-GitRepositoryInit{
     $GITLASTERROR = $null
     return $result
 }
+
+# Create a commit with actual changes
+function script:Invoke-GitRepositoryCommit{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][string]$Message
+    )
+
+    # check if git is installed
+    $gitPath = Get-Command -Name git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+
+    if(!$gitPath){
+        $GITLASTERROR =  "Git is not installed"
+        return $null
+    }
+
+    # Stage all changes
+    $null = git -C $Path add .
+
+    # check the result of git call
+    if($LASTEXITCODE -ne 0){
+        $GITLASTERROR = "Git staginig failed"
+        return $null
+    }
+
+    # Commit all changes
+    $result = git -C $Path commit --allow-empty  -m $Message
+
+    # check the result of git call
+    if($LASTEXITCODE -ne 0){
+        $GITLASTERROR = "Git commit failed"
+        return $null
+    }
+
+    $GITLASTERROR = $null
+    return $result
+}
+
 
 function script:Test-GitRepository{
     [CmdletBinding()]
