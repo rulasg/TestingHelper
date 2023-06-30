@@ -19,7 +19,7 @@ function script:Invoke-GitRepositoryInit{
         return $null
     }
 
-    $result = git -C $Path init
+    $result = git -C $Path init --initial-branch="main"
 
     # check the result of git call
     if($LASTEXITCODE -ne 0){
