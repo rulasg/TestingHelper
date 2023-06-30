@@ -4,6 +4,41 @@
 
 $GITLASTERROR = $null
 
+function Initialize-GitRepoConfiguration {
+    [CmdletBinding()]
+    param(
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path
+    )
+
+    process{
+        #check if its null or empty
+        if([string]::IsNullOrWhiteSpace($result)){
+            if ($PSCmdlet.ShouldProcess("git config user.email", "Init to [you@example.com] ")) {
+                $result = git -C $Path config user.email
+                if($LASTEXITCODE -ne 0){
+                    $GITLASTERROR = "Git config user.email failed"
+                    return $null
+                }
+            }
+        }
+
+        #check if its null or empty
+        if([string]::IsNullOrWhiteSpace($result)){
+            if ($PSCmdlet.ShouldProcess("git config user.name", "Init to [Your Name]")) {
+                $result = git -C $Path config user.name
+                if($LASTEXITCODE -ne 0){
+                    $GITLASTERROR = "Git config user.name failed"
+                    return $null
+                }
+            }
+        }
+
+        return $true
+    }
+}
+
 # Initializae git repository
 function script:Invoke-GitRepositoryInit{
     [CmdletBinding()]
@@ -56,8 +91,21 @@ function script:Invoke-GitRepositoryCommit{
         return $null
     }
 
-    # Commit all changes
-    $result = git -C $Path commit --allow-empty  -m $Message
+
+    # $result = Initialize-GitRepoConfiguration -Path $Path
+    # if(!$result){
+    #     $GITLASTERROR = "Git configuration failed - $GITLASTERROR"
+    #     return $null
+    # }
+
+    
+    # Commit all changes depending on auther configuration
+    $gitUserName = git -C $Path config user.name 
+    if(![string]::IsNullOrWhiteSpace($gitUserName)){
+        $result = git -C $Path commit --allow-empty  -m $Message
+    } else {
+        $result = git -C $Path commit --allow-empty  -m $Message --author="TMAgente <>"
+    }
 
     # check the result of git call
     if($LASTEXITCODE -ne 0){
@@ -68,7 +116,6 @@ function script:Invoke-GitRepositoryCommit{
     $GITLASTERROR = $null
     return $result
 }
-
 
 function script:Test-GitRepository{
     [CmdletBinding()]

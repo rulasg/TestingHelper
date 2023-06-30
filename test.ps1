@@ -50,4 +50,4 @@ Import-TestingHelper -AllowPrerelease
 # Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_AddTestToModuleAll_Simple
 # Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_NewModuleV3_AddModule_DefaultManifest
 # Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_AddToModuleGitRepository_PipeCalls_Folder_WhatIf_DoubleCall
-Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors 
+Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName "TestingHelperTest_*git*"
