@@ -13,7 +13,7 @@
 [cmdletbinding(SupportsShouldProcess)]
 param()
 
-. ($PSScriptRoot | Join-Path -ChildPath "sync-helper.ps1")
+. ($PSScriptRoot | Join-Path -ChildPath "tools" -AdditionalChildPath "sync-helper.ps1")
 
 Save-UrlContentToFile -FilePath 'deploy_module_on_release.yml' -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy_module_on_release.yml'  
 Save-UrlContentToFile -FilePath 'powershell.yml'               -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.powershell.yml'                

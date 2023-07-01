@@ -185,7 +185,7 @@ function Add-ToModuleSyncScript{
         $Path = NormalizePath -Path:$Path ?? return $null
 
         Import-Template -Force:$Force -Path $Path -File "sync.ps1" -Template "template.v3.sync.ps1"
-        Import-Template -Force:$Force -Path $Path -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
+        Import-Template -Force:$Force -Path ($Path | Join-Path -ChildPath "tools") -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
     
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
