@@ -4,38 +4,42 @@
 
 $GITLASTERROR = $null
 
+# Reset git configuration
+function Reset-GitRepoConfiguration {
+    [CmdletBinding(SupportsShouldProcess)]
+    param(
+        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
+        [Alias("PSPath")][ValidateNotNullOrEmpty()]
+        [string] $Path
+    )
 
-# function Initialize-GitRepoConfiguration {
-#     [CmdletBinding()]
-#     param(
-#         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-#         [Alias("PSPath")][ValidateNotNullOrEmpty()]
-#         [string] $Path
-#     )
-#     process{
-#         #check if its null or empty
-#         if([string]::IsNullOrWhiteSpace($result)){
-#             if ($PSCmdlet.ShouldProcess("git config user.email", "Init to [you@example.com] ")) {
-#                 $result = git -C $Path config user.email
-#                 if($LASTEXITCODE -ne 0){
-#                     $GITLASTERROR = "Git config user.email failed"
-#                     return $null
-#                 }
-#             }
-#         }
-#         #check if its null or empty
-#         if([string]::IsNullOrWhiteSpace($result)){
-#             if ($PSCmdlet.ShouldProcess("git config user.name", "Init to [Your Name]")) {
-#                 $result = git -C $Path config user.name
-#                 if($LASTEXITCODE -ne 0){
-#                     $GITLASTERROR = "Git config user.name failed"
-#                     return $null
-#                 }
-#             }
-#         }
-#         return $true
-#     }
-# }
+    begin{
+        $userName = "TestingHelper Agent"
+        $userEmail = "tha@sample.com"
+    }
+
+    process{
+        #check if its null or empty
+        if ($PSCmdlet.ShouldProcess("git config user.email", "Init to [you@example.com] ")) {
+            $result1 = git -C $Path config user.email $userEmail
+            if($LASTEXITCODE -ne 0){
+                $GITLASTERROR = "Git config user.email failed - $result1"
+                return $null
+            }
+        }
+
+        #check if its null or empty
+        if ($PSCmdlet.ShouldProcess("git config user.name", "Init to [Your Name]")) {
+            $result2 = git -C $Path config user.name $userName
+            if($LASTEXITCODE -ne 0){
+                $GITLASTERROR = "Git config user.name failed - $result2"
+                return $null
+            }
+        }
+
+        return $true
+    }
+}
 
 # Initializae git repository
 function script:Invoke-GitRepositoryInit{
@@ -52,7 +56,9 @@ function script:Invoke-GitRepositoryInit{
     }
 
     # Initialize git repository
-    $result = git -C $Path init --initial-branch="main"
+    # Silence warnings from git stream
+    $result = git -C $Path init --initial-branch="main" 2>$null
+    # $result = git -C $Path init --quiet --initial-branch="main"
 
     # check the result of git call
     if($LASTEXITCODE -ne 0){
@@ -119,6 +125,46 @@ function script:Invoke-GitRepositoryCommit{
     return $result
 }
 
+function script:Invoke-GitRepositoryCommitV2{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [Parameter(Mandatory)][string]$Message
+    )
+
+    # Reset git configuration.
+    $gitReset = Reset-GitRepoConfiguration -Path $Path
+    if(!$gitReset){
+        $GITLASTERROR =  "Git Resetting configuration failed - $GITLASTERROR"
+        return $null
+    }
+
+    # check if git is installed
+    $gitPath = Get-Command -Name git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+    if(!$gitPath){
+        $GITLASTERROR =  "Git is not installed"
+        return $null
+    }
+
+    # Stage all changes
+    $result = git -C $Path add .
+    # check the result of git call
+    if($LASTEXITCODE -ne 0){
+        $GITLASTERROR = "Git staginig failed - $result"
+        return $null
+    }
+
+    # Commit
+    $result = git -C $Path commit --allow-empty  -m $Message 
+    if($LASTEXITCODE -ne 0){
+        $GITLASTERROR = "Git commit failed - $result"
+        return $null
+    }
+
+    $GITLASTERROR = $null
+    return $result
+}
+
 function script:Test-GitRepository{
     [CmdletBinding()]
     param(
@@ -130,4 +176,13 @@ function script:Test-GitRepository{
     $ret = Test-Path -Path $gitPath
 
     return $ret
+}
+
+function script:Test-GitRepositoryV2{
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Path
+    )
+    # check if we are on a git folder
+    return ((git -C $Path rev-parse --is-inside-work-tree 2>$null) -eq "true")
 }

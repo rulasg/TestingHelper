@@ -23,13 +23,14 @@ function Add-ToModuleGitRepository{
         if ($PSCmdlet.ShouldProcess($Path, "Git init")) {
 
             $result = Invoke-GitRepositoryInit -Path $Path
+
         } else {
             # Fake a success run
             $result = "Initialized empty Git repository in"
         }
 
         if(!$result){
-            Write-Error "Git init failed. $GITLASTERROR"
+            Write-Error "Git init failed - $GITLASTERROR"
             return $ret
         }
 
@@ -86,7 +87,7 @@ function Add-ToModuleGitCommit{
         }
         
 
-        $result = Invoke-GitRepositoryCommit -Path $Path -Message $Message
+        $result = Invoke-GitRepositoryCommitV2 -Path $Path -Message $Message
 
         if(!$result){
             Write-Error "Git commit failed. $GITLASTERROR"
