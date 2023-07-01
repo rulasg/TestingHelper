@@ -56,13 +56,12 @@ function script:Invoke-GitRepositoryInit{
     }
 
     # Initialize git repository
-    # Silence warnings from git stream
+    # Silence warnings from git STDERR stream. 2>$null
     $result = git -C $Path init --initial-branch="main" 2>$null
-    # $result = git -C $Path init --quiet --initial-branch="main"
 
     # check the result of git call
     if($LASTEXITCODE -ne 0){
-        $GITLASTERROR = "Git init failed"
+        $GITLASTERROR = "Git init failed."
         return $null
     }
 
@@ -72,60 +71,6 @@ function script:Invoke-GitRepositoryInit{
 
 # Create a commit with actual changes
 function script:Invoke-GitRepositoryCommit{
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][string]$Path,
-        [Parameter(Mandatory)][string]$Message
-    )
-
-    # check if git is installed
-    $gitPath = Get-Command -Name git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
-
-    if(!$gitPath){
-        $GITLASTERROR =  "Git is not installed"
-        return $null
-    }
-
-    # Stage all changes
-    $result = git -C $Path add .
-
-    # check the result of git call
-    if($LASTEXITCODE -ne 0){
-        $GITLASTERROR = "Git staginig failed - $result"
-        return $null
-    }
-
-    # $result = Initialize-GitRepoConfiguration -Path $Path
-    # if(!$result){
-    #     $GITLASTERROR = "Git configuration failed - $GITLASTERROR"
-    #     return $null
-    # }
-    
-    # Commit all changes depending on auther configuration
-    # $gitUserName = git -C $Path config user.name 
-    # if(![string]::IsNullOrWhiteSpace($gitUserName)){
-    #     Write-Verbose "Git user.name is $gitUserName"
-    #     $result = git -C $Path commit --allow-empty  -m $Message
-    # } else {
-    #     Write-Verbose "Git user.name is empty. Using fake author TMAgente"
-    #     $result = git -C $Path commit --allow-empty  -m $Message --author="TMAgente <>"
-    #     # $result = git -C $Path commit --allow-empty  -m $Message --author="TMAgente <tmagent@company.com>"
-    # }
-
-    # We will author all commits with a fake user
-    $result = git -C $Path commit --allow-empty  -m $Message --author="TestingHelper Agent <tha@sample.com>"
-
-    # check the result of git call
-    if($LASTEXITCODE -ne 0){
-        $GITLASTERROR = "Git commit failed - $result"
-        return $null
-    }
-
-    $GITLASTERROR = $null
-    return $result
-}
-
-function script:Invoke-GitRepositoryCommitV2{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Path,
@@ -165,20 +110,8 @@ function script:Invoke-GitRepositoryCommitV2{
     return $result
 }
 
+# Check if the folder is a git repository
 function script:Test-GitRepository{
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][string]$Path
-    )
-
-    $gitPath = $Path | Join-Path -ChildPath ".git"
-
-    $ret = Test-Path -Path $gitPath
-
-    return $ret
-}
-
-function script:Test-GitRepositoryV2{
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Path

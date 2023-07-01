@@ -47,7 +47,4 @@ function Import-TestingHelper{
 Import-TestingHelper -AllowPrerelease
 
 # Run test by PSD1 file
-# Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_AddTestToModuleAll_Simple
-# Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_NewModuleV3_AddModule_DefaultManifest
-# Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_AddToModuleGitRepository_PipeCalls_Folder_WhatIf_DoubleCall
-Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName "TestingHelperTest_*git*"
+Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors 

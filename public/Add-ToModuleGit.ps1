@@ -83,18 +83,18 @@ function Add-ToModuleGitCommit{
 
         # Set messsage if not provided
         if ([string]::IsNullOrEmpty($Message)) {
-            $Message = $justCreated ? "TH Init commit" : "TH Commit"<# Action to perform if the condition is true #>
+            $Message = $justCreated ? "TH Init commit" : "TH Commit"
         }
         
 
-        $result = Invoke-GitRepositoryCommitV2 -Path $Path -Message $Message
+        $result = Invoke-GitRepositoryCommit -Path $Path -Message $Message
 
         if(!$result){
             Write-Error "Git commit failed. $GITLASTERROR"
             return $ret
         }
 
-        # Write warning of the execution if needed
+        # TODO: Write warning of the execution if needed
 
         return $ret
     }
