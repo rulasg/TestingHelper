@@ -22,12 +22,12 @@ function Assert-AddGitCommit{
     process{
         $Path = $Path | Convert-Path
 
-        # Extract last commit message from log.
-        $messageList= git -C $Path log -1 --pretty=%B 
+        # Extract last commit message from log to check body message
+        $body= (git -C $Path log -1 --pretty=%B | out-string).Trim()
+        Assert-AreEqual -Expected $MessageExpected -Presented $body -Comment "Git commit message"
 
-        
-        $lastMessage = ($messageList | Out-String).Trim()
-
-        Assert-AreEqual -Expected $MessageExpected -Presented $lastMessage -Comment "Git commit message"
+        # Extarct last commit message from log to check author
+        $author = git -C $Path log -1 --pretty='[%an][%ae]'
+        Assert-AreEqual -Expected "[TestingHelper Agent][tha@sample.com]" -Presented $author -Comment "Git commit author"
     }
 }
