@@ -5,6 +5,8 @@
 # -Force: If the file already exists, it will be overwritten withe the default values
 # The output will be the Path of the module updated. This way we may pipe with next Add-ToModule* function
 
+$TOOLS_RELATIVE_PATH = "tools"
+
 function Add-ToModuleSampleCode{
     [CmdletBinding(SupportsShouldProcess)]
     param(
@@ -142,10 +144,10 @@ function Add-ToModuleDeployScript{
     process{
         $Path = NormalizePath -Path:$Path ?? return $null
 
-        $toolsPath = $Path | Join-Path -ChildPath "tools"
+        $toolsPath = $Path | Join-Path -ChildPath $TOOLS_RELATIVE_PATH
 
         Import-Template -Force:$Force -Path $Path -File "deploy.ps1" -Template "template.v3.deploy.ps1"
-        Import-Template -Force:$Force -Path $toolsPath -File "deploy.Helper.ps1" -Template "template.v3.deploy.Helper.ps1"
+        Import-Template -Force:$Force -Path $toolsPath -File "deploy.helper.ps1" -Template "template.v3.deploy.helper.ps1"
     
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
@@ -186,7 +188,7 @@ function Add-ToModuleSyncScript{
     process{
         $Path = NormalizePath -Path:$Path ?? return $null
 
-        $toolsPath = $Path | Join-Path -ChildPath "tools"
+        $toolsPath = $Path | Join-Path -ChildPath $TOOLS_RELATIVE_PATH
 
         Import-Template -Force:$Force -Path $Path -File "sync.ps1" -Template "template.v3.sync.ps1"
         Import-Template -Force:$Force -Path $toolsPath -File "sync.Helper.ps1" -Template "template.v3.sync.Helper.ps1"

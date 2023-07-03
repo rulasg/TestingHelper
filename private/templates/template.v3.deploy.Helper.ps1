@@ -12,6 +12,8 @@
 
 .LINK
     https://raw.githubusercontent.com/rulasg/DemoPsModule/main/deploy.Helper.ps1
+    https://github.com/rulasg/TestingHelper/blob/main/private/templates/template.v3.deploy.Helper.ps1
+    https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy.Helper.ps1
 
 #>
 

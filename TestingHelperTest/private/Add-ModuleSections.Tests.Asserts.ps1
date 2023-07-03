@@ -1,4 +1,6 @@
 
+$TOOLS_RELATIVE_PATH = "tools"
+
 function TestingHelperTest_AssertAddSection_throwOnNull{
 # All asserts here has a pattern
 # This test will confirm tht the pattern will not miss a false negative
@@ -105,7 +107,7 @@ function Assert-AddDeployScript{
     process{
         $Path = $Path | Convert-Path
 
-        $toolsPath = $Path | Join-Path -ChildPath "tools"
+        $toolsPath = $Path | Join-Path -ChildPath $TOOLS_RELATIVE_PATH
 
         Assert-ItemExist -Path ($Path      | Join-Path -ChildPath "deploy.ps1") -Comment "deploy.ps1"
         Assert-ItemExist -Path ($toolsPath | Join-Path -ChildPath "deploy.Helper.ps1") -Comment "deploy.Helper.ps1"
@@ -136,8 +138,10 @@ function Assert-AddSyncScript{
     process{
         $Path = $Path | Convert-Path
 
+        $toolsPath = $Path | Join-Path -ChildPath $TOOLS_RELATIVE_PATH
+
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync.ps1") -Comment "sync.ps1"
-        Assert-ItemExist -Path (($Path | Join-Path -ChildPath "tools") | Join-Path -ChildPath "sync.Helper.ps1") -Comment "sync.Helper.ps1"
+        Assert-ItemExist -Path ($toolsPath | Join-Path -ChildPath "sync.Helper.ps1") -Comment "sync.Helper.ps1"
     }
 }
 
