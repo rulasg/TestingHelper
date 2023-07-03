@@ -1,3 +1,5 @@
+$TEMPLATE_PATH = $PSScriptRoot  | Join-Path -ChildPath templates
+
 # Imports a template to a file and replace content if $Force
 function Import-Template {
     [CmdletBinding(SupportsShouldProcess)]
@@ -23,7 +25,7 @@ function Import-Template {
         }
     }
 
-    $templatePath = $PSScriptRoot  | Join-Path -ChildPath templates -AdditionalChildPath $Template
+    $templatePath = $TEMPLATE_PATH | Join-Path -ChildPath $Template
     $content = Get-Content -Path $templatePath
 
     if ($Replaces) {
