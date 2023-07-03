@@ -1,10 +1,11 @@
 
-$deploy_ps1 = $PSScriptRoot | Split-path -Parent | split-path -Parent | Join-Path -ChildPath 'deploy.ps1'
-$manifestPath = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent | Join-Path -ChildPath 'TestingHelper.psd1'
+$TESTED_MODULE_PATH = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent
+$deploy_ps1 = $TESTED_MODULE_PATH | Join-Path -ChildPath 'deploy.ps1'
+$manifestPath = $TESTED_MODULE_PATH | Join-Path -ChildPath 'TestingHelper.psd1'
 
 $SCRITPBLOCK_WITHNOEXCEPTION = {
         
-    function Invoke-DeployModule {
+    function script:Invoke-DeployModule {
         [CmdletBinding()]
         param(
             [Parameter(Mandatory=$true)][string]$Name,
@@ -20,7 +21,7 @@ $SCRITPBLOCK_WITHNOEXCEPTION = {
 $EXCEPTION_MESSAGE = 'Some exception message thown  on Invoke-DeployModule injected function'
 $SCRITPBLOCK_WITHEXCEPTION = {
         
-    function Invoke-DeployModule {
+    function script:Invoke-DeployModule {
         [CmdletBinding()]
         param(
             [Parameter(Mandatory=$true)][string]$Name,

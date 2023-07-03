@@ -11,11 +11,12 @@
     It is not intended to be used directly.
 
 .LINK
+    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/deploy-helper.ps1
     https://github.com/rulasg/TestingHelper/blob/main/private/templates/template.v3.deploy-helper.ps1
     https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy-helper.ps1
 
-#>
 
+#>
 
 Write-Information -MessageData ("Loading {0} ..." -f ($PSCommandPath | Split-Path -LeafBase))
 
@@ -32,12 +33,12 @@ function Invoke-DeployModuleToPSGallery{
         # Force the deploy without prompting for confirmation
         [Parameter(Mandatory=$false)] [switch]$Force,
         # Force deploying package to the gallery. Equivalente to Import-Module -Force
-        [Parameter(Mandatory=$false)] [switch]$ForceDeploy
+        [Parameter(Mandatory=$false)] [switch]$ForceDeploy,
+        # Module Manifest Path
+        [Parameter(Mandatory=$false)] [string]$ModuleManifestPath
     )
 
-    # look for psd1 file on the same folder as this script
-    $moduleName  = $PSScriptRoot | Split-Path -leaf
-    $psdPath = $PSScriptRoot | Join-Path -ChildPath "$moduleName.psd1"
+    $psdPath = $ModuleManifestPath
 
     # check if $psd is set
     if ( -not (Test-Path -Path $psdPath)) {
@@ -72,7 +73,7 @@ function Update-DeployModuleManifest {
 
     $parameters = @{
         ModuleVersion = Get-DeployModuleVersion -VersionTag $VersionTag
-        Path = Get-DeployModuleManifestPath
+        Path = $MODULE_PSD1
         Prerelease = Get-DeployModulePreRelease -VersionTag $VersionTag
     }
 
@@ -94,7 +95,7 @@ function Update-DeployModuleManifest {
     }
 } 
 
-function Invoke-DeployModule {
+function script:Invoke-DeployModule {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)][string]$Name,
@@ -145,19 +146,4 @@ function Get-DeployModulePreRelease {
     $preRelease
 }
 
-function Get-DeployModuleManifestPath {
-    [CmdletBinding()]
-    param()
 
-    # look for psd1 file on the same folder as this script
-    $moduleName  = $PSScriptRoot | Split-Path -leaf
-    $psdPath = $PSScriptRoot | Join-Path -ChildPath "$moduleName.psd1"
-
-    # check if $psd is set
-    if ( -not (Test-Path -Path $psdPath)) {
-        Write-Error -Message 'No psd1 file found'
-        return
-    } else {
-        $psdPath
-    }
-}

@@ -40,10 +40,14 @@ param(
     [Parameter(Mandatory=$false)] [scriptblock]$DependencyInjection
 )
 
+$MODULE_PATH = $PSScriptRoot
+$MODULE_NAME = $MODULE_PATH | Split-Path -LeafBase
+$MODULE_PSD1 = Join-Path -Path $MODULE_PATH -ChildPath "$MODULE_NAME.psd1"
+
 # Load helper 
 # We dot souce the ps1 to allow all code to be in the same scope as the script
 # Easier to inject for testing with DependecyInjection parameter
-. ($PSScriptRoot | Join-Path -ChildPath "tools" -AdditionalChildPath "deploy-helper.ps1")
+. ($MODULE_PATH | Join-Path -ChildPath "tools" -AdditionalChildPath "deploy-helper.ps1")
 if ($DependencyInjection) { 
     . $DependencyInjection 
 }
@@ -73,4 +77,4 @@ if ( [string]::IsNullOrWhiteSpace($NuGetApiKey) ) {
 }
 
 # Deploy module to PSGallery
-Invoke-DeployModuleToPSGallery -NuGetApiKey $NuGetApiKey -Force
+Invoke-DeployModuleToPSGallery -NuGetApiKey $NuGetApiKey -Force -ModuleManifestPath $MODULE_PSD1

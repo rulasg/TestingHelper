@@ -51,59 +51,6 @@ function Add-ToModuleDevContainerJson{
     }
 } Export-ModuleMember -Function Add-ToModuleDevContainerJson
 
-# Adds git repository to the module
-function Add-ToModuleGitRepository{
-    [CmdletBinding(SupportsShouldProcess)]
-    param(
-        [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path,
-        [Parameter(ValueFromPipelineByPropertyName)][switch]$Force,
-        [Parameter(ValueFromPipelineByPropertyName)][Switch]$Passthru
-    )
-
-    process{
-        $Path = NormalizePath -Path:$Path ?? return $null
-        $ret = ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
-
-        # check if git was initialized before on this folder
-
-        if((Test-GitRepository -Path $Path) -and (!$Force)){
-            Write-Warning "Git repository already exists."
-            return $ret
-        }
-
-        if ($PSCmdlet.ShouldProcess($Path, "Git init")) {
-
-            $result = Invoke-GitRepositoryInit -Path $Path
-        } else {
-            # Fake a success run
-            $result = "Initialized empty Git repository in"
-        }
-
-        if(!$result){
-            Write-Error "Git init failed. $GITLASTERROR"
-            return $ret
-        }
-
-        # Write warning of the execution if needed
-        # SUCCESS "Initialized empty Git repository in $Path/.git/"
-        # ALREADY "Reinitialized existing Git repository in $Path/.git/"
-        if (!($result.StartsWith("Initialized empty Git repository in"))) {
-
-            if($result.StartsWith("Reinitialized existing Git repository in") -and $Force){
-                Write-Warning "Reinitialized existing Git repository."
-
-            } else {
-                Write-Warning "Git init may have failed. Please check the output"
-            }
-        }            
-
-        return $ret
-
-    }
-} Export-ModuleMember -Function Add-ToModuleGitRepository
-
 # Add License file
 function Add-ToModuleLicense{
     [CmdletBinding(SupportsShouldProcess)]
@@ -198,7 +145,7 @@ function Add-ToModuleDeployScript{
         $toolsPath = $Path | Join-Path -ChildPath "tools"
 
         Import-Template -Force:$Force -Path $Path -File "deploy.ps1" -Template "template.v3.deploy.ps1"
-        Import-Template -Force:$Force -Path $toolsPath -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
+        Import-Template -Force:$Force -Path ($Path | Join-path -ChildPath "tools") -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
     
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
@@ -242,7 +189,7 @@ function Add-ToModuleSyncScript{
         $toolsPath = $Path | Join-Path -ChildPath "tools"
 
         Import-Template -Force:$Force -Path $Path -File "sync.ps1" -Template "template.v3.sync.ps1"
-        Import-Template -Force:$Force -Path $toolsPath -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
+        Import-Template -Force:$Force -Path ($Path | Join-Path -ChildPath "tools") -File "sync-helper.ps1" -Template "template.v3.sync-helper.ps1"
     
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }

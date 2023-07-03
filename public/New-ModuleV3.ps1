@@ -67,7 +67,7 @@ function New-ModuleV3 {
 
     $retModulePath = $null
 
-    $modulePath = Get-ModulePath -Name $Name -RootPath $Path
+    $modulePath = Get-ModulePath -RootPath $Path -Name $Name 
     $moduleName = Get-ModuleName -Path $modulePath
 
     # check $modulePath and return if null

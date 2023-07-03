@@ -1,9 +1,11 @@
 Write-Information -Message ("Loading {0} ..." -f ($PSCommandPath | Split-Path -LeafBase)) -InformationAction continue
 
+#Module path is where resides the RootModule file. This file. :)
+$MODULE_PATH = $PSScriptRoot
 
 #Get public and private function definition files.
-$Public  = @( Get-ChildItem -Path $PSScriptRoot\public\*.ps1 -ErrorAction SilentlyContinue )
-$Private = @( Get-ChildItem -Path $PSScriptRoot\private\*.ps1 -ErrorAction SilentlyContinue )
+$Public  = @( Get-ChildItem -Path $MODULE_PATH\public\*.ps1 -ErrorAction SilentlyContinue )
+$Private = @( Get-ChildItem -Path $MODULE_PATH\private\*.ps1 -ErrorAction SilentlyContinue )
 
 #Dot source the files
 Foreach($import in @($Public + $Private))
