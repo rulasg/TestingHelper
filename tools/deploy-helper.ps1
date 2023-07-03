@@ -15,7 +15,6 @@
 
 #>
 
-
 Write-Information -MessageData ("Loading {0} ..." -f ($PSCommandPath | Split-Path -LeafBase))
 
 # This functionalty should be moved to TestingHelper module to allow a simple Deploy.ps1 code.
@@ -35,7 +34,7 @@ function Invoke-DeployModuleToPSGallery{
     )
 
     # look for psd1 file on the same folder as this script
-    $moduleName  = $PSScriptRoot | Split-Path -Parent | Split-Path -leaf
+    $moduleName  = Get-DeployModuleName
     $psdPath = $PSScriptRoot | Split-Path -Parent | Join-Path -ChildPath "$moduleName.psd1"
 
     # check if $psd is set
@@ -149,9 +148,8 @@ function Get-DeployModuleManifestPath {
     param()
 
     # look for psd1 file on the same folder as this script
-    $moduleName  = $PSScriptRoot | Split-Path -Parent | Split-Path -leaf
-    $psdPath = $PSScriptRoot | Split-Path -Parent | Join-Path -ChildPath "$moduleName.psd1"
-
+    $moduleName  = Get-DeployModuleName
+    $psdPath = Get-DeployModulePsd1Path
 
     # check if $psd is set
     if ( -not (Test-Path -Path $psdPath)) {
@@ -160,4 +158,33 @@ function Get-DeployModuleManifestPath {
     } else {
         $psdPath
     }
+}
+
+function Get-DeployModulePsd1Path {
+    [CmdletBinding()]
+    param()
+
+    # moduleName = $PSScriptRoot | Split-Path -Parent | Join-Path -ChildPath "$moduleName.psd1"
+
+
+    # look for psd1 file on the same folder as this script
+    $moduleName  = Get-DeployModuleName
+    $psdPath = $PSScriptRoot | Split-Path -Parent | Join-Path -ChildPath "$moduleName.psd1"
+
+    # check if $psd is set
+    if ( -not (Test-Path -Path $psdPath)) {
+        Write-Error -Message 'No psd1 file found'
+        return $null
+    } else {
+        $psdPath
+    }
+}
+
+function Get-DeployModuleName {
+    [CmdletBinding()]
+    param()
+
+    # look for psd1 file on the same folder as this script
+    $moduleName  = $PSScriptRoot | Split-Path -Parent | Split-Path -LeafBase
+    $moduleName
 }
