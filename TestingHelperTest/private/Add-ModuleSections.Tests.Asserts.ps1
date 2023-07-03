@@ -1,4 +1,6 @@
 
+$TOOLS_RELATIVE_PATH = "tools"
+
 function TestingHelperTest_AssertAddSection_throwOnNull{
 # All asserts here has a pattern
 # This test will confirm tht the pattern will not miss a false negative
@@ -24,20 +26,6 @@ function Assert-AddDevContainerJson{
         $Path = $Path | Convert-Path
 
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath ".devcontainer" | Join-Path -ChildPath "devcontainer.json") -Comment "devcontainer.json"
-    }
-}
-
-# Git Repository
-function Assert-AddGitRepository{
-    param(
-        [Parameter(Mandatory,Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
-        [Alias("PSPath")][ValidateNotNullOrEmpty()]
-        [string] $Path
-    )
-    process{
-        $Path = $Path | Convert-Path
-
-        Assert-ItemExist -Path ($Path | Join-Path -ChildPath ".git") -Comment ".git"
     }
 }
 
@@ -119,10 +107,10 @@ function Assert-AddDeployScript{
     process{
         $Path = $Path | Convert-Path
 
-        $toolsPath = $Path | Join-Path -ChildPath "tools"
+        $toolsPath = $Path | Join-Path -ChildPath $TOOLS_RELATIVE_PATH
 
         Assert-ItemExist -Path ($Path      | Join-Path -ChildPath "deploy.ps1") -Comment "deploy.ps1"
-        Assert-ItemExist -Path ($toolsPath | Join-Path -ChildPath "deploy-helper.ps1") -Comment "deploy-helper.ps1"
+        Assert-ItemExist -Path ($toolsPath | Join-Path -ChildPath "deploy.Helper.ps1") -Comment "deploy.Helper.ps1"
     }
 }
 
@@ -150,8 +138,10 @@ function Assert-AddSyncScript{
     process{
         $Path = $Path | Convert-Path
 
+        $toolsPath = $Path | Join-Path -ChildPath $TOOLS_RELATIVE_PATH
+
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync.ps1") -Comment "sync.ps1"
-        Assert-ItemExist -Path (($Path | Join-Path -ChildPath "tools") | Join-Path -ChildPath "sync-helper.ps1") -Comment "sync-helper.ps1"
+        Assert-ItemExist -Path ($toolsPath | Join-Path -ChildPath "sync.Helper.ps1") -Comment "sync.Helper.ps1"
     }
 }
 
