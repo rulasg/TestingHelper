@@ -23,7 +23,7 @@
       1. publish-helper.ps1
    2. release.ps1
    3. sync.ps1
-      1. sync-helper.ps1
+      1. sync.Helper.ps1
 
 ## Workflows
 

@@ -137,7 +137,7 @@ function Assert-AddSyncScript{
         $Path = $Path | Convert-Path
 
         Assert-ItemExist -Path ($Path | Join-Path -ChildPath "sync.ps1") -Comment "sync.ps1"
-        Assert-ItemExist -Path (($Path | Join-Path -ChildPath "tools") | Join-Path -ChildPath "sync-helper.ps1") -Comment "sync-helper.ps1"
+        Assert-ItemExist -Path (($Path | Join-Path -ChildPath "tools") | Join-Path -ChildPath "sync.Helper.ps1") -Comment "sync.Helper.ps1"
     }
 }
 
