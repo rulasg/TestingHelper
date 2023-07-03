@@ -19,15 +19,15 @@ $WORKFLOW_PATH  = $MODULE_PATH | Join-Path -ChildPath ".github" -AdditionalChild
 
 . ($TOOLS_PATH | Join-Path -ChildPath "sync-helper.ps1")
 
-Save-UrlContentToFile -File 'deploy_module_on_release.yml' -Folder $WORKFLOW_PATH  -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy_module_on_release.yml'  
-Save-UrlContentToFile -File 'powershell.yml'               -Folder $WORKFLOW_PATH  -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.powershell.yml'                
-Save-UrlContentToFile -File 'test_with_TestingHelper.yml'  -Folder $WORKFLOW_PATH  -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.test_with_TestingHelper.yml'   
+Save-UrlContentToFile -File 'deploy_module_on_release.yml' -Folder $WORKFLOW_PATH  -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy_module_on_release.yml'
+Save-UrlContentToFile -File 'powershell.yml'               -Folder $WORKFLOW_PATH  -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.powershell.yml'
+Save-UrlContentToFile -File 'test_with_TestingHelper.yml'  -Folder $WORKFLOW_PATH  -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.test_with_TestingHelper.yml'
 
-Save-UrlContentToFile -File 'deploy-helper.ps1'            -Folder $TOOLS_PATH     -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy-helper.ps1'             
-Save-UrlContentToFile -File 'deploy.ps1'                   -Folder $MODULE_PATH    -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy.ps1'                    
+Save-UrlContentToFile -File 'deploy-helper.ps1'            -Folder $TOOLS_PATH     -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy-helper.ps1'
+Save-UrlContentToFile -File 'deploy.ps1'                   -Folder $MODULE_PATH    -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy.ps1'
 
-Save-UrlContentToFile -File 'sync-helper.ps1'              -Folder $TOOLS_PATH     -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.sync-helper.ps1'               
-Save-UrlContentToFile -File 'sync.ps1'                     -Folder $MODULE_PATH    -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.sync.ps1'                      
+Save-UrlContentToFile -File 'sync-helper.ps1'              -Folder $TOOLS_PATH     -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.sync-helper.ps1'
+Save-UrlContentToFile -File 'sync.ps1'                     -Folder $MODULE_PATH    -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.sync.ps1'
 
-Save-UrlContentToFile -File 'release.ps1'                  -Folder $MODULE_PATH    -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.release.ps1'                   
-Save-UrlContentToFile -File 'test.ps1'                     -Folder $MODULE_PATH    -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.test.ps1'                      
+Save-UrlContentToFile -File 'release.ps1'                  -Folder $MODULE_PATH    -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.release.ps1'
+Save-UrlContentToFile -File 'test.ps1'                     -Folder $MODULE_PATH    -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.test.ps1'
