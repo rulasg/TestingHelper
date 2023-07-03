@@ -20,7 +20,7 @@
 ## Tools Scripts
 
    1. publish.ps1
-      1. publish-helper.ps1
+      1. deploy.Helper.ps1er.ps1
    2. release.ps1
    3. sync.ps1
       1. sync.Helper.ps1

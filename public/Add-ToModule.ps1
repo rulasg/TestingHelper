@@ -145,7 +145,7 @@ function Add-ToModuleDeployScript{
         $toolsPath = $Path | Join-Path -ChildPath "tools"
 
         Import-Template -Force:$Force -Path $Path -File "deploy.ps1" -Template "template.v3.deploy.ps1"
-        Import-Template -Force:$Force -Path $toolsPath -File "deploy.helper.ps1" -Template "template.v3.deploy.helper.ps1"
+        Import-Template -Force:$Force -Path $toolsPath -File "deploy.Helper.ps1" -Template "template.v3.deploy.Helper.ps1"
     
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }

@@ -23,7 +23,7 @@ Save-UrlContentToFile -File 'deploy_module_on_release.yml' -Folder $WORKFLOW_PAT
 Save-UrlContentToFile -File 'powershell.yml'               -Folder $WORKFLOW_PATH  -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.powershell.yml'
 Save-UrlContentToFile -File 'test_with_TestingHelper.yml'  -Folder $WORKFLOW_PATH  -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.test_with_TestingHelper.yml'
 
-Save-UrlContentToFile -File 'deploy.helper.ps1'            -Folder $TOOLS_PATH     -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy.helper.ps1'
+Save-UrlContentToFile -File 'deploy.Helper.ps1'            -Folder $TOOLS_PATH     -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy.Helper.ps1'
 Save-UrlContentToFile -File 'deploy.ps1'                   -Folder $MODULE_PATH    -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.deploy.ps1'
 
 Save-UrlContentToFile -File 'sync.Helper.ps1'              -Folder $TOOLS_PATH     -Url 'https://raw.githubusercontent.com/rulasg/TestingHelper/main/private/templates/template.v3.sync.Helper.ps1'
