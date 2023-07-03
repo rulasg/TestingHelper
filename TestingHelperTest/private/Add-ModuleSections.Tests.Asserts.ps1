@@ -108,7 +108,7 @@ function Assert-AddDeployScript{
         $toolsPath = $Path | Join-Path -ChildPath "tools"
 
         Assert-ItemExist -Path ($Path      | Join-Path -ChildPath "deploy.ps1") -Comment "deploy.ps1"
-        Assert-ItemExist -Path ($toolsPath | Join-Path -ChildPath "deploy-helper.ps1") -Comment "deploy-helper.ps1"
+        Assert-ItemExist -Path ($toolsPath | Join-Path -ChildPath "deploy.helper.ps1") -Comment "deploy.helper.ps1"
     }
 }
 
