@@ -19,8 +19,7 @@ function TestingHelperTest_GetModuleHeader {
 # Testing TestingHelperTest private function Get-TestingHelperTestedModuleHandle
 function TestingHelperTest_GetModuleHandle {
     
-    $localPath = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent
-    $psdpath = Get-ChildItem -Path $localPath -Filter "*.psd1" -ErrorAction SilentlyContinue
+    $psdpath = Get-ChildItem -Path $TESTED_MODULE_PATH -Filter "*.psd1" -ErrorAction SilentlyContinue
     $manifest = Import-PowerShellDataFile -Path $psdpath
 
     # Internal TestingHelperTest function

@@ -1,6 +1,7 @@
 
-$deploy_ps1 = $PSScriptRoot | Split-path -Parent | split-path -Parent | Join-Path -ChildPath 'deploy.ps1'
-$manifestPath = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent | Join-Path -ChildPath 'TestingHelper.psd1'
+$TESTED_MODULE_PATH = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent
+$deploy_ps1 = $TESTED_MODULE_PATH | Join-Path -ChildPath 'deploy.ps1'
+$manifestPath = $TESTED_MODULE_PATH | Join-Path -ChildPath 'TestingHelper.psd1'
 
 $SCRITPBLOCK_WITHNOEXCEPTION = {
         

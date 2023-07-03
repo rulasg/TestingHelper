@@ -30,12 +30,12 @@ function Invoke-DeployModuleToPSGallery{
         # Force the deploy without prompting for confirmation
         [Parameter(Mandatory=$false)] [switch]$Force,
         # Force deploying package to the gallery. Equivalente to Import-Module -Force
-        [Parameter(Mandatory=$false)] [switch]$ForceDeploy
+        [Parameter(Mandatory=$false)] [switch]$ForceDeploy,
+        # Module Manifest Path
+        [Parameter(Mandatory=$false)] [string]$ModuleManifestPath
     )
 
-    # look for psd1 file on the same folder as this script
-    $moduleName  = Get-DeployModuleName
-    $psdPath = $PSScriptRoot | Split-Path -Parent | Join-Path -ChildPath "$moduleName.psd1"
+    $psdPath = $ModuleManifestPath
 
     # check if $psd is set
     if ( -not (Test-Path -Path $psdPath)) {
@@ -70,7 +70,7 @@ function Update-DeployModuleManifest {
 
     $parameters = @{
         ModuleVersion = Get-DeployModuleVersion -VersionTag $VersionTag
-        Path = Get-DeployModuleManifestPath
+        Path = $MODULE_PSD1
         Prerelease = Get-DeployModulePreRelease -VersionTag $VersionTag
     }
 
@@ -143,48 +143,3 @@ function Get-DeployModulePreRelease {
     $preRelease
 }
 
-function Get-DeployModuleManifestPath {
-    [CmdletBinding()]
-    param()
-
-    # look for psd1 file on the same folder as this script
-    $moduleName  = Get-DeployModuleName
-    $psdPath = Get-DeployModulePsd1Path
-
-    # check if $psd is set
-    if ( -not (Test-Path -Path $psdPath)) {
-        Write-Error -Message 'No psd1 file found'
-        return
-    } else {
-        $psdPath
-    }
-}
-
-function Get-DeployModulePsd1Path {
-    [CmdletBinding()]
-    param()
-
-    # moduleName = $PSScriptRoot | Split-Path -Parent | Join-Path -ChildPath "$moduleName.psd1"
-
-
-    # look for psd1 file on the same folder as this script
-    $moduleName  = Get-DeployModuleName
-    $psdPath = $PSScriptRoot | Split-Path -Parent | Join-Path -ChildPath "$moduleName.psd1"
-
-    # check if $psd is set
-    if ( -not (Test-Path -Path $psdPath)) {
-        Write-Error -Message 'No psd1 file found'
-        return $null
-    } else {
-        $psdPath
-    }
-}
-
-function Get-DeployModuleName {
-    [CmdletBinding()]
-    param()
-
-    # look for psd1 file on the same folder as this script
-    $moduleName  = $PSScriptRoot | Split-Path -Parent | Split-Path -LeafBase
-    $moduleName
-}
