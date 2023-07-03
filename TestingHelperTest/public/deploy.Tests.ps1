@@ -4,7 +4,7 @@ $manifestPath = $PSScriptRoot | Split-Path -Parent | Split-Path -Parent | Join-P
 
 $SCRITPBLOCK_WITHNOEXCEPTION = {
         
-    function Invoke-DeployModule {
+    function script:Invoke-DeployModule {
         [CmdletBinding()]
         param(
             [Parameter(Mandatory=$true)][string]$Name,
@@ -20,7 +20,7 @@ $SCRITPBLOCK_WITHNOEXCEPTION = {
 $EXCEPTION_MESSAGE = 'Some exception message thown  on Invoke-DeployModule injected function'
 $SCRITPBLOCK_WITHEXCEPTION = {
         
-    function Invoke-DeployModule {
+    function script:Invoke-DeployModule {
         [CmdletBinding()]
         param(
             [Parameter(Mandatory=$true)][string]$Name,

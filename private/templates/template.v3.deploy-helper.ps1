@@ -93,7 +93,7 @@ function Update-DeployModuleManifest {
     }
 } 
 
-function Invoke-DeployModule {
+function script:Invoke-DeployModule {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory=$true)][string]$Name,

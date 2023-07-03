@@ -143,7 +143,7 @@ function Add-ToModuleDeployScript{
         $Path = NormalizePath -Path:$Path ?? return $null
 
         Import-Template -Force:$Force -Path $Path -File "deploy.ps1" -Template "template.v3.deploy.ps1"
-        Import-Template -Force:$Force -Path $Path -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
+        Import-Template -Force:$Force -Path ($Path | Join-path -ChildPath "tools") -File "deploy-helper.ps1" -Template "template.v3.deploy-helper.ps1"
     
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }

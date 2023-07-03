@@ -47,4 +47,5 @@ function Import-TestingHelper{
 Import-TestingHelper -AllowPrerelease
 
 # Run test by PSD1 file
+# Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_Deploy_With_VersionTag*
 Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors 
