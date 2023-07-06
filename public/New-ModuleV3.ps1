@@ -64,6 +64,11 @@ function New-ModuleV3 {
         # Add deploy workflow
         [Parameter()][switch]$AddDeployWorkflow
     )
+    # check that Name and Path are not both empty
+    if(!$Name -and !$Path){
+        Write-Error "Name and Path cannot be both empty"
+        return $null
+    }
 
     $retModulePath = $null
 
@@ -76,7 +81,7 @@ function New-ModuleV3 {
     }
 
     # If asked for testing add sample code on both modules
-    $AddSampleCode = $AddSampleCode -or $AddTesting
+    $AddSampleCode = $AddSampleCode -or $AddTesting -or $AddAll
 
     # Create the module
     if ($moduleName) {
