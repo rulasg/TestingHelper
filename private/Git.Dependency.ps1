@@ -23,6 +23,7 @@ function Reset-GitRepoConfiguration {
         if ($PSCmdlet.ShouldProcess("git config user.email", "Init to [you@example.com] ")) {
             $result1 = git -C $Path config user.email $userEmail
             if($LASTEXITCODE -ne 0){
+                [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUserDeclaredVarsMoreThanAssignments', '', Scope='Function')]
                 $GITLASTERROR = "Git config user.email failed - $result1"
                 return $null
             }
@@ -58,6 +59,7 @@ function script:Invoke-GitRepositoryInit{
     # check if git is installed
     $gitPath = Get-Command -Name git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
     if(!$gitPath){
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUserDeclaredVarsMoreThanAssignments', '', Scope='Function')]
         $GITLASTERROR =  "Git is not installed"
         return $null
     }
