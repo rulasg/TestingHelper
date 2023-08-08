@@ -16,10 +16,10 @@ function Reset-GitRepoConfiguration {
     begin{
         $userName = "TestingHelper Agent"
         $userEmail = "tha@sample.com"
+        $commitGpgSign = "false"
     }
 
     process{
-        #check if its null or empty
         if ($PSCmdlet.ShouldProcess("git config user.email", "Init to [you@example.com] ")) {
             $result1 = git -C $Path config user.email $userEmail
             if($LASTEXITCODE -ne 0){
@@ -28,11 +28,18 @@ function Reset-GitRepoConfiguration {
             }
         }
 
-        #check if its null or empty
         if ($PSCmdlet.ShouldProcess("git config user.name", "Init to [Your Name]")) {
             $result2 = git -C $Path config user.name $userName
             if($LASTEXITCODE -ne 0){
                 $GITLASTERROR = "Git config user.name failed - $result2"
+                return $null
+            }
+        }
+
+        if ($PSCmdlet.ShouldProcess("git config commit.gpgsign", "Init to $commitGpgSign")) {
+            $result3 = git -C $Path config commit.gpgsign $commitGpgSign
+            if($LASTEXITCODE -ne 0){
+                $GITLASTERROR = "Git config commit.gpgsign failed - $result3"
                 return $null
             }
         }
