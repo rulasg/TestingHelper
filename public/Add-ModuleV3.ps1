@@ -40,6 +40,7 @@ function Add-ModuleV3 {
 
     try {
         # Create the PSD1 file
+        # Default Prerelease to 'dev' but may be overriten by $metadata
         New-MyModuleManifest  -Path $psd1Path -RootModule $rootModule -PreRelease "dev"
 
         # Update with metadata
