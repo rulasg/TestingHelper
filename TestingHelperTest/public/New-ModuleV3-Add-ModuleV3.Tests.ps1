@@ -39,6 +39,8 @@ function TestingHelperTest_NewModuleV3_AddModule_DefaultManifest {
 
     $defaultsManifest = Get-DefaultsManifest
 
+    $defaultsManifest.PrivateData.PSData.Prerelease = 'dev'
+
     Assert-AreEqualPath -Expected $moduleName -Presented $result
 
     Assert-AddModuleV3  -Path $moduleName -Expected $defaultsManifest
@@ -48,6 +50,7 @@ function TestingHelperTest_NewModuleV3_AddModule_MyManifest {
 
     $moduleName = "MyModule"
 
+    # Metadata is really the posible parameters for Update-ModuleManifest
     $param = @{
         RootModule        = "MyModule.psm1"
         Author            = "Me"
@@ -56,11 +59,28 @@ function TestingHelperTest_NewModuleV3_AddModule_MyManifest {
         Description       = "MyDescription of the module"
         FunctionsToExport = @("MyFunction")
         CopyRight         = "(c) 2020 MyCompany. All rights reserved."
+        Prerelease        = "radompre"
     } 
-    
+
     $result = Add-TT_ModuleV3 -Name $moduleName -Metadata $param
 
-    Assert-AddModuleV3  -Path $result -Expected $param
+    $ExpectedMetadata = @{
+        RootModule        = $param.RootModule
+        Author            = $param.Author
+        CompanyName       = $param.CompanyName
+        ModuleVersion     = $param.ModuleVersion
+        Description       = $param.Description
+        FunctionsToExport = $param.FunctionsToExport
+        Copyright         = $param.CopyRight
+    }
+
+    $ExpectedMetadata.PrivateData = @{
+        PSData = @{
+            Prerelease = $param.Prerelease
+        }
+    }
+
+    Assert-AddModuleV3  -Path $result -Expected $ExpectedMetadata
 
 }
 
