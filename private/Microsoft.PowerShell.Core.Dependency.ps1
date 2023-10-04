@@ -4,9 +4,10 @@ function script:New-MyModuleManifest {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Path,
-        [Parameter(Mandatory)][string]$RootModule
+        [Parameter(Mandatory)][string]$RootModule,
+        [Parameter(Mandatory)][string]$PreRelease
     )
-    New-ModuleManifest  -Path $Path -RootModule $RootModule
+    New-ModuleManifest  -Path $Path -RootModule $RootModule -PreRelease $PreRelease
 }
 
 function script:Update-MyModuleManifest {
