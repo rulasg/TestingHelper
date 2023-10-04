@@ -40,7 +40,7 @@ function Add-ModuleV3 {
 
     try {
         # Create the PSD1 file
-        New-MyModuleManifest  -Path $psd1Path -RootModule $rootModule
+        New-MyModuleManifest  -Path $psd1Path -RootModule $rootModule -PreRelease "dev"
 
         # Update with metadata
         if ($Metadata.Count -gt 0) {
