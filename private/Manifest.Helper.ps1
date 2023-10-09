@@ -6,12 +6,8 @@ function Get-ModuleManifest($Path){
 
     $psdpath = Get-ChildItem -Path $localPath -Filter "*.psd1" -ErrorAction SilentlyContinue
 
-    if($psdpath.count -eq 0){
-        throw "No psd1 file found in path $localPath"
-    }
-
     if($psdpath.count -ne 1){
-        throw "More than one manifest (psd1) found on module path"
+        throw "No psd1 file found in path $localPath"
     }
     
     $manifest = Import-PowerShellDataFile -Path $psdpath.FullName
