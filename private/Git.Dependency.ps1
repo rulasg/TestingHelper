@@ -7,6 +7,7 @@ $GITLASTERROR = $null
 # Reset git configuration
 function Reset-GitRepoConfiguration {
     [CmdletBinding(SupportsShouldProcess)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
     param(
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
@@ -23,7 +24,6 @@ function Reset-GitRepoConfiguration {
         if ($PSCmdlet.ShouldProcess("git config user.email", "Init to [you@example.com] ")) {
             $result1 = git -C $Path config user.email $userEmail
             if($LASTEXITCODE -ne 0){
-                [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUserDeclaredVarsMoreThanAssignments', '', Scope='Function')]
                 $GITLASTERROR = "Git config user.email failed - $result1"
                 return $null
             }
