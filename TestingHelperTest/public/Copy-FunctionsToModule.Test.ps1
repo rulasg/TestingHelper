@@ -42,6 +42,4 @@ function TestingHelperTest_FunctionsToModule_Copy_FilesExist{
     Assert-AreEqual -Expected 'Function1 source' -Presented $(Get-Content -Path destinationModule/public/Function1.ps1)
     Assert-AreEqual -Expected 'Function6 source' -Presented $(Get-Content -Path destinationModule/private/childFolder/Function6.txt)
     Assert-AreEqual -Expected 'Function3 source' -Presented $(Get-Content -Path destinationModule/destinationModuleTest/public/Function3.ps1)
-
-    Assert-NotImplemented
 }
