@@ -23,11 +23,11 @@ function Copy-FunctionsToModule {
     $destinationTestPublic = $Destination | Join-Path -ChildPath $($destinationModuleName + 'Test') -AdditionalChildPath 'public'
     $destinationTestPrivate = $Destination | Join-Path -ChildPath $($destinationModuleName + 'Test') -AdditionalChildPath 'private'
 
-    Copy-Item -Path $sourcePublic/* -Destination $destinationPublic -Recurse
-    Copy-Item -Path $sourcePrivate/* -Destination $destinationPrivate -Recurse
+    Copy-Item -Path $sourcePublic/* -Destination $destinationPublic -Recurse -Force
+    Copy-Item -Path $sourcePrivate/* -Destination $destinationPrivate -Recurse -Force
 
-    Copy-Item -Path $sourceTestPublic/* -Destination $destinationTestPublic -Recurse
-    Copy-Item -Path $sourceTestPrivate/* -Destination $destinationTestPrivate -Recurse
+    Copy-Item -Path $sourceTestPublic/* -Destination $destinationTestPublic -Recurse -Force
+    Copy-Item -Path $sourceTestPrivate/* -Destination $destinationTestPrivate -Recurse -Force
 
 } Export-ModuleMember -Function Copy-FunctionsToModule
 
