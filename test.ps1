@@ -7,16 +7,36 @@
     Using TestingHelper this script will search for a Test module and run the tests
     This script will be referenced from launch.json to run the tests on VSCode
 .LINK
-    https://raw.githubusercontent.com/rulasg/DemoPsModule/main/test.ps1
+    https://raw.githubusercontent.com/rulasg/StagingModule/main/test.ps1
 .EXAMPLE
     > ./test.ps1
 #>
 
 [CmdletBinding()]
 param (
-    #Switch ShowTestErrors
     [Parameter()][switch]$ShowTestErrors
 )
+
+function Set-TestName{
+    [CmdletBinding()]
+    [Alias("st")]
+    param (
+        [Parameter(Position=0,ValueFromPipeline)][string]$TestName
+    )
+
+    process{
+        $global:TestName = $TestName
+    }
+}
+
+function Clear-TestName{
+    [CmdletBinding()]
+    [Alias("ct")]
+    param (
+    )
+
+    $global:TestName = $null
+}
 
 function Import-TestingHelper{
     [CmdletBinding()]
@@ -47,5 +67,11 @@ function Import-TestingHelper{
 Import-TestingHelper -AllowPrerelease
 
 # Run test by PSD1 file
-# Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors -TestName TestingHelperTest_Deploy_With_VersionTag*
-Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors 
+# Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors 
+# Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors -TestName StagingModuleTest_*
+
+if($TestName){
+    Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors -TestName $TestName
+} else {
+    Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors
+}
