@@ -20,6 +20,9 @@ function Add-TestModuleV3 {
         $manifest.Remove('Name')
         $manifest.Remove('RootModule')
         $manifest.Remove('GUID')
+
+        #match the prerelease field with module
+        $manifest.Prerelease = $manifest.PrivateData.PSData.Prerelease
     } 
     
     # TODO: Not sure how to mangage Force on Add-Module functions
