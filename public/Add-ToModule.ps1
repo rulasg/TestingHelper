@@ -23,10 +23,10 @@ function Add-ToModuleSampleCode{
         $modulePath = NormalizePath -Path:$Path ?? return $null
 
         $destination = $modulePath | Join-Path -ChildPath "public"
-        Import-Template -Path $destination -File "samplePublicFunction.ps1" -Template "template.module.functions.public.ps1"
+        $null = Import-Template -Path $destination -File "samplePublicFunction.ps1" -Template "template.module.functions.public.ps1"
         
         $destination = $modulePath | Join-Path -ChildPath "private"
-        Import-Template -Path $destination -File "samplePrivateFunction.ps1" -Template "template.module.functions.private.ps1"
+        $null = Import-Template -Path $destination -File "samplePrivateFunction.ps1" -Template "template.module.functions.private.ps1"
         
         return ReturnValue -Path $Path -Force:$Force -Passthru:$Passthru
     }
