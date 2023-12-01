@@ -71,7 +71,7 @@ Import-TestingHelper -AllowPrerelease
 # Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors -TestName StagingModuleTest_*
 
 if($TestName){
-    Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors -TestName $TestName
+    Invoke-TestingHelper -TestName $TestName
 } else {
-    Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors
+    Invoke-TestingHelper 
 }
