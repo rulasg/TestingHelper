@@ -34,7 +34,7 @@ jobs:
             $tag = $env:RELEASE_TAG
             write-host -message "Release [$env:RELEASE_NAME] on tag [$tag]"
           } else {
-            # Read Tag o Branch name
+            # Read Tag or Branch name
             $tag = $env:EVENT_REF.Split('/')[2]
             write-host "workflow_dispatch triggered on ref leaf [$tag]"
           }

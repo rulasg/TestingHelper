@@ -7,6 +7,7 @@ $GITLASTERROR = $null
 # Reset git configuration
 function Reset-GitRepoConfiguration {
     [CmdletBinding(SupportsShouldProcess)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
     param(
         [Parameter(Position=0,ValueFromPipeline,ValueFromPipelineByPropertyName)]
         [Alias("PSPath")][ValidateNotNullOrEmpty()]
@@ -58,6 +59,7 @@ function script:Invoke-GitRepositoryInit{
     # check if git is installed
     $gitPath = Get-Command -Name git -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
     if(!$gitPath){
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUserDeclaredVarsMoreThanAssignments', '', Scope='Function')]
         $GITLASTERROR =  "Git is not installed"
         return $null
     }

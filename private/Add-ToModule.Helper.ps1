@@ -13,6 +13,9 @@ function ReturnValue($Path,$Force, $Passthru){
 }
 
 # Normalize $Path and returns $null if not valid
+# If $Path is a file, returns the parent folder
+# If $Path is $null or empty, returns the current folder
+# Path needs to be a valid path
 function NormalizePath($Path){
     # Path returned should be the folder where the module is located.
     

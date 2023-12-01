@@ -81,6 +81,12 @@ function Invoke-TestingHelper {
 
     process {
 
+        if([string]::IsNullOrWhiteSpace($Path)) {
+            $Path = '.'
+        }
+
+        "Inovking Testing Helper on path [$Path]" | Write-Verbose
+
         $manifest = Get-ModuleManifest -Path ($Path | Convert-Path)
         $testingmodulemanifest = Get-TestingModuleManifest -ModulePath $manifest.Path
         $versionString = "{0} {1} {2}" -f $manifest.Name, $manifest.ModuleVersion, $manifest.PrivateData.PSData.Prerelease

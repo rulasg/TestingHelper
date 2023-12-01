@@ -30,7 +30,7 @@ function TestingHelperTest_NewModuleV3_WithName_RemotePath {
     Assert-AddModuleV3 -Path $expectedPath 
 }
 
-function TestingHelperTest_NewModuleV3_WithOutName {
+function TestingHelperTest_NewModuleV3_WithOutName_LocalPath {
 
     # Error as the name is mandatory
 
@@ -40,9 +40,31 @@ function TestingHelperTest_NewModuleV3_WithOutName {
     $result = New-TT_ModuleV3 @ErrorParameters
 
     Assert-IsNull -Object $result
-    Assert-Contains -Expected "Path and Name cannot be null or empty at the same time." -Presented $errorVar.Exception.Message
+    Assert-Contains -Expected "Name and Path cannot be both empty" -Presented $errorVar.Exception.Message
 }
 
+function TestingHelperTest_NewModuleV3_WithOutName_withPath {
+
+    $folder = New-TestingFolder -Name "ModulefolderName" -PassThru
+    $finalFolder = $folder.FullName | Join-Path -ChildPath "ModulefolderName"
+
+    $result = New-TT_ModuleV3 -Path $folder @ErrorParameters
+
+    Assert-AreEqualPath -Expected $finalFolder -Presented $result
+    Assert-AddModuleV3 -Path $finalFolder
+}
+
+function TestingHelperTest_NewModuleV3_WithOutName_WithPath_AddAll {
+
+    $folder = New-TestingFolder -Name "ModulefolderName" -PassThru
+    $finalFolder = $folder.FullName | Join-Path -ChildPath "ModulefolderName"
+
+    $result = New-TT_ModuleV3 -Path $folder -AddAll @ErrorParameters
+
+    Assert-AreEqualPath -Expected $finalFolder -Presented $result
+    Assert-AddAll -Path $folder
+
+}
 function TestingHelperTest_NewModuleV3_AddTesting{
 
     $moduleName = "MyModule"
