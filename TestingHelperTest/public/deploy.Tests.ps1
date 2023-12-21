@@ -215,7 +215,6 @@ function Assert-Manifest{
 
     $manifest = Import-PowerShellDataFile -Path $manifestPath
 
-    
     Assert-AreEqual -Expected $version -Presented $manifest.ModuleVersion -Comment "Expected[$version] Presented[$($manifest.ModuleVersion)]] - $Comment"
     
     # If preRelease is not present in the manifest, then we expect null
