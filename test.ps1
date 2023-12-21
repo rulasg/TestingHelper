@@ -82,8 +82,8 @@ function Import-RequiredModules{
 Import-RequiredModules -Name TestingHelper -AllowPrerelease
 
 # Required Modules
-$localPath = $PSScriptRoot
-$requiredModule = $localPath | Join-Path -child "*.psd1" |  Get-Item | Import-PowerShellDataFile | Select-Object -ExpandProperty requiredModules
+$manifest = $PSScriptRoot | Join-Path -child "*.psd1" | Get-Item | Import-PowerShellDataFile
+$requiredModule = $manifest.RequiredModules
 $requiredModule | Import-RequiredModules -AllowPrerelease
 
 if($TestName){
