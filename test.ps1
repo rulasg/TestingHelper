@@ -29,6 +29,15 @@ function Set-TestName{
     }
 }
 
+function Get-TestName{
+    [CmdletBinding()]
+    [Alias("gt")]
+    param (
+    )
+
+    return $global:TestName
+}
+
 function Clear-TestName{
     [CmdletBinding()]
     [Alias("ct")]
@@ -38,40 +47,47 @@ function Clear-TestName{
     $global:TestName = $null
 }
 
-function Import-TestingHelper{
+function Import-RequiredModules{
     [CmdletBinding()]
     param (
+        [Parameter(Mandatory,ValueFromPipeline,ValueFromPipelineByPropertyName)][string]$Name,
         [Parameter()][string]$Version,
         [Parameter()][switch]$AllowPrerelease,
         [Parameter()][switch]$PassThru
     )
-    
-    if ($Version) {
-        $V = $Version.Split('-')
-        $semVer = $V[0]
-        $AllowPrerelease = ($AllowPrerelease -or ($null -ne $V[1]))
-    }
-    
-    $module = Import-Module TestingHelper -PassThru -ErrorAction SilentlyContinue -RequiredVersion:$semVer
+    process{
+        "Importing module Name[{0}] Version[{1}] AllowPrerelease[{2}]" -f $Name, $Version, $AllowPrerelease | Write-Host -ForegroundColor DarkGray
 
-    if ($null -eq $module) {
-        $installed = Install-Module -Name TestingHelper -Force -AllowPrerelease:$AllowPrerelease -passThru -RequiredVersion:$Version
-        $module = Import-Module -Name $installed.Name -RequiredVersion ($installed.Version.Split('-')[0]) -Force -PassThru
-    }
-
-    if ($PassThru) {
-        $module
+        if ($Version) {
+            $V = $Version.Split('-')
+            $semVer = $V[0]
+            $AllowPrerelease = ($AllowPrerelease -or ($null -ne $V[1]))
+        }
+        
+        $module = Import-Module $Name -PassThru -ErrorAction SilentlyContinue -RequiredVersion:$semVer
+        
+        if ($null -eq $module) {
+            "Installing module Name[{0}] Version[{1}] AllowPrerelease[{2}]" -f $Name, $Version, $AllowPrerelease | Write-Host -ForegroundColor DarkGray
+            $installed = Install-Module -Name $Name -Force -AllowPrerelease:$AllowPrerelease -passThru -RequiredVersion:$Version
+            $module = Import-Module -Name $installed.Name -RequiredVersion ($installed.Version.Split('-')[0]) -Force -PassThru
+        }
+        
+        if ($PassThru) {
+            $module
+        }
     }
 }
 
-Import-TestingHelper -AllowPrerelease
+# TestingHelper
+Import-RequiredModules -Name TestingHelper -AllowPrerelease
 
-# Run test by PSD1 file
-# Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors 
-# Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors -TestName StagingModuleTest_*
+# Required Modules
+$localPath = $PSScriptRoot
+$requiredModule = $localPath | Join-Path -child "*.psd1" |  Get-Item | Import-PowerShellDataFile | Select-Object -ExpandProperty requiredModules
+$requiredModule | Import-RequiredModules -AllowPrerelease
 
 if($TestName){
-    Invoke-TestingHelper -TestName $TestName
+    Invoke-TestingHelper -TestName $TestName -ShowTestErrors:$ShowTestErrors
 } else {
-    Invoke-TestingHelper 
+    Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors
 }
