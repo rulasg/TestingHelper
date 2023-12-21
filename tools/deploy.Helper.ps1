@@ -65,6 +65,7 @@ function Invoke-DeployModuleToPSGallery{
         # Inport-PsModule will run Test-Module before and will fail if all dependencies are not available localy
         Install-Dependencies -ModuleManifestPath $ModuleManifestPath
 
+        # Invoke to deploy the module
         Invoke-DeployModule -Name $psdPath -NuGetApiKey $NuGetApiKey -Force:$ForceDeploy
     }
 }
@@ -75,14 +76,16 @@ function Install-Dependencies{
         [Parameter(Mandatory)] [string]$ModuleManifestPath
     )
 
-    $requiredModules = $ModuleManifestPath | Get-Item | Import-PowerShellDataFile | Select-Object -ExpandProperty requiredModules
+    $manifest = $ModuleManifestPath | Get-Item | Import-PowerShellDataFile
+
+    $requiredModules = $manifest.RequiredModules
 
     foreach ($requiredModule in $requiredModules) {
         $module = Import-Module -Name $requiredModule -PassThru -ErrorAction SilentlyContinue
 
         if ($null -eq $module) {
             "Installing module $requiredModule" | Write-Host -ForegroundColor DarkGray
-            Install-Module -Name $Name -Force -AllowPrerelease
+            Install-Module -Name $requiredModule -Force -AllowPrerelease
             $module = Import-Module -Name $requiredModule -PassThru
             "Loaded module Name[$($module.Name)] Version[$($module.Version)]" | Write-Host -ForegroundColor DarkGray
         }

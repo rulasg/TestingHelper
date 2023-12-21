@@ -53,6 +53,11 @@ if ($DependencyInjection) {
     . $DependencyInjection 
 }
 
+## Install delendecies as Publish-Module 
+# will check if dependecies are installed locally due to a bug
+# in Test-ModuleManifest
+Install-Dependencies -ModuleManifestPath $MODULE_PSD1
+
 # Process Tag
 if($VersionTag){
 
