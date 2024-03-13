@@ -9,13 +9,13 @@ function TestingHelperTest_ImportTestingModule_TargetModule{
 
     Import-TT_TestingModule -TargetModule $Dummy1
 
-    Assert-IsNotNull -Object (Get-Module -Name ($Dummy1 +"Test"))
+    Assert-IsNotNull -Object (Get-Module -Name "Test")
 
-    $instance1 = Get-DummyModule1TestInstanceId
+    $instance1 = Get-TestInstanceId
 
     Import-TT_TestingModule -TargetModule $Dummy1 -Force
 
-    $instance2 = Get-DummyModule1TestInstanceId
+    $instance2 = Get-TestInstanceId
 
     Assert-AreNotEqual -Expected $instance1 -Presented $instance2
 }
@@ -45,7 +45,7 @@ function TestingHelperTest_ImportTestingModule_TargetModule_AlreadyLoaded{
 
     Import-TT_TestingModule -TargetModule $Dummy1 @WarningParameters
     
-    Assert-IsNotNull -Object (Get-Module -Name ($Dummy1 +"Test"))
+    Assert-IsNotNull -Object (Get-Module -Name "Test")
 
     Assert-Count -Expected 1 -Presented $WarningVar
     Assert-AreEqual -Presented $WarningVar[0].Message -Expected ("[Import-TestingModule] TargetModule {0} is already loaded" -f $Dummy1) 
@@ -54,7 +54,7 @@ function TestingHelperTest_ImportTestingModule_TargetModule_AlreadyLoaded{
 function TestingHelperTest_ImportTestingModule_TestingModule {
     [CmdletBinding()] param ()
 
-    $TestDummy1 = $Dummy1 + "Test"
+    $TestDummy1 = "Test"
 
     Import-Module -name $DUMMY_1_PATH -Global
 
@@ -68,15 +68,17 @@ function TestingHelperTest_ImportTestingModule_TestingModule {
 
     Assert-IsNotNull -Object (Get-Module -Name $TestDummy1)
 
-    $instance1 = Get-DummyModule1TestInstanceId
+    $instance1 = Get-TestInstanceId
 
     Import-TT_TestingModule -Name $TestDummyPath -Force
 
-    $instance2 = Get-DummyModule1TestInstanceId
+    $instance2 = Get-TestInstanceId
 
     Assert-AreNotEqual -Expected $instance1 -Presented $instance2
 
-    Get-Module -Name $Dummy1* | Remove-Module -Force
+    Get-Module -Name $Dummy1 | Remove-Module -Force
+    Assert-IsNull -Object (Get-Module -Name $Dummy1)
 
-    Assert-IsNull -Object (Get-Module -Name $TestDummy1*)
+    Get-module -Name $TestDummy1 | Remove-Module -Force
+    Assert-IsNull -Object (Get-Module -Name $TestDummy1)
 }

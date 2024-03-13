@@ -16,6 +16,7 @@ function Get-TestingModuleName {
         [parameter(Mandatory)] [string] $TargetModule
     )
     
-    return ($TargetModule + "Test") 
+    # return ($TargetModule + "Test") 
+    return "Test"
 } 
 
