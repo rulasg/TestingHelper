@@ -45,7 +45,6 @@ function Get-TestModulePath{
         [Parameter()][string]$Path
     )
 
-    
     $testModulePath = $path | Join-Path -ChildPath ("Test")
 
     return $testModulePath
@@ -56,7 +55,7 @@ function Get-TestModuleName {
     param (
         [parameter(Mandatory)] [string] $Path
     )
-    
+
     $name = "Test"
 
     return $name
