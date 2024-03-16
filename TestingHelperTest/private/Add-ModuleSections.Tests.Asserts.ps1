@@ -218,8 +218,7 @@ function Assert-AddTestSampleCodes{
     process{
         $Path = $Path | Convert-Path
 
-        $name = $Path | Split-Path -LeafBase
-        $testingModuleName = $Name + "Test"
+        $testingModuleName = "Test"
         $testingModulePath = $path | Join-Path -ChildPath $testingModuleName
 
         $samplePublicPath = $testingModulePath | Join-Path -ChildPath "public" -AdditionalChildPath SampleFunctionTests.ps1
@@ -355,10 +354,7 @@ function Assert-AddTestModuleV3{
     process{
         $Path = $Path | Convert-Path
 
-        $name = $Path | Split-Path -LeafBase
-
-        # $modulePath = $Path | Join-Path -ChildPath $Name
-        $testingModuleName = $name + "Test"
+        $testingModuleName = "Test"
         $testingModulePath = $path | Join-Path -ChildPath $testingModuleName
         
         Assert-AddModuleV3 -Path $testingModulePath
@@ -375,10 +371,8 @@ function Assert-AddTestAll {
     process{
         $Path = $Path | Convert-Path
 
-        $name = $Path | Split-Path -LeafBase
-
         # $modulePath = $Path | Join-Path -ChildPath $Name
-        $testingModuleName = $name + "Test"
+        $testingModuleName = "Test"
         $testingModulePath = $path | Join-Path -ChildPath $testingModuleName
         
         Assert-AddModuleV3 -Path $testingModulePath

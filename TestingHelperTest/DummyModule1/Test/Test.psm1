@@ -1,16 +1,16 @@
 
-Write-Host "Loading DummyModule1Test ..." -ForegroundColor DarkYellow
+Write-Host "Loading Test ..." -ForegroundColor DarkYellow
 
 $InstanceId = New-Guid
 function Get-InstanceId{
     return $InstanceId
 }
 
-function DummyModule1Test_Intro{
+function Test_Intro{
     Assert-IsTrue -Condition $true
 }
 
-function DummyModule1Test_Description{
+function Test_Description{
 
     [string] $result = Get-DummyModule1Description
 

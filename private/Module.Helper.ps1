@@ -12,10 +12,11 @@ function Get-ModuleHeader {
 
 function Get-TestingModuleName {
     [CmdletBinding()]
+    [OutputType([string])]
     param (
         [parameter(Mandatory)] [string] $TargetModule
     )
-    
-    return ($TargetModule + "Test") 
+
+    return "Test"
 } 
 

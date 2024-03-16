@@ -14,14 +14,14 @@ function Copy-FunctionsToModule {
     $sourcePublic = $Source | Join-Path -ChildPath 'public'
     $sourcePrivate = $Source | Join-Path -ChildPath 'private'
 
-    $sourceTestPublic = $Source | Join-Path -ChildPath $($sourceModuleName + 'Test') -AdditionalChildPath 'public'
-    $sourceTestPrivate = $Source | Join-Path -ChildPath $($sourceModuleName + 'Test') -AdditionalChildPath 'private'
+    $sourceTestPublic = $Source | Join-Path -ChildPath 'Test' -AdditionalChildPath 'public'
+    $sourceTestPrivate = $Source | Join-Path -ChildPath  'Test' -AdditionalChildPath 'private'
 
     $destinationPublic = $Destination | Join-Path -ChildPath 'public'
     $destinationPrivate = $Destination | Join-Path -ChildPath 'private'
 
-    $destinationTestPublic = $Destination | Join-Path -ChildPath $($destinationModuleName + 'Test') -AdditionalChildPath 'public'
-    $destinationTestPrivate = $Destination | Join-Path -ChildPath $($destinationModuleName + 'Test') -AdditionalChildPath 'private'
+    $destinationTestPublic = $Destination | Join-Path -ChildPath 'Test' -AdditionalChildPath 'public'
+    $destinationTestPrivate = $Destination | Join-Path -ChildPath 'Test' -AdditionalChildPath 'private'
 
     Copy-Item -Path $sourcePublic/* -Destination $destinationPublic -Recurse -Force
     Copy-Item -Path $sourcePrivate/* -Destination $destinationPrivate -Recurse -Force
