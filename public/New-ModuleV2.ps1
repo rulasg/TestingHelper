@@ -103,7 +103,7 @@ function New-ModuleV2 {
             New-ModuleV2 @testingparams
 
             # test.ps1
-            Import-Template -Path $modulePath -File "test.ps1" -Template "template.test.ps1"
+            Import-Template -Path $modulePath -File "test.ps1" -Template "template.v2.test.ps1"
             # launch.json
             Import-Template -Path ($modulePath | Join-Path -ChildPath '.vscode') -File 'launch.json' -Template "template.launch.json"
 
