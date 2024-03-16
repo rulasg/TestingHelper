@@ -19,6 +19,9 @@ param (
 
 function Set-TestName{
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Scope='Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Scope='Function')]
     [Alias("st")]
     param (
         [Parameter(Position=0,ValueFromPipeline)][string]$TestName
@@ -29,8 +32,22 @@ function Set-TestName{
     }
 }
 
+function Get-TestName{
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Scope='Function')]
+    [Alias("gt")]
+    param (
+    )
+
+    process{
+        $global:TestName
+    }
+}
+
 function Clear-TestName{
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Scope='Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
     [Alias("ct")]
     param (
     )
@@ -38,40 +55,90 @@ function Clear-TestName{
     $global:TestName = $null
 }
 
-function Import-TestingHelper{
+function Import-RequiredModule{
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Scope='Function')]
     param (
-        [Parameter()][string]$Version,
-        [Parameter()][switch]$AllowPrerelease,
-        [Parameter()][switch]$PassThru
+        [Parameter(ParameterSetName = "HT", ValueFromPipeline)][hashtable]$RequiredModule,
+        [Parameter(ParameterSetName = "RM",Position = 0)][string]$ModuleName,
+        [Parameter(ParameterSetName = "RM")][string]$ModuleVersion,
+        [Parameter(ParameterSetName = "HT")]
+        [Parameter(ParameterSetName = "RM")]
+        [switch]$AllowPrerelease,
+        [Parameter(ParameterSetName = "HT")]
+        [Parameter(ParameterSetName = "RM")]
+        [switch]$PassThru
     )
-    
-    if ($Version) {
-        $V = $Version.Split('-')
-        $semVer = $V[0]
-        $AllowPrerelease = ($AllowPrerelease -or ($null -ne $V[1]))
-    }
-    
-    $module = Import-Module TestingHelper -PassThru -ErrorAction SilentlyContinue -RequiredVersion:$semVer
 
-    if ($null -eq $module) {
-        $installed = Install-Module -Name TestingHelper -Force -AllowPrerelease:$AllowPrerelease -passThru -RequiredVersion:$Version
-        $module = Import-Module -Name $installed.Name -RequiredVersion ($installed.Version.Split('-')[0]) -Force -PassThru
-    }
+    process{
+        # Powershell module manifest does not allow versions with prerelease tags on them. 
+        # Powershell modle manifest does not allow to add a arbitrary field to specify prerelease versions.
+        # Valid value (ModuleName, ModuleVersion, RequiredVersion, GUID)
+        # There is no way to specify a prerelease required module.
 
-    if ($PassThru) {
-        $module
+        if($RequiredModule){
+            $ModuleName = $RequiredModule.ModuleName
+            $ModuleVersion = [string]::IsNullOrWhiteSpace($RequiredModule.RequiredVersion) ? $RequiredModule.ModuleVersion : $RequiredModule.RequiredVersion
+        }
+
+        "Importing module Name[{0}] Version[{1}] AllowPrerelease[{2}]" -f $ModuleName, $ModuleVersion, $AllowPrerelease | Write-Host -ForegroundColor DarkGray
+
+        # Following semVer we can manually specidy a taged version to specify that is prerelease
+        # Extract the semVer from it and set AllowPrerelease to true
+        if ($ModuleVersion) {
+            $V = $ModuleVersion.Split('-')
+            $semVer = $V[0]
+            $AllowPrerelease = ($AllowPrerelease -or ($null -ne $V[1]))
+        }
+
+        $module = Import-Module $ModuleName -PassThru -ErrorAction SilentlyContinue -MinimumVersion:$semVer
+
+        if ($null -eq $module) {
+            "Installing module Name[{0}] Version[{1}] AllowPrerelease[{2}]" -f $ModuleName, $ModuleVersion, $AllowPrerelease | Write-Host -ForegroundColor DarkGray
+            $installed = Install-Module -Name $ModuleName -Force -AllowPrerelease:$AllowPrerelease -passThru -RequiredVersion:$ModuleVersion
+            $module = $installed | ForEach-Object {Import-Module -Name $_.Name -RequiredVersion ($_.Version.Split('-')[0]) -Force -PassThru}
+        }
+
+        "Imported module Name[{0}] Version[{1}] PreRelease[{2}]" -f $module.Name, $module.Version, $module.privatedata.psdata.prerelease | Write-Host -ForegroundColor DarkGray
+
+        if ($PassThru) {
+            $module
+        }
     }
 }
 
-Import-TestingHelper -AllowPrerelease
+<#
+. SYNOPSIS
+    Extracts the required modules from the module manifest
+#>
+function Get-RequiredModule{
+    [CmdletBinding()]
+    [OutputType([Object[]])]
+    param()
 
-# Run test by PSD1 file
-# Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors 
-# Test-ModulelocalPSD1 -ShowTestErrors:$ShowTestErrors -TestName StagingModuleTest_*
+    # Required Modules
+    $localPath = $PSScriptRoot
+    $manifest = $localPath | Join-Path -child "*.psd1" |  Get-Item | Import-PowerShellDataFile
+    $requiredModule = $null -eq $manifest.RequiredModules ? @() : $manifest.RequiredModules
+
+    # Convert to hashtable
+    $ret = @()
+    $requiredModule | ForEach-Object{
+        $ret += $_ -is [string] ? @{ ModuleName = $_ } : $_
+    }
+
+    return $ret
+}
+
+# Install and load TestingHelper
+# Import-RequiredModule -Name TestingHelper -AllowPrerelease
+Import-RequiredModule "TestingHelper" -AllowPrerelease
+
+# Install and Load Module dependencies
+Get-RequiredModule | Import-RequiredModule -AllowPrerelease
 
 if($TestName){
-    Invoke-TestingHelper -TestName $TestName
+    Invoke-TestingHelper -TestName $TestName -ShowTestErrors:$ShowTestErrors
 } else {
-    Invoke-TestingHelper 
+    Invoke-TestingHelper -ShowTestErrors:$ShowTestErrors
 }
