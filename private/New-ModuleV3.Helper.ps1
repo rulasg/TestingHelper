@@ -46,7 +46,7 @@ function Get-TestModulePath{
     )
 
     
-    $testModulePath = $path | Join-Path -ChildPath ("test")
+    $testModulePath = $path | Join-Path -ChildPath ("Test")
 
     return $testModulePath
 }
