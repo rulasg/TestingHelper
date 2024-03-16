@@ -51,19 +51,32 @@ function TestingHelperTest_Manual_Work_Testing{
 
     # Run tests
     
-    $result = Invoke-TestingHelper -Path $modulePath
+    $result = Invoke-TT_TestingHelper -Path $modulePath
 
     Assert-AreEqual -Expected 2 -Presented $result.Tests
     Assert-AreEqual -Expected 2 -Presented $result.Pass
 }
 
-function TestingHelperTest_Manual_Work_Testing{
+function TestingHelperTest_Manual_Work_Testing_2{
 
     $moduleName = "modulename_{0}" -f (New-Guid).ToString().Substring(0,8)
 
     $result = New-TT_ModuleV3 -Name $moduleName -AddTesting
 
-    $result = Invoke-TestingHelper -Path $result
+    $result = Invoke-TT_TestingHelper -Path $result
+    Assert-AreEqual -Expected 2 -Presented $result.Tests
+    Assert-AreEqual -Expected 2 -Presented $result.Pass
+}
+
+function TestingHelperTest_Manual_Work_Testing_3{
+
+    $moduleName = "modulename_{0}" -f (New-Guid).ToString().Substring(0,8)
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddTesting
+
+    $newName = rename-item -Path $result -NewName "NewName" -PassThru
+
+    $result = Invoke-TT_TestingHelper -Path $newName
     Assert-AreEqual -Expected 2 -Presented $result.Tests
     Assert-AreEqual -Expected 2 -Presented $result.Pass
 }
