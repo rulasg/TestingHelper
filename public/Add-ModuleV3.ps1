@@ -22,7 +22,7 @@ function Add-ModuleV3 {
 
     # Create the module folder. Fail if exists
     # This will filter if Path already exist to avoid overwriting an existing module
-    $modulePath = $modulePathString | New-Folder
+    $modulePath = $modulePathString | New-ModuleFolder
     if( !$modulePath ){ return $null }
 
     $moduleName = Get-ModuleName -Path $modulePath

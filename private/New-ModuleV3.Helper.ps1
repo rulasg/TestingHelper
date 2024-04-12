@@ -61,7 +61,7 @@ function Get-TestModuleName {
     return $name
 } 
 
-function New-Folder{
+function New-ModuleFolder{
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory,ValueFromPipeline)][string]$Path
@@ -71,17 +71,23 @@ function New-Folder{
 
         try {
             #test if path exists
-            if($Path | Test-Path){
-                Write-Error "Path already exists."
-                return $null
-            } else {
+            if(!($Path | Test-Path)){
                 if ($PSCmdlet.ShouldProcess($Path, "New-Item -ItemType Directory")) {
                     $null = New-Item -ItemType Directory -Path $Path
                 }
-                
                 # Converting to Provider path
                 return $Path | Convert-Path
+            } 
+            
+            # Folder exists. Check if the psd1 file exists
+            $psd1Path = ($Path | Join-Path -ChildPath "$($Path | Split-Path -LeafBase).psd1")
+            if($psd1Path | Test-Path){
+                Write-Error -Message "Module already exists."
+                return $null
             }
+
+            return $Path | Convert-Path
+
         } 
         catch {
             Write-Error -Message "Failed to add path."
