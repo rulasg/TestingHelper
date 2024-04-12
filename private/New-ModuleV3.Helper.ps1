@@ -77,8 +77,8 @@ function New-ModuleFolder{
                 }
                 # Converting to Provider path
                 return $Path | Convert-Path
-            } 
-            
+            }
+
             # Folder exists. Check if the psd1 file exists
             $psd1Path = ($Path | Join-Path -ChildPath "$($Path | Split-Path -LeafBase).psd1")
             if($psd1Path | Test-Path){
@@ -88,12 +88,11 @@ function New-ModuleFolder{
 
             return $Path | Convert-Path
 
-        } 
+        }
         catch {
             Write-Error -Message "Failed to add path."
             return $null
         }
     }
-
 }
 
