@@ -37,6 +37,30 @@ function TestingHelperTest_NewModuleV3_AddModule_FailCall_NewModuleManifest {
 
 }
 
+function TestingHelperTest_NewModuleV3_AddModule_FolderExists {
+
+    $moduleName = "MyModule"
+
+    New-TestingFolder -Name $moduleName
+
+    $result = Add-TT_ModuleV3 -Name $moduleName
+
+    Assert-AddModuleV3  -Path $result
+}
+
+
+function TestingHelperTest_NewModuleV3_AddModule_ModuleExistInFolder {
+
+    $moduleName = "MyModule"
+
+    $result = Add-TT_ModuleV3 -Name $moduleName
+
+    $result = Add-TT_ModuleV3 -Name $moduleName @ErrorParameters
+
+    Assert-IsNull -Object $result
+    Assert-Contains -Expected "Module already exists." -Presented ($errorVar.Exception.Message)
+}
+
 function TestingHelperTest_NewModuleV3_AddModule_DefaultManifest {
 
     $moduleName = "MyModule"
