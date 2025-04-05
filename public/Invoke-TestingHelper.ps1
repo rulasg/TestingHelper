@@ -1,4 +1,6 @@
-Set-Variable -Name TestRunFolderName -Value "TestRunFolder" 
+Set-Variable -Name TestRunFolderName -Value "TestRunFolder"
+
+$BEFORE_AFTER_COLOR = "Blue"
 
 function Test-Module {
     [System.ObsoleteAttribute("This function is obsolete. Use Invoke-TestingHelper instead", $true)]
@@ -117,21 +119,35 @@ function Invoke-TestingHelper {
             else {
                 # No function scope so search for all testing functions in module based on prefix
                 $functionsTestName = Get-TestingFunctionPrefix -TestingModuleName ($testingmodulemanifest.Name )
-            } 
-            
-            # Get list of testing fucntions to run
-            $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName -ErrorAction SilentlyContinue
-            
+            }
+
             # Run tests and gather result
             $start = Get-Date
+
+            # Get list of testing functions to run
+            $functionsTest += Get-Command -Name $functionsTestName -Module $TestingModuleName -ErrorAction SilentlyContinue
+            
+            # Run_BeforeAll
+            $hasRunBeforeall = Invoke-FunctionName -ModuleName $TestingModuleName -FunctionName "Run_BeforeAll"
+            
+            #Run all tests
             $result = $functionsTest | Start-TestingFunction -ShowTestErrors:$ShowTestErrors
+            
+            # Run_AfterAll
+            $hasRunAfterall = Invoke-FunctionName -ModuleName $TestingModuleName -FunctionName "Run_AfterAll"
+
+            # Record time
             $time = ($start | New-TimeSpan ).ToString("hh\:mm\:ss\:FFFF")
+
+            #check for afterAll function
             
             # Add extra info to result
             $result | Add-Member -NotePropertyName "Name" -NotePropertyValue $manifest.Name
             $result | Add-Member -NotePropertyName "TestModule" -NotePropertyValue $TestingModuleName
             $result | Add-Member -NotePropertyName "TestsName" -NotePropertyValue $functionsTestName
             $result | Add-Member -NotePropertyName "Tests" -NotePropertyValue $functionsTest.Length
+            $result | Add-Member -NotePropertyName "RunBeforeAll" -NotePropertyValue $hasRunBeforeall
+            $result | Add-Member -NotePropertyName "RunAfterAll" -NotePropertyValue $hasRunAfterall
             $result | Add-Member -NotePropertyName "Time" -NotePropertyValue $time
 
             # Save result to global variable
@@ -151,6 +167,43 @@ function Invoke-TestingHelper {
         }
     }
 } Export-ModuleMember -Function Invoke-TestingHelper
+
+function Invoke-FunctionName{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory, Position = 0)] [string] $FunctionName,
+        [Parameter( Position = 1)] [string] $ModuleName,
+        [Parameter()][switch] $Silence
+    )
+
+    $ret = $false
+
+    $functions = Get-Command -Name $FunctionName -Module $ModuleName -ErrorAction SilentlyContinue
+
+    $functions | ForEach-Object {
+
+        try {
+            if($Silence){
+                $null = & $FunctionName -ErrorAction $ErrorShow
+            } else {
+                Write-Host "$FunctionName ... [" -NoNewline -ForegroundColor $BEFORE_AFTER_COLOR
+                $null = & $FunctionName -ErrorAction $ErrorShow
+                Write-Host "] "  -NoNewline -ForegroundColor $BEFORE_AFTER_COLOR
+                Write-Host "PASS"  -ForegroundColor DarkYellow
+            }
+            $ret = $true
+        }
+        catch {
+            if(!$Silence){
+                Write-Host "x"  -NoNewline -ForegroundColor Red
+                Write-Host "] "  -NoNewline -ForegroundColor $BEFORE_AFTER_COLOR
+            }
+            throw $_
+        }
+    }
+
+    return $ret
+}
 
 function Test-ModulelocalPSD1 {
     [System.ObsoleteAttribute("This function is obsolete. Use Invoke-TestingHelper instead", $true)]
@@ -225,13 +278,16 @@ function Start-TestingFunction {
             $FunctionName = $FunctionInfo.Name
         }
         Write-Verbose -Message "Running [ $FunctionName ]"
-    
+
+        
         $local = Push-TestingFolder -Path $FunctionName
-    
+        
         try {
             Write-Host "$FunctionName ... [" -NoNewline -ForegroundColor DarkCyan
+            if(Invoke-FunctionName -ModuleName $FunctionInfo.Module -FunctionName "Run_BeforeEach" -Silence) { Write-Host "#" -NoNewline -ForegroundColor $BEFORE_AFTER_COLOR }
             $null = & $FunctionName -ErrorAction $ErrorShow
-            Write-Host "] "  -NoNewline -ForegroundColor DarkCyan 
+            if(Invoke-FunctionName -ModuleName $FunctionInfo.Module -FunctionName "Run_AfterEach" -Silence) { Write-Host "#" -NoNewline -ForegroundColor $BEFORE_AFTER_COLOR }
+            Write-Host "] "  -NoNewline -ForegroundColor DarkCyan
             Write-Host "PASS"  -ForegroundColor DarkYellow 
             $ret.Pass++
         }
