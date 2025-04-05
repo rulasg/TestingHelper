@@ -80,3 +80,64 @@ function TestingHelperTest_Manual_Work_Testing_3{
     Assert-AreEqual -Expected 2 -Presented $result.Tests
     Assert-AreEqual -Expected 2 -Presented $result.Pass
 }
+
+function TestingHelperTest_Manual_Work_Testing_WithBeforeAndAfter{
+
+    $moduleName = "modulename_{0}" -f (New-Guid).ToString().Substring(0,8)
+
+    $result = New-TT_ModuleV3 -Name $moduleName -AddTesting
+    $func =@'
+
+    $global:RunBeforeEach_Count = 0
+    $global:RunAfterEach_Count = 0
+    $global:RunBeforeAll = $false
+    $global:RunAfterAll = $false
+
+    function Run_BeforeAll{
+        Assert-IsTrue -Condition $true
+        $global:RunBeforeAll = $true
+    }
+    
+    function Run_AfterAll{
+        Assert-IsTrue -Condition $true
+        $global:RunAfterAll = $true
+    }
+
+    function Run_BeforeEach{
+        Assert-IsTrue -Condition $true
+        $global:RunBeforeEach_Count++
+    }
+
+    function Run_AfterEach{
+        Assert-IsTrue -Condition $true
+        $global:RunAfterEach_Count++
+    }
+
+    Export-ModuleMember -Function Run_*
+'@
+
+    # Create BeforeAndAfter.ps1
+    New-TestingFile -Path "$moduleName/Test/public" -Name "BeforeAndAfter.ps1" -Content $func
+
+    # Act
+
+    $result = Invoke-TT_TestingHelper -Path $result
+
+    # Assert
+    Assert-AreEqual -Expected 2 -Presented $result.Tests
+    Assert-AreEqual -Expected 2 -Presented $result.Pass
+
+    Assert-IsTrue -Condition $result.RunAfterAll
+    Assert-IsTrue -Condition $result.RunAfterAll
+
+    Assert-IsTrue -Condition $global:RunBeforeAll
+    Assert-IsTrue -Condition $global:RunAfterAll
+
+    Assert-AreEqual -Expected 2 -Presented $global:RunBeforeEach_Count
+    Assert-AreEqual -Expected 2 -Presented $global:RunAfterEach_Count
+
+    $global:RunBeforeEach_Count = $null
+    $global:RunAfterEach_Count = $null
+    $global:RunBeforeAll = $null
+    $global:RunAfterAll = $null
+}
